@@ -163,19 +163,9 @@ bool Settings::aiThinkingVisible() const
 }
 
 // ---------------------------------------------------------------------------
-QString Settings::leanCloudAppId() const
+QString Settings::cloudApiBase() const
 {
-    return m_s.value(QStringLiteral("cloud/lcAppId"), QString()).toString().trimmed();
-}
-
-QString Settings::leanCloudAppKey() const
-{
-    return m_s.value(QStringLiteral("cloud/lcAppKey"), QString()).toString().trimmed();
-}
-
-QString Settings::leanCloudApiBase() const
-{
-    return m_s.value(QStringLiteral("cloud/lcApiBase"), QString()).toString().trimmed();
+    return m_s.value(QStringLiteral("cloud/apiBase"), QString()).toString().trimmed();
 }
 
 bool Settings::cloudEnabled() const
@@ -424,12 +414,8 @@ bool Settings::save(const QJsonObject& p)
 
     if (p.contains(QStringLiteral("cloudEnabled")))
         m_s.setValue(QStringLiteral("cloud/enabled"), flag("cloudEnabled", true));
-    if (p.contains(QStringLiteral("leanCloudAppId")))
-        m_s.setValue(QStringLiteral("cloud/lcAppId"), str("leanCloudAppId"));
-    if (p.contains(QStringLiteral("leanCloudAppKey")))
-        m_s.setValue(QStringLiteral("cloud/lcAppKey"), str("leanCloudAppKey"));
-    if (p.contains(QStringLiteral("leanCloudApiBase")))
-        m_s.setValue(QStringLiteral("cloud/lcApiBase"), str("leanCloudApiBase"));
+    if (p.contains(QStringLiteral("cloudApiBase")))
+        m_s.setValue(QStringLiteral("cloud/apiBase"), str("cloudApiBase"));
 
     if (p.contains(QStringLiteral("theme")))
         setTheme(str("theme"));

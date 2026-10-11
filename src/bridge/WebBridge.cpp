@@ -1290,9 +1290,7 @@ QString WebBridge::saveSettings(const QString& json)
     if (patch.contains(QStringLiteral("concurrent")) && m_downloads)
         m_downloads->setConcurrency(cfg.concurrent());
     if ((patch.contains(QStringLiteral("cloudEnabled")) ||
-         patch.contains(QStringLiteral("leanCloudAppId")) ||
-         patch.contains(QStringLiteral("leanCloudAppKey")) ||
-         patch.contains(QStringLiteral("leanCloudApiBase"))) && m_cloud)
+         patch.contains(QStringLiteral("cloudApiBase"))) && m_cloud)
         m_cloud->configureFromSettings();
     if (patch.contains(QStringLiteral("enabledSources")) && m_search) {
         SearchAggregator::Config c = m_search->config();

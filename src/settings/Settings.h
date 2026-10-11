@@ -46,12 +46,11 @@ public:
     int     aiTimeoutMs() const;
     bool    aiThinkingVisible() const;          // 前端"显示 AI 思考过程"
 
-    // ---------------- 云端账户（LeanCloud 无服务器后端） ----------------
-    // 凭证优先级：这里的手动配置 > 编译期注入（cmake/secrets.cmake，发布机专用）。
-    // AppKey 会随 exe 分发（LeanCloud 客户端应用的标准做法），额度被盗刷风险可接受。
-    QString leanCloudAppId() const;             // 空 = 走编译期常量
-    QString leanCloudAppKey() const;
-    QString leanCloudApiBase() const;           // REST 域名，空 = 按 AppId 推导
+    // ---------------- 云端账户（CloudBase 云函数，无服务器后端） ----------------
+    // 端点优先级：这里的手动配置 > 编译期注入（cmake/secrets.cmake，发布机专用）。
+    // 服务端实现见 tools/cloudbase/ms-account.js；云端地址会打进 exe，
+    // 属公开信息（安全靠服务端 scrypt + token 机制），额度被盗刷风险可接受。
+    QString cloudApiBase() const;               // 云函数 HTTP 访问地址，空 = 走编译期常量
     bool    cloudEnabled() const;               // 总开关，默认开
 
     // ---------------- 界面 ----------------
