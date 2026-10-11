@@ -32,8 +32,10 @@ const TOKEN_DAYS = 30;
 
 // ---------- 工具 ----------
 function scryptHash(pwdHash, salt) {
-  // pwdHash 本身已是前端弱哈希；scrypt 再加 2^15 轮 → 服务端存储层安全
-  return crypto.scryptSync(pwdHash, salt, 32).toString('hex');
+  // pwdHash 本身已是前端弱哈希；scrypt 再叠加 → 服务端存储层安全。
+  // N=2^14（128KB 内存 * 16384 = 16MB）—— Node 默认 maxmem 32MB 内安全；
+  // N=2^15 会撞 33.5MB > 32MB 上限（实测 "memory limit exceeded"）。
+  return crypto.scryptSync(pwdHash, salt, 32, { N: 16384, r: 8, p: 1 }).toString('hex');
 }
 function newToken() { return crypto.randomBytes(24).toString('hex'); }
 function now() { return Date.now(); }

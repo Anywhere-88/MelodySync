@@ -29,7 +29,14 @@ LeanCloud 已公告 2027-01-12 彻底关停，账号系统改用腾讯云 CloudB
 
 ## 四、验证
 
-浏览器或 curl 访问（POST）：
+**推荐：客户端探针一键全验**（注册→心跳→歌单推拉→错误密码拒绝，全链路）：
+
+```bash
+build\bin\MelodySync.exe --probe-cloud "<你的HTTP访问地址>"
+# 期望末行：=== CloudProbe：全部通过 ===（返回码 0）
+```
+
+或先手动 curl 验证连通性：
 
 ```bash
 curl -X POST "<你的HTTP访问地址>" -H "Content-Type: application/json" \

@@ -38,8 +38,9 @@ public:
     explicit CloudSync(QObject* parent = nullptr);
 
     // 从 Settings + 编译期常量解析云端 API 地址；未配置时所有上报静默
-    // 跳过（纯本地模式）。
-    void configureFromSettings();
+    // 跳过（纯本地模式）。传 apiBaseOverride 时直接使用（--probe-cloud 自检用，
+    // 跳过总开关与 settings）。
+    void configureFromSettings(const QString& apiBaseOverride = QString());
     bool isConfigured() const { return !m_base.isEmpty(); }
 
     // 稳定的设备指纹（首次生成后写入 QSettings，长期不变）

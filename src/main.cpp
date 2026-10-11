@@ -13,6 +13,7 @@
 
 #include "ai/IntentParser.h"
 #include "audio/FFmpegTranscoder.h"
+#include "auth/CloudSync.h"
 #include "bridge/LocalAudioServer.h"
 #include "core/HttpClient.h"
 #include "data/Database.h"
@@ -27,12 +28,14 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
+#include <QEventLoop>
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocalServer>
 #include <QLocalSocket>
+#include <QTimer>
 #include <QMessageBox>
 #include <QMutex>
 #include <QStandardPaths>
@@ -409,6 +412,157 @@ int runProbe(const QString& query, const QString& downloadCountArg,
     return (done > 0) ? 0 : 1;
 }
 
+// ===========================================================================
+//  --probe-cloud <apiBase>：云端账户端到端自检
+//
+//  为什么要有它：账号链路（注册/登录/心跳/歌单同步）藏在 GUI 个人中心里，
+//  部署完云函数手点 UI 验证既慢又说不清哪步断了。一条命令走完全部动作，
+//  每步 PASS/FAIL 直接打在 stdout —— 也能对着本地 mock 服务器测客户端传输层。
+//
+//  动作序列（每步最多等总超时兜底）：
+//    1) register（重名则自动改走 login）
+//    2) heartbeat（验证 token 会话）
+//    3) pushPlaylist（整包推）
+//    4) pullPlaylist（拉回并核对内容）
+//    5) 错误密码登录（应被拒绝 —— 安全验证）
+//  全部通过返回 0，任何一步失败返回 1。
+// ===========================================================================
+int runCloudProbe(const QString& apiBase)
+{
+#ifdef Q_OS_WIN
+    // 与 runProbe 相同的控制台处理：只在 stdout 未重定向时抢父控制台
+    const DWORD outType = GetFileType(GetStdHandle(STD_OUTPUT_HANDLE));
+    const bool redirected = (outType == FILE_TYPE_DISK || outType == FILE_TYPE_PIPE);
+    if (!redirected && AttachConsole(ATTACH_PARENT_PROCESS)) {
+        freopen_s(nullptr, "CONOUT$", "w", stdout);
+        freopen_s(nullptr, "CONOUT$", "w", stderr);
+    }
+    SetConsoleOutputCP(65001);
+#endif
+    if (apiBase.trimmed().isEmpty()) {
+        probeSay(QStringLiteral("用法：MelodySync.exe --probe-cloud <云函数HTTP访问地址>"));
+        return 2;
+    }
+
+    CloudSync cloud;
+    cloud.configureFromSettings(apiBase);
+
+    const QString user  = QStringLiteral("probe_user");
+    const QString pwd   = QStringLiteral("probe_pwd_hash_0123456789");
+    const QString items = QStringLiteral("[{\"name\":\"probe-checklist\",\"songs\":[1,2,3]}]");
+
+    QEventLoop loop;
+    QTimer::singleShot(90 * 1000, &loop, [&loop]() { loop.exit(2); });   // 总超时兜底
+
+    QString expectedAction;          // 当前等待的 syncSucceeded/syncFailed action
+    QString pullItems;
+    bool    stepOk = false;
+    QString stepErr;
+    int     failures = 0;
+
+    auto failStep = [&](const QString& name, const QString& why) {
+        ++failures;
+        probeSay(QStringLiteral("  ✗ %1: %2").arg(name, why));
+    };
+
+    QObject::connect(&cloud, &CloudSync::syncSucceeded,
+                     [&](const QString& action, const QString&) {
+                         if (action == expectedAction) { stepOk = true; loop.quit(); }
+                     });
+    QObject::connect(&cloud, &CloudSync::syncFailed,
+                     [&](const QString& action, const QString& err) {
+                         if (action == expectedAction) { stepOk = false; stepErr = err; loop.quit(); }
+                     });
+    QObject::connect(&cloud, &CloudSync::playlistPulled, [&](const QString& pulled) {
+        if (expectedAction == QStringLiteral("pull")) {
+            pullItems = pulled;
+            stepOk = true;
+            loop.quit();
+        }
+    });
+
+    auto waitStep = [&]() {
+        stepOk = false;
+        stepErr.clear();
+        loop.exec();
+    };
+
+    // 1) 注册（重名 → 自动改走登录，也算过）
+    expectedAction = QStringLiteral("register");
+    probeSay(QStringLiteral("--- 1) register ---"));
+    cloud.reportRegister(user, pwd, QStringLiteral("🎵"));
+    waitStep();
+    if (stepOk) {
+        probeSay(QStringLiteral("  ✓ PASS"));
+    } else {
+        probeSay(QStringLiteral("  · register 未通过（%1），改走 login…").arg(stepErr));
+        expectedAction = QStringLiteral("login");
+        cloud.reportLogin(user, pwd);
+        waitStep();
+        if (stepOk) probeSay(QStringLiteral("  ✓ login PASS（账户已存在）"));
+        else failStep(QStringLiteral("register+login"), stepErr);
+    }
+
+    // 2) 心跳（验证 token 会话有效）
+    if (failures == 0) {
+        expectedAction = QStringLiteral("heartbeat");
+        probeSay(QStringLiteral("--- 2) heartbeat ---"));
+        cloud.heartbeat();
+        waitStep();
+        if (stepOk) probeSay(QStringLiteral("  ✓ PASS（在线状态已刷新）"));
+        else failStep(QStringLiteral("heartbeat"), stepErr);
+    }
+
+    // 3) 歌单整包推
+    if (failures == 0) {
+        expectedAction = QStringLiteral("pushPlaylist");
+        probeSay(QStringLiteral("--- 3) pushPlaylist ---"));
+        cloud.pushPlaylist(user, items);
+        waitStep();
+        if (stepOk) probeSay(QStringLiteral("  ✓ PASS"));
+        else failStep(QStringLiteral("pushPlaylist"), stepErr);
+    }
+
+    // 4) 拉回并核对内容
+    if (failures == 0) {
+        expectedAction = QStringLiteral("pull");
+        probeSay(QStringLiteral("--- 4) pullPlaylist ---"));
+        cloud.pullPlaylist(user);
+        waitStep();
+        if (stepOk && pullItems.contains(QLatin1String("probe-checklist")))
+            probeSay(QStringLiteral("  ✓ PASS（内容一致，%1 字节）").arg(pullItems.size()));
+        else failStep(QStringLiteral("pullPlaylist"),
+                      pullItems.isEmpty() ? QStringLiteral("云端无歌单") : QStringLiteral("内容不一致"));
+    }
+
+    // 5) 错误密码应被拒绝（cloudLoginResult 路径，WebBridge 跨设备登录用的就是它）。
+    //    ⚠ 前置步骤全过才跑：网络不通时 cloudLoginResult(false) 无法区分
+    //    「服务端拒绝」与「连接失败」，误报 PASS 会把真问题盖住。
+    if (failures == 0) {
+        CloudSync cloud2;
+        cloud2.configureFromSettings(apiBase);
+        probeSay(QStringLiteral("--- 5) 错误密码登录（应拒绝）---"));
+        bool rejected = false;
+        QObject::connect(&cloud2, &CloudSync::cloudLoginResult,
+                         [&](bool ok, const QString&, const QString&,
+                             const QString&, const QString&) {
+                             rejected = !ok;
+                             loop.quit();
+                         });
+        cloud2.cloudLogin(user, QStringLiteral("wrong_password_hash"));
+        loop.exec();
+        if (rejected) probeSay(QStringLiteral("  ✓ PASS（已拒绝）"));
+        else { ++failures; probeSay(QStringLiteral("  ✗ 错误密码竟然登录成功 —— 服务端校验有问题！")); }
+    } else {
+        probeSay(QStringLiteral("--- 5) 错误密码登录：跳过（前置步骤有失败，结果不可信）---"));
+    }
+
+    probeSay(QStringLiteral("=== CloudProbe：%1 ===")
+                 .arg(failures == 0 ? QStringLiteral("全部通过")
+                                    : QStringLiteral("%1 项失败").arg(failures)));
+    return failures == 0 ? 0 : 1;
+}
+
 } // namespace
 
 int main(int argc, char* argv[])
@@ -504,6 +658,8 @@ int main(int argc, char* argv[])
                               "--probe-song \"Cartoon / Jéja / Coleman Trapp|Why We Lose|197\"");
         return 2;
     }
+    if (hasArg(argc, argv, "--probe-cloud"))
+        return runCloudProbe(argValue(QStringLiteral("--probe-cloud")));
     if (hasArg(argc, argv, "--probe"))
         return runProbe(argValue(QStringLiteral("--probe")),
                         argValue(QStringLiteral("--probe-download")),

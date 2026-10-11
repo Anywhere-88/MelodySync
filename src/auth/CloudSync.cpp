@@ -46,8 +46,16 @@ CloudSync::CloudSync(QObject* parent) : QObject(parent)
 // ---------------------------------------------------------------------------
 // 端点解析：Settings 用户显式配置 > 编译期注入。都没配 = 纯本地模式。
 // ---------------------------------------------------------------------------
-void CloudSync::configureFromSettings()
+void CloudSync::configureFromSettings(const QString& apiBaseOverride)
 {
+    // 自检探针直连指定端点（绕过总开关与 settings）
+    if (!apiBaseOverride.isEmpty()) {
+        m_base = apiBaseOverride.trimmed();
+        while (m_base.endsWith(QLatin1Char('/'))) m_base.chop(1);
+        qInfo() << "[CloudSync] 云端账户自检端点:" << m_base;
+        return;
+    }
+
     const Settings& st = Settings::instance();
 
     if (!st.cloudEnabled()) {
@@ -120,6 +128,7 @@ void CloudSync::callAction(const QString& action, const QJsonObject& payload, bo
     if (!isConfigured()) return;   // 未配置：静默跳过（纯本地模式）
 
     QJsonObject body = payload;
+    body[QStringLiteral("action")] = action;   // 服务端按 action 分发
     if (withToken && !m_token.isEmpty())
         body[QStringLiteral("token")] = m_token;
     const QByteArray raw = QJsonDocument(body).toJson(QJsonDocument::Compact);
@@ -150,6 +159,10 @@ void CloudSync::callAction(const QString& action, const QJsonObject& payload, bo
                 handleSessionResponse(action, resp);
             emit syncSucceeded(action, QString::fromUtf8(
                 QJsonDocument(resp).toJson(QJsonDocument::Compact)));
+            // 拉取结果要单独走 playlistPulled（WebBridge 靠它包成
+            // cloudPlaylistPulled 回前端；syncSucceeded 只在探针/日志用）
+            if (action == QLatin1String("pullPlaylist"))
+                emit playlistPulled(resp.value(QStringLiteral("items")).toString());
         });
     });
 }
