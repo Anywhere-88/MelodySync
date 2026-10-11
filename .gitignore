@@ -1,0 +1,30 @@
+# ---- 构建产物 ----
+build/
+build-debug/
+dist/
+out/
+.vs/
+*.vcxproj.user
+*.suo
+
+# ---- vcpkg 运行时（README 有装法；fetch_vcpkg_sources.py 可断源救急）----
+vcpkg_installed/
+
+# ---- sidecar 二进制 ----
+# yt-dlp.exe 用 tools\fetch_ytdlp.py 重新获取（bin/ 是唯一源）
+bin/yt-dlp.exe
+vcpkg/
+
+# ---- Python ----
+__pycache__/
+*.pyc
+
+# ---- 打包产物 ----
+*.zip
+*.7z
+
+# ---- 本地笔记 / 临时文件 ----
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

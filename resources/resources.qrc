@@ -1,0 +1,16 @@
+<!DOCTYPE RCC>
+<!--
+    MelodySync 资源文件
+    把前端单文件 index.html 编译进 exe，运行时用 qrc:/ui/index.html 加载。
+    注意：CMake 构建时由 qt_add_resources() 自动生成等价内容，
+          本文件用于 VS 手写工程（MelodySync.vcxproj）的 QtRcc 步骤。
+-->
+<RCC>
+    <qresource prefix="/">
+        <file alias="ui/index.html">../ui/index.html</file>
+    </qresource>
+    <qresource prefix="/bin">
+        <!-- 外部可执行文件不进 qrc（体积 + 无法直接执行），
+             改由 CMake POST_BUILD / Inno Setup 拷到 exe 同级目录 -->
+    </qresource>
+</RCC>

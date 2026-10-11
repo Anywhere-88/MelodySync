@@ -1,0 +1,36 @@
+此目录用于放置两个外部可执行文件（不随 exe 打进 qrc）：
+
+  1) yt-dlp.exe
+     用途：下载页面音频（哔哩哔哩 / YouTube / SoundCloud 等）
+     下载：推荐用脚本（会校验 SHA-256 并实际跑一次 --version）：
+               python tools\fetch_ytdlp.py
+           手工下载：https://github.com/yt-dlp/yt-dlp/releases
+               （选 yt-dlp.exe，放到本目录即可）
+
+     ⚠⚠ 本目录才是唯一的手工维护点，build\bin\ 里那份只是副本 ⚠⚠
+        构建时会由 CMake POST_BUILD / VS CopyRuntimeSidecars
+        把本目录的 *.exe 拷到 MelodySync.exe 同级。
+        所以**只替换 build\bin\ 里的那份是没用的** —— 下次构建就会被这里的
+        旧文件盖回去。（真实踩过：手工换了新版，跑起来正常，重新构建之后
+        又开始报 "yt-dlp.exe 已损坏"，来回找了很久。）
+
+     ⚠ 光看文件大小判断不出文件好坏。
+        曾经那份损坏的 yt-dlp.exe 有 18,903,582 字节，比官方正常的
+        17,840,399 还大（中间被塞了脏数据）。症状是启动即报：
+            [PYI-xxxx:ERROR] Failed to extract ...\_ARC4.pyd:
+                            decompression resulted in return code -3!
+        程序里会识别这个报错并提示重新下载，所以直接跑 fetch_ytdlp.py 最省事。
+
+  2) ffmpeg.exe
+     用途：向设备同步时的实时转码（如 FLAC -> MP3 320kbps）
+     下载：https://www.gyan.dev/ffmpeg/builds/
+           （解压后从 bin/ 里取 ffmpeg.exe，放到本目录）
+
+可选：
+  3) cacert.pem
+     用途：libcurl 的 CA 证书包。放这里或 exe 同级目录均可；
+           都不放时程序会回落到系统证书库。
+     下载：https://curl.se/ca/cacert.pem
+
+排查下载/搜索问题：不用开界面，跑探针就行
+      build\bin\MelodySync.exe --probe "歌名 歌手" --probe-download 2

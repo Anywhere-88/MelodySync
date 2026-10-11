@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MelodySync.vcxproj.filters
+
+  Two different kinds of strings live in this file, and confusing them is a
+  classic source of "my files vanished from Solution Explorer" bugs:
+
+    1) <Filter Include="src\core"> is a LOGICAL GROUP NAME shown as a folder in
+       Solution Explorer. It is not a path on disk, so it must NOT carry the
+       "..\" prefix. Child groups are written as parent\child.
+
+    2) <ClCompile Include="..\src\core\Types.cpp"> is a REAL FILE PATH, resolved
+       relative to this project file (MelodySync/MelodySync/). Since the sources
+       live in the sibling folder MelodySync/src/, every one of them needs the
+       "..\" prefix. These paths must match the .vcxproj items character for
+       character, otherwise the filter mapping silently fails.
+
+  Verify with: python tools/check_xml.py
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- ===== logical groups (no path prefix) ===== -->
+    <Filter Include="src">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\core">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\data">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\bridge">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\auth">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ai">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\search">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\search\sources">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\playlist">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000009}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\download">
+      <UniqueIdentifier>{11111111-0000-0000-0000-00000000000A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\audio">
+      <UniqueIdentifier>{11111111-0000-0000-0000-00000000000B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\device">
+      <UniqueIdentifier>{11111111-0000-0000-0000-00000000000C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\settings">
+      <UniqueIdentifier>{11111111-0000-0000-0000-00000000000D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{11111111-0000-0000-0000-00000000000E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{11111111-0000-0000-0000-00000000000F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="installer">
+      <UniqueIdentifier>{11111111-0000-0000-0000-000000000010}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+
+  <!-- ===== real file paths (all carry "..\" because sources sit one level up) ===== -->
+  <ItemGroup>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MainWindow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\Types.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\HttpClient.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\Async.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\data\Database.cpp">
+      <Filter>src\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\bridge\WebBridge.cpp">
+      <Filter>src\bridge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\bridge\LocalAudioServer.cpp">
+      <Filter>src\bridge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auth\UserManager.cpp">
+      <Filter>src\auth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auth\CloudSync.cpp">
+      <Filter>src\auth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ai\AiClient.cpp">
+      <Filter>src\ai</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ai\IntentParser.cpp">
+      <Filter>src\ai</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\search\SearchAggregator.cpp">
+      <Filter>src\search</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\search\sources\JamendoSource.cpp">
+      <Filter>src\search\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\search\sources\FmaSource.cpp">
+      <Filter>src\search\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\search\sources\ArchiveSource.cpp">
+      <Filter>src\search\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\search\sources\PixabaySource.cpp">
+      <Filter>src\search\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\search\sources\PreviewSource.cpp">
+      <Filter>src\search\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\search\sources\WebSource.cpp">
+      <Filter>src\search\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\playlist\PlaylistParser.cpp">
+      <Filter>src\playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\playlist\NeteaseApi.cpp">
+      <Filter>src\playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\playlist\QQMusicApi.cpp">
+      <Filter>src\playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\download\DownloadEngine.cpp">
+      <Filter>src\download</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\download\YtDlpWrapper.cpp">
+      <Filter>src\download</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\TagWriter.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\FFmpegTranscoder.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\device\DeviceManager.cpp">
+      <Filter>src\device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\device\MtpSync.cpp">
+      <Filter>src\device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\device\UsbSync.cpp">
+      <Filter>src\device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\settings\Settings.cpp">
+      <Filter>src\settings</Filter>
+    </ClCompile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="..\src\MainWindow.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\Types.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\HttpClient.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\Async.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\data\Database.h">
+      <Filter>src\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\bridge\WebBridge.h">
+      <Filter>src\bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\bridge\LocalAudioServer.h">
+      <Filter>src\bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\auth\UserManager.h">
+      <Filter>src\auth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\auth\CloudSync.h">
+      <Filter>src\auth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ai\AiClient.h">
+      <Filter>src\ai</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ai\IntentParser.h">
+      <Filter>src\ai</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\search\SearchSource.h">
+      <Filter>src\search</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\search\SearchAggregator.h">
+      <Filter>src\search</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\search\sources\JamendoSource.h">
+      <Filter>src\search\sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\search\sources\FmaSource.h">
+      <Filter>src\search\sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\search\sources\ArchiveSource.h">
+      <Filter>src\search\sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\search\sources\PixabaySource.h">
+      <Filter>src\search\sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\search\sources\PreviewSource.h">
+      <Filter>src\search\sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\search\sources\WebSource.h">
+      <Filter>src\search\sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\playlist\PlaylistParser.h">
+      <Filter>src\playlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\playlist\NeteaseApi.h">
+      <Filter>src\playlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\playlist\QQMusicApi.h">
+      <Filter>src\playlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\download\DownloadEngine.h">
+      <Filter>src\download</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\download\YtDlpWrapper.h">
+      <Filter>src\download</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\TagWriter.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\FFmpegTranscoder.h">
+      <Filter>src\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\device\DeviceManager.h">
+      <Filter>src\device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\device\MtpSync.h">
+      <Filter>src\device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\device\UsbSync.h">
+      <Filter>src\device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\settings\Settings.h">
+      <Filter>src\settings</Filter>
+    </ClInclude>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ResourceCompile Include="..\resources\MelodySync.rc">
+      <Filter>resources</Filter>
+    </ResourceCompile>
+    <QtRcc Include="..\resources\resources.qrc">
+      <Filter>resources</Filter>
+    </QtRcc>
+    <None Include="..\ui\index.html">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="..\installer\MelodySync.iss">
+      <Filter>installer</Filter>
+    </None>
+  </ItemGroup>
+</Project>

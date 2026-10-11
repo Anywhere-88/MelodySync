@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "melodysync",
+  "version": "1.0.0",
+  "description": "歌单导入 + AI 全网搜 + 无损下载 + 设备同步 一体化的 Windows 桌面工具",
+  "homepage": "https://example.local/melodysync",
+  "dependencies": [
+    {
+      "name": "taglib",
+      "default-features": false
+    },
+    {
+      "name": "curl",
+      "default-features": false,
+      "features": [
+        "ssl",
+        "http2"
+      ]
+    },
+    "nlohmann-json",
+    "sqlite3"
+  ],
+  "builtin-baseline": "8fece632eb3b173ec9b1a0f04da253ee227172af",
+  "overrides": []
+}

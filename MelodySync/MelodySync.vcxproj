@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MelodySync.vcxproj
+
+  IMPORTANT: CMakeLists.txt is the authoritative build definition.
+  This hand-written MSBuild project exists so the solution can be opened
+  directly in Visual Studio 2022. It relies on:
+    1) Qt VS Tools (QtMsBuild) for moc/rcc/uic and Qt module linking
+    2) vcpkg MSBuild integration for Manifest mode (vcpkg.json)
+
+  Recommended workflow (see README.md section 3):
+    configure with the "Visual Studio 17 2022" generator, x64 platform, the
+    vcpkg toolchain file and CMAKE_PREFIX_PATH pointing at the Qt kit, then
+    build the Release configuration with parallel compilation.
+
+  NOTE: XML comments must not contain two consecutive hyphens, so the literal
+  command lines (which are full of double-dash switches) are intentionally
+  kept out of this header and live in README.md / build.bat instead.
+
+  If you prefer this project instead of the CMake flow, set the environment
+  variables QTDIR and VCPKG_ROOT (or edit QtInstallDir / VcpkgRoot below)
+  before opening the solution.
+-->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{7A3E9C51-1F42-4B7E-9C0D-6E5A2B8D4F31}</ProjectGuid>
+    <RootNamespace>MelodySync</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>MelodySync</ProjectName>
+  </PropertyGroup>
+
+  <!-- ===================== Toolchain locations ===================== -->
+  <PropertyGroup Label="Toolchain">
+    <!-- Qt 6.6.0 msvc2019_64 -->
+    <QtInstallDir Condition="'$(QtInstallDir)' == '' AND '$(QTDIR)' != ''">$(QTDIR)</QtInstallDir>
+    <QtInstallDir Condition="'$(QtInstallDir)' == ''">C:\Qt\6.6.0\msvc2019_64</QtInstallDir>
+    <QtInstallDir Condition="!HasTrailingSlash('$(QtInstallDir)')">$(QtInstallDir)\</QtInstallDir>
+
+    <VcpkgRoot Condition="'$(VcpkgRoot)' == '' AND '$(VCPKG_ROOT)' != ''">$(VCPKG_ROOT)</VcpkgRoot>
+    <VcpkgRoot Condition="'$(VcpkgRoot)' == ''">C:\vcpkg</VcpkgRoot>
+
+    <!-- Manifest mode: dependencies come from vcpkg.json in the repo root -->
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgManifestRoot>$(MSBuildThisFileDirectory)..\</VcpkgManifestRoot>
+    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+    <VcpkgConfiguration Condition="'$(Configuration)' == 'Release'">Release</VcpkgConfiguration>
+    <VcpkgConfiguration Condition="'$(Configuration)' == 'Debug'">Debug</VcpkgConfiguration>
+
+    <QtModules>core;gui;widgets;network;sql;webenginewidgets;webchannel</QtModules>
+    <QtMocDir>$(ProjectDir)GeneratedFiles\$(Configuration)\moc</QtMocDir>
+    <QtRccDir>$(ProjectDir)GeneratedFiles\$(Configuration)\rcc</QtRccDir>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries Condition="'$(Configuration)'=='Debug'">true</UseDebugLibraries>
+    <UseDebugLibraries Condition="'$(Configuration)'=='Release'">false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization Condition="'$(Configuration)'=='Release'">true</WholeProgramOptimization>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+
+  <ImportGroup Label="ExtensionSettings" />
+
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
+  </ImportGroup>
+
+  <!-- ===================== vcpkg (manifest mode) ===================== -->
+  <Import Project="$(VcpkgRoot)\scripts\buildsystems\msbuild\vcpkg.props"
+          Condition="Exists('$(VcpkgRoot)\scripts\buildsystems\msbuild\vcpkg.props')" />
+
+  <!-- ===================== Qt VS Tools (QtMsBuild) ===================== -->
+  <Import Project="$(QtInstallDir)msbuild\Qt.props" Condition="Exists('$(QtInstallDir)msbuild\Qt.props')" />
+  <Import Project="$(QtInstallDir)msbuild\QtWebEngineWidgets.props"
+          Condition="Exists('$(QtInstallDir)msbuild\QtWebEngineWidgets.props')" />
+
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)build\bin\</OutDir>
+    <IntDir>$(SolutionDir)build\obj\$(ProjectName)\$(Configuration)\</IntDir>
+    <TargetName>MelodySync</TargetName>
+    <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <!-- 全部源码为 UTF-8（无 BOM），必须配 /utf-8（见下方 AdditionalOptions），
+           否则 MSVC 会按系统 ANSI 代码页解析，中文界面文本会乱码。 -->
+      <AdditionalIncludeDirectories>
+        $(ProjectDir)..\src;
+        $(QtInstallDir)include;
+        $(QtInstallDir)include\QtCore;
+        $(QtInstallDir)include\QtGui;
+        $(QtInstallDir)include\QtWidgets;
+        $(QtInstallDir)include\QtNetwork;
+        $(QtInstallDir)include\QtSql;
+        $(QtInstallDir)include\QtWebEngineWidgets;
+        $(QtInstallDir)include\QtWebChannel;
+        $(VcpkgRoot)\installed\$(VcpkgTriplet)\include;
+        $(VcpkgRoot)\installed\$(VcpkgTriplet)\include\taglib;
+        %(AdditionalIncludeDirectories)
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>
+        UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_SECURE_NO_WARNINGS;
+        QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SQL_LIB;
+        QT_WEBENGINEWIDGETS_LIB;QT_WEBCHANNEL_LIB;
+        QT_NO_DEBUG_OUTPUT;
+        %(PreprocessorDefinitions)
+      </PreprocessorDefinitions>
+      <AdditionalOptions>/utf-8 /MP /bigobj /Zc:__cplusplus /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>
+        ws2_32.lib;crypt32.lib;setupapi.lib;shell32.lib;ole32.lib;
+        %(AdditionalDependencies)
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- ===================== Sources ===================== -->
+  <ItemGroup>
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\MainWindow.cpp" />
+    <ClCompile Include="..\src\core\Types.cpp" />
+    <ClCompile Include="..\src\core\HttpClient.cpp" />
+    <ClCompile Include="..\src\core\Async.cpp" />
+    <ClCompile Include="..\src\data\Database.cpp" />
+    <ClCompile Include="..\src\bridge\WebBridge.cpp" />
+    <ClCompile Include="..\src\bridge\LocalAudioServer.cpp" />
+    <ClCompile Include="..\src\auth\UserManager.cpp" />
+    <ClCompile Include="..\src\auth\CloudSync.cpp" />
+    <ClCompile Include="..\src\ai\AiClient.cpp" />
+    <ClCompile Include="..\src\ai\IntentParser.cpp" />
+    <ClCompile Include="..\src\search\SearchAggregator.cpp" />
+    <ClCompile Include="..\src\search\sources\JamendoSource.cpp" />
+    <ClCompile Include="..\src\search\sources\FmaSource.cpp" />
+    <ClCompile Include="..\src\search\sources\ArchiveSource.cpp" />
+    <ClCompile Include="..\src\search\sources\PixabaySource.cpp" />
+    <ClCompile Include="..\src\search\sources\PreviewSource.cpp" />
+    <ClCompile Include="..\src\search\sources\WebSource.cpp" />
+    <ClCompile Include="..\src\playlist\PlaylistParser.cpp" />
+    <ClCompile Include="..\src\playlist\NeteaseApi.cpp" />
+    <ClCompile Include="..\src\playlist\QQMusicApi.cpp" />
+    <ClCompile Include="..\src\playlist\PlatformResolve.cpp" />
+    <ClCompile Include="..\src\download\DownloadEngine.cpp" />
+    <ClCompile Include="..\src\download\YtDlpWrapper.cpp" />
+    <ClCompile Include="..\src\audio\TagWriter.cpp" />
+    <ClCompile Include="..\src\audio\FFmpegTranscoder.cpp" />
+    <ClCompile Include="..\src\device\DeviceManager.cpp" />
+    <ClCompile Include="..\src\device\MtpSync.cpp" />
+    <ClCompile Include="..\src\device\UsbSync.cpp" />
+    <ClCompile Include="..\src\settings\Settings.cpp" />
+  </ItemGroup>
+
+  <!-- Win32 资源脚本：把 resources/icons/melodysync.ico 链进 PE 的资源节，
+       这样 exe 在资源管理器 / 任务栏 / Alt+Tab 里显示的是应用图标。
+       注意 rc.exe 是按系统 ANSI 代码页读取 .rc 的，所以这个文件刻意保持纯 ASCII。 -->
+  <ItemGroup>
+    <ResourceCompile Include="..\resources\MelodySync.rc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="..\src\MainWindow.h" />
+    <ClInclude Include="..\src\core\Types.h" />
+    <ClInclude Include="..\src\core\HttpClient.h" />
+    <ClInclude Include="..\src\core\Async.h" />
+    <ClInclude Include="..\src\data\Database.h" />
+    <ClInclude Include="..\src\bridge\WebBridge.h" />
+    <ClInclude Include="..\src\bridge\LocalAudioServer.h" />
+    <ClInclude Include="..\src\auth\UserManager.h" />
+    <ClInclude Include="..\src\auth\CloudSync.h" />
+    <ClInclude Include="..\src\ai\AiClient.h" />
+    <ClInclude Include="..\src\ai\IntentParser.h" />
+    <ClInclude Include="..\src\search\SearchSource.h" />
+    <ClInclude Include="..\src\search\SearchAggregator.h" />
+    <ClInclude Include="..\src\search\sources\JamendoSource.h" />
+    <ClInclude Include="..\src\search\sources\FmaSource.h" />
+    <ClInclude Include="..\src\search\sources\ArchiveSource.h" />
+    <ClInclude Include="..\src\search\sources\PixabaySource.h" />
+    <ClInclude Include="..\src\search\sources\PreviewSource.h" />
+    <ClInclude Include="..\src\search\sources\WebSource.h" />
+    <ClInclude Include="..\src\playlist\PlaylistParser.h" />
+    <ClInclude Include="..\src\playlist\NeteaseApi.h" />
+    <ClInclude Include="..\src\playlist\QQMusicApi.h" />
+    <ClInclude Include="..\src\playlist\PlatformResolve.h" />
+    <ClInclude Include="..\src\download\DownloadEngine.h" />
+    <ClInclude Include="..\src\download\YtDlpWrapper.h" />
+    <ClInclude Include="..\src\audio\TagWriter.h" />
+    <ClInclude Include="..\src\audio\FFmpegTranscoder.h" />
+    <ClInclude Include="..\src\device\DeviceManager.h" />
+    <ClInclude Include="..\src\device\MtpSync.h" />
+    <ClInclude Include="..\src\device\UsbSync.h" />
+    <ClInclude Include="..\src\settings\Settings.h" />
+  </ItemGroup>
+
+  <!-- Qt resource: processed by QtMsBuild (QtRcc) -->
+  <ItemGroup>
+    <QtRcc Include="..\resources\resources.qrc">
+      <BaseName>resources</BaseName>
+    </QtRcc>
+  </ItemGroup>
+
+  <!-- Runtime sidecars copied next to the exe -->
+  <ItemGroup>
+    <None Include="..\bin\yt-dlp.exe" Condition="Exists('..\bin\yt-dlp.exe')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\bin\ffmpeg.exe" Condition="Exists('..\bin\ffmpeg.exe')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\ui\index.html" />
+    <None Include="..\vcpkg.json" />
+    <None Include="..\README.md" />
+  </ItemGroup>
+
+  <!-- ===================== Qt / vcpkg targets ===================== -->
+  <Import Project="$(QtInstallDir)msbuild\Qt.targets" Condition="Exists('$(QtInstallDir)msbuild\Qt.targets')" />
+  <Import Project="$(VcpkgRoot)\scripts\buildsystems\msbuild\vcpkg.targets"
+          Condition="Exists('$(VcpkgRoot)\scripts\buildsystems\msbuild\vcpkg.targets')" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+
+  <!-- Copy sidecars after build so the app can find yt-dlp.exe / ffmpeg.exe -->
+  <Target Name="CopyRuntimeSidecars" AfterTargets="Build" Condition="Exists('..\bin')">
+    <ItemGroup>
+      <SidecarFiles Include="..\bin\*.exe" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SidecarFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
