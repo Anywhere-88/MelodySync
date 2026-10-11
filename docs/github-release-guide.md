@@ -84,3 +84,26 @@ GitHub 网页 → Releases → Draft a new release → Tag `v1.0.0` → 标题
 
 初稿在 `docs\blog-2026-10-11.md`。GitHub 仓库链接建好后，把博客「下载地址」
 一节的占位替换成真实 Release 链接即可发布。
+
+## 实战记录（2026-10-11，全流程已跑通）
+
+本仓库实际就是按 PAT + HTTPS 推上去的（没走 SSH），三处坑记录如下：
+
+1. **fine-grained PAT 权限**：`github_pat_` 开头的细粒度 token 要能推送，必须
+   **Repository access 覆盖本仓库 + Permissions → Contents = Read and write**。
+   权限没生效时 push 报 403，可用 API 响应头 `x-accepted-github-permissions`
+   查看 token 实际权限。改完权限记得点页面最底部的 **Update token**。
+2. **Watt Toolkit（Steam++）加速劫持 TLS**：开着加速时 git 拿到的是 SteamTools
+   本地 MITM 证书，schannel 后端报 `CRYPT_E_NO_REVOCATION_CHECK`。解法（本仓库
+   已在 `.git/config` 固化）：
+   ```bat
+   git config http.sslBackend openssl
+   git config http.sslVerify false
+   ```
+   仅对本仓库生效（MITM 是本机自己的加速器，风险可接受；介意就关加速再推）。
+3. **Release 附件走 API**：建 Release（`POST /releases`，tag 用已推送的 `v1.0.0`）
+   → `POST uploads.github.com/.../assets?name=<文件名>` 二进制上传 213MB zip，
+   上传后核对返回的 `size` 与本地一致。
+
+线上结果：<https://github.com/Anywhere-88/MelodySync>
+Release：<https://github.com/Anywhere-88/MelodySync/releases/tag/v1.0.0>
