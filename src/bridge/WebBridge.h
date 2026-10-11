@@ -63,6 +63,11 @@ public slots:
     Q_INVOKABLE QString updateUser(const QString& patchJson);
     Q_INVOKABLE QString deleteUser();
 
+    // 云端歌单同步（LeanCloud，无服务器）。结果经 cloudPlaylistPulled 信号
+    // 回前端（拉取结果 / 推送失败提示都走它，保证任何路径都有回包）。
+    Q_INVOKABLE void    cloudPushPlaylist(const QString& itemsJson);
+    Q_INVOKABLE void    cloudPullPlaylist();
+
     // ------------------------------------------------------------------ 歌单
     Q_INVOKABLE QString parsePlaylist(const QString& url, const QString& platform);
     Q_INVOKABLE QString qrLoginCreate();
@@ -168,6 +173,7 @@ signals:
     void userChanged(const QString& json);
     void lyricsReady(const QString& json);      // 歌词获取完成（fetchLyrics 的回执）
     void authResult(const QString& json);       // 注册/登录/改资料/删账户的回执
+    void cloudPlaylistPulled(const QString& json); // 云端歌单拉取/推送的回执（LeanCloud）
     void settingsLoaded(const QString& json);
     void sourcesLoaded(const QString& json);
     void analysisLoaded(const QString& json);

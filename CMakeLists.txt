@@ -11,6 +11,16 @@
 # ============================================================================
 cmake_minimum_required(VERSION 3.21)
 
+# 云端账户密钥（LeanCloud）：发布机构建时创建 cmake/secrets.cmake（已 gitignore），
+# 内容形如：
+#   set(MS_LC_APP_ID  "xxxxxxxxxxxxxxxx")
+#   set(MS_LC_APP_KEY "xxxxxxxxxxxxxxxx")
+#   set(MS_LC_API_BASE "https://xxxxxxxx.api.lncldglobal.com")   # 可省略，按 AppId 推导
+# 没有该文件时用空值编译（云端同步停用，纯本地模式，不影响其他功能）。
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/secrets.cmake")
+    include(cmake/secrets.cmake)
+endif()
+
 project(MelodySync
     VERSION 1.0.0
     DESCRIPTION "MelodySync - 歌单导入 / AI 全网搜 / 无损下载 / 设备同步"
@@ -228,6 +238,13 @@ else()
     target_compile_definitions(MelodySync PRIVATE MS_HAVE_LIBMTP=0)
     message(WARNING "MelodySync: 未找到 libmtp，MTP 同步将降级为「仅识别设备」模式")
 endif()
+
+# 云端账户（LeanCloud）凭证注入；MS_LC_* 未定义时 CloudSync 用空串兜底
+target_compile_definitions(MelodySync PRIVATE
+    MS_LC_APP_ID="${MS_LC_APP_ID}"
+    MS_LC_APP_KEY="${MS_LC_APP_KEY}"
+    MS_LC_API_BASE="${MS_LC_API_BASE}"
+)
 
 if (FFMPEG_INCLUDE_DIR)
     target_include_directories(MelodySync PRIVATE ${FFMPEG_INCLUDE_DIR})

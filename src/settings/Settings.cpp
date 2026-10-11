@@ -163,15 +163,24 @@ bool Settings::aiThinkingVisible() const
 }
 
 // ---------------------------------------------------------------------------
-QString Settings::cloudEndpoint() const
+QString Settings::leanCloudAppId() const
 {
-    return m_s.value(QStringLiteral("cloud/endpoint"),
-                     QStringLiteral("https://your-worker.workers.dev")).toString();
+    return m_s.value(QStringLiteral("cloud/lcAppId"), QString()).toString().trimmed();
+}
+
+QString Settings::leanCloudAppKey() const
+{
+    return m_s.value(QStringLiteral("cloud/lcAppKey"), QString()).toString().trimmed();
+}
+
+QString Settings::leanCloudApiBase() const
+{
+    return m_s.value(QStringLiteral("cloud/lcApiBase"), QString()).toString().trimmed();
 }
 
 bool Settings::cloudEnabled() const
 {
-    return m_s.value(QStringLiteral("cloud/enabled"), false).toBool();
+    return m_s.value(QStringLiteral("cloud/enabled"), true).toBool();
 }
 
 // ---------------------------------------------------------------------------
@@ -361,7 +370,6 @@ QJsonObject Settings::all() const
     o[QStringLiteral("aiKeySet")]     = !aiApiKey().isEmpty();   // 只回"是否设置过"，不回传密钥
     o[QStringLiteral("aiThinking")]   = aiThinkingVisible();
 
-    o[QStringLiteral("cloudEndpoint")] = cloudEndpoint();
     o[QStringLiteral("cloudEnabled")]  = cloudEnabled();
 
     o[QStringLiteral("theme")]         = theme();
@@ -414,8 +422,14 @@ bool Settings::save(const QJsonObject& p)
     if (p.contains(QStringLiteral("aiThinking")))
         m_s.setValue(QStringLiteral("ai/thinking"), flag("aiThinking", true));
 
-    if (p.contains(QStringLiteral("cloudEndpoint")))
-        m_s.setValue(QStringLiteral("cloud/endpoint"), str("cloudEndpoint"));
+    if (p.contains(QStringLiteral("cloudEnabled")))
+        m_s.setValue(QStringLiteral("cloud/enabled"), flag("cloudEnabled", true));
+    if (p.contains(QStringLiteral("leanCloudAppId")))
+        m_s.setValue(QStringLiteral("cloud/lcAppId"), str("leanCloudAppId"));
+    if (p.contains(QStringLiteral("leanCloudAppKey")))
+        m_s.setValue(QStringLiteral("cloud/lcAppKey"), str("leanCloudAppKey"));
+    if (p.contains(QStringLiteral("leanCloudApiBase")))
+        m_s.setValue(QStringLiteral("cloud/lcApiBase"), str("leanCloudApiBase"));
 
     if (p.contains(QStringLiteral("theme")))
         setTheme(str("theme"));

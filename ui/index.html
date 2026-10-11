@@ -2036,6 +2036,17 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
             '<button class="p-mini" id="pEditPwd">修改密码</button>' +
           '</div></div>' +
 
+        (u.isCloud ?
+          '<div style="display:flex;align-items:center;padding:12px 0;' +
+            'border-bottom:1px solid rgba(255,255,255,.06)">' +
+            '<div style="font-size:12.5px;font-weight:550">歌单云同步' +
+              '<div style="font-size:10.5px;color:#6b7488;margin-top:2px">' +
+                '上传整包覆盖云端；恢复会导入云端歌单到本地</div></div>' +
+            '<div style="margin-left:auto;display:flex;gap:8px">' +
+              '<button class="p-mini" id="pCloudPush">上传</button>' +
+              '<button class="p-mini" id="pCloudPull">恢复</button>' +
+            '</div></div>' : '') +
+
         '<div style="display:flex;align-items:center;padding:12px 0">' +
           '<div style="font-size:12.5px;font-weight:550">退出登录</div>' +
           '<div style="margin-left:auto">' +
@@ -2179,6 +2190,47 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
       setUser(u.name, u);
       alert('密码已修改');
     };
+
+    // ---- 歌单云同步（仅云端账户） ----
+    // 上传：整包序列化当前所有歌单（列表 + 逐个详情），覆盖云端
+    if (u.isCloud) {
+      document.getElementById('pCloudPush').onclick = async function(){
+        var btn = this; btn.disabled = true; btn.textContent = '上传中…';
+        try {
+          var list = [];
+          if (bridge) {
+            var arr = JSON.parse(bridge.getPlaylists() || '[]');
+            for (var i = 0; i < arr.length; i++) {
+              var d = JSON.parse(bridge.getPlaylistDetail(arr[i].id) || '{}');
+              if (d && d.name) list.push(d);
+            }
+          }
+          if (!list.length) { toast('本地还没有歌单', 'w'); return; }
+          await window.MSAuth.cloudPush(JSON.stringify(list));
+        } catch (e) { console.warn('[CloudSync] 上传失败', e); }
+        finally { btn.disabled = false; btn.textContent = '上传'; }
+      };
+
+      // 恢复：云端整包 → 逐个 savePlaylist 导入本地（追加，不删现有）
+      document.getElementById('pCloudPull').onclick = async function(){
+        var btn = this; btn.disabled = true; btn.textContent = '恢复中…';
+        try {
+          var res = await window.MSAuth.cloudPull();
+          if (!res || !res.ok) { alert((res && res.error) || '从云端恢复失败'); return; }
+          if (!res.hasCloud) { alert('云端还没有歌单，先在其他设备上传一次'); return; }
+          var list = JSON.parse(res.items || '[]');
+          if (!list.length) { alert('云端歌单为空'); return; }
+          if (!await uiConfirm('云端有 ' + list.length + ' 个歌单，导入到本地（不会删除现有歌单）？', { okText:'导入' })) return;
+          var done = 0;
+          for (var i = 0; i < list.length; i++) {
+            var r = JSON.parse(bridge.savePlaylist(JSON.stringify(list[i])) || '{}');
+            if (r && r.ok) done++;
+          }
+          toast('已从云端恢复 ' + done + ' 个歌单');
+        } catch (e) { console.warn('[CloudSync] 恢复失败', e); }
+        finally { btn.disabled = false; btn.textContent = '恢复'; }
+      };
+    }
 
     document.getElementById('pLogout').onclick = async function(){
       if (!await uiConfirm('确定退出登录？', { danger:false, okText:'退出' })) return;
@@ -2797,6 +2849,22 @@ window.MSAuth = {
     if (!bridge) return null;
     const p = _waitSignal('authResult', 15000);
     bridge.deleteUser();
+    const r = await p;
+    return r ? JSON.parse(r) : null;
+  },
+  // 云端歌单（LeanCloud）：推送无独立回执信号，靠 cloudPlaylistPulled 的
+  // 失败分支/成功提示；拉取走 cloudPlaylistPulled({ok,hasCloud,items})
+  async cloudPush(itemsJson) {
+    if (!bridge) return null;
+    const p = _waitSignal('cloudPlaylistPulled', 20000);
+    bridge.cloudPushPlaylist(itemsJson);
+    const r = await p;
+    return r ? JSON.parse(r) : null;
+  },
+  async cloudPull() {
+    if (!bridge) return null;
+    const p = _waitSignal('cloudPlaylistPulled', 20000);
+    bridge.cloudPullPlaylist();
     const r = await p;
     return r ? JSON.parse(r) : null;
   },

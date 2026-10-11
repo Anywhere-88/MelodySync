@@ -171,12 +171,15 @@ void WebBridge::bootstrap()
 
     m_users->init();
 
-    // 云端端点 & AI 配置从设置里读一次
-    m_cloud->setEndpoint(Settings::instance().cloudEndpoint());
+    // 云端账户凭证（LeanCloud）从设置/编译期常量解析一次
+    m_cloud->configureFromSettings();
 
     // 自动登录
     if (m_users->restoreSession()) {
         m_downloads->setUserId(m_users->currentId());
+        // 云端账户恢复心跳（本地 isCloud 用户才需要；普通用户无感）
+        if (m_users->currentUser().value(QStringLiteral("isCloud")).toBool())
+            m_cloud->resumeSession(m_users->currentName());
         qInfo() << "[Bridge] 自动登录:" << m_users->currentName();
     }
 
@@ -224,12 +227,76 @@ void WebBridge::wireSignals()
     connect(m_users.get(), &UserManager::userChanged,
             this, &WebBridge::userChanged);
 
-    // 云端同步失败时给出轻提示（不阻塞任何操作）
+    // 云端同步失败时给出轻提示（不阻塞任何操作；心跳失败静默，不烦用户）
     connect(m_cloud.get(), &CloudSync::syncFailed, this,
             [this](const QString& action, const QString& error) {
-                Q_UNUSED(action)
+                if (action == QLatin1String("heartbeat")) return;
+                if (action == QLatin1String("playlistPush") ||
+                    action == QLatin1String("playlistPull")) {
+                    QJsonObject o;
+                    o[QStringLiteral("ok")]    = false;
+                    o[QStringLiteral("error")] = error;
+                    emit cloudPlaylistPulled(toCompact(o));
+                    return;
+                }
                 emit toast(QStringLiteral("云端同步失败，已切换为纯本地模式（%1）").arg(error),
                            QStringLiteral("w"));
+            });
+
+    // 云端歌单拉取结果 → 前端
+    connect(m_cloud.get(), &CloudSync::playlistPulled, this,
+            [this](const QString& itemsJson) {
+                QJsonObject o;
+                o[QStringLiteral("ok")]       = true;
+                o[QStringLiteral("hasCloud")] = !itemsJson.isEmpty();
+                if (!itemsJson.isEmpty())
+                    o[QStringLiteral("items")] = itemsJson;
+                emit cloudPlaylistPulled(toCompact(o));
+            });
+
+    // 云端歌单推送成功 → 前端回执（与失败分支共用 cloudPlaylistPulled 通道）
+    connect(m_cloud.get(), &CloudSync::syncSucceeded, this,
+            [this](const QString& action, const QString&) {
+                if (action != QLatin1String("playlistPush")) return;
+                QJsonObject o;
+                o[QStringLiteral("ok")]    = true;
+                o[QStringLiteral("hasCloud")] = false;
+                emit cloudPlaylistPulled(toCompact(o));
+            });
+
+    // 跨设备登录：云端验证通过 → 镜像建户（本地库无同名才建）→ 正式登录
+    connect(m_cloud.get(), &CloudSync::cloudLoginResult, this,
+            [this](bool ok, const QString& name, const QString& pwdHash,
+                   const QString& avatar, const QString& error) {
+                if (!ok) {
+                    QJsonObject o;
+                    o[QStringLiteral("ok")]    = false;
+                    o[QStringLiteral("error")] =
+                        QStringLiteral("账户不存在或密码错误（云端验证: %1）").arg(error);
+                    emit authResult(toCompact(o));
+                    return;
+                }
+
+                // 本地没有同名账户 → 把云端账户镜像下来（isCloud=true）
+                QJsonObject res = m_users->registerUser(name, pwdHash, avatar, true);
+                if (!res.value(QStringLiteral("ok")).toBool()) {
+                    // 同名本地账户已存在（可能密码不同）→ 试一次本地登录
+                    res = m_users->loginUser(name, pwdHash);
+                    if (!res.value(QStringLiteral("ok")).toBool()) {
+                        QJsonObject o;
+                        o[QStringLiteral("ok")]    = false;
+                        o[QStringLiteral("error")] =
+                            QStringLiteral("本地已有同名账户且密码不一致，请用本地密码登录");
+                        emit authResult(toCompact(o));
+                        return;
+                    }
+                }
+
+                m_downloads->setUserId(m_users->currentId());
+                // 会话在 cloudLogin 成功时已缓存，这里恢复心跳
+                m_cloud->resumeSession(name);
+                emit toast(QStringLiteral("欢迎回来，%1（已从云端同步账户）").arg(name), QString());
+                emit authResult(toCompact(res));
             });
 }
 
@@ -254,7 +321,6 @@ QString WebBridge::registerUser(const QString& name, const QString& pwdHash,
         m_downloads->setUserId(m_users->currentId());
         if (isCloud) {
             // 勾选了才上报；失败会被 CloudSync 降级成本地模式
-            m_cloud->setEndpoint(Settings::instance().cloudEndpoint());
             m_cloud->reportRegister(name, pwdHash, avatar);
         }
         emit toast(QStringLiteral("账户创建成功，欢迎 %1").arg(name), QString());
@@ -270,13 +336,26 @@ QString WebBridge::loginUser(const QString& name, const QString& pwdHash)
     const QJsonObject res = m_users->loginUser(name, pwdHash);
     if (res.value(QStringLiteral("ok")).toBool()) {
         m_downloads->setUserId(m_users->currentId());
-        // 只有云端账户才上报 last_seen
+        // 只有云端账户才换取云端会话并开始心跳
         const QJsonObject user = res.value(QStringLiteral("user")).toObject();
         if (user.value(QStringLiteral("isCloud")).toBool()) {
-            m_cloud->setEndpoint(Settings::instance().cloudEndpoint());
             m_cloud->reportLogin(name, pwdHash);
         }
+        emit authResult(toCompact(res));
+        return toCompact(res);
     }
+
+    // 本地查无此账户（或密码不符）→ 云端验证回落（跨设备登录）。
+    // LeanCloud 校验通过后，cloudLoginResult 里把云端账户镜像成本地账户
+    // 再补发 authResult；失败也补发（任何路径都保证前端等得到回包）。
+    if (m_cloud->isConfigured()) {
+        m_cloud->cloudLogin(name, pwdHash);
+        QJsonObject pending;
+        pending[QStringLiteral("ok")]      = false;
+        pending[QStringLiteral("pending")] = true;
+        return toCompact(pending);
+    }
+
     emit authResult(toCompact(res));
     return toCompact(res);
 }
@@ -286,6 +365,7 @@ void WebBridge::logoutUser()
     if (!m_users) return;
     m_users->logoutUser();
     m_downloads->setUserId(0);
+    m_cloud->clearSession();   // 停云端心跳并清会话缓存
     emit toast(QStringLiteral("已退出登录"), QString());
 }
 
@@ -460,10 +540,57 @@ QString WebBridge::savePlaylist(const QString& playlistJson)
     res[QStringLiteral("count")] = pl.songs.size();
     emit toast(QStringLiteral("已保存歌单《%1》（%2 首）").arg(pl.name).arg(pl.songs.size()),
                QString());
+    // 云端账户：整包推送 LeanCloud（last-write-wins，失败静默降级）
+    const QJsonObject cu = m_users->currentUser();
+    if (cu.value(QStringLiteral("isCloud")).toBool())
+        m_cloud->pushPlaylist(cu.value(QStringLiteral("name")).toString(), playlistJson);
     // 通知前端：保存结果 + 刷新歌单列表
     emit playlistSaved(toCompact(res));
     emit playlistsLoaded(toCompact(Database::instance().playlists(uid)));
     return toCompact(res);
+}
+
+// ---------------------------------------------------------------------------
+// 云端歌单手动同步（个人中心按钮）
+// ---------------------------------------------------------------------------
+void WebBridge::cloudPushPlaylist(const QString& itemsJson)
+{
+    if (!m_users || !m_users->loggedIn()) {
+        QJsonObject o;
+        o[QStringLiteral("ok")]    = false;
+        o[QStringLiteral("error")] = QStringLiteral("请先登录");
+        emit cloudPlaylistPulled(toCompact(o));
+        return;
+    }
+    const QJsonObject cu = m_users->currentUser();
+    if (!cu.value(QStringLiteral("isCloud")).toBool()) {
+        QJsonObject o;
+        o[QStringLiteral("ok")]    = false;
+        o[QStringLiteral("error")] = QStringLiteral("云端歌单同步仅支持云端账户");
+        emit cloudPlaylistPulled(toCompact(o));
+        return;
+    }
+    m_cloud->pushPlaylist(cu.value(QStringLiteral("name")).toString(), itemsJson);
+}
+
+void WebBridge::cloudPullPlaylist()
+{
+    if (!m_users || !m_users->loggedIn()) {
+        QJsonObject o;
+        o[QStringLiteral("ok")]    = false;
+        o[QStringLiteral("error")] = QStringLiteral("请先登录");
+        emit cloudPlaylistPulled(toCompact(o));
+        return;
+    }
+    const QJsonObject cu = m_users->currentUser();
+    if (!cu.value(QStringLiteral("isCloud")).toBool()) {
+        QJsonObject o;
+        o[QStringLiteral("ok")]    = false;
+        o[QStringLiteral("error")] = QStringLiteral("云端歌单同步仅支持云端账户");
+        emit cloudPlaylistPulled(toCompact(o));
+        return;
+    }
+    m_cloud->pullPlaylist(cu.value(QStringLiteral("name")).toString());
 }
 
 // ===========================================================================
@@ -1159,11 +1286,14 @@ QString WebBridge::saveSettings(const QString& json)
     Settings& cfg = Settings::instance();
     cfg.save(patch);
 
-    // 立即生效的项：并发数、云端端点
+    // 立即生效的项：并发数、云端凭证
     if (patch.contains(QStringLiteral("concurrent")) && m_downloads)
         m_downloads->setConcurrency(cfg.concurrent());
-    if (patch.contains(QStringLiteral("cloudEndpoint")) && m_cloud)
-        m_cloud->setEndpoint(cfg.cloudEndpoint());
+    if ((patch.contains(QStringLiteral("cloudEnabled")) ||
+         patch.contains(QStringLiteral("leanCloudAppId")) ||
+         patch.contains(QStringLiteral("leanCloudAppKey")) ||
+         patch.contains(QStringLiteral("leanCloudApiBase"))) && m_cloud)
+        m_cloud->configureFromSettings();
     if (patch.contains(QStringLiteral("enabledSources")) && m_search) {
         SearchAggregator::Config c = m_search->config();
         c.enabledSources = cfg.enabledSources();

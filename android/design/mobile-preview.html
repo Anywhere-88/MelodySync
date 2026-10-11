@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MelodySync 手机端 · UI 预览</title>
+<style>
+/* ==================================================================
+   MelodySync Android 预览原型
+   设计令牌 100% 取自桌面版 ui/index.html :root
+   规则沿用项目铁律：禁 backdrop-filter，深色实底玻璃
+   ================================================================== */
+:root{
+  --bg-0:#08090d;--bg-1:#0d0f14;--bg-2:#12151c;--bg-3:#181c25;--bg-4:#1f242f;
+  --br-1:rgba(255,255,255,.06);--br-2:rgba(255,255,255,.09);--br-3:rgba(255,255,255,.14);
+  --tx-1:#f0f2f7;--tx-2:#a8b0c0;--tx-3:#6b7488;--tx-4:#4a5162;
+  --ac:#00e0b8;--g-ac:linear-gradient(135deg,#00e0b8,#00b8d4);
+  --g-ai:linear-gradient(135deg,#a855f7,#5b8cff 50%,#00e0b8);
+  --wn:#f5a524;--dg:#ff4d6a;
+  --sd-2:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.25);
+  --e:cubic-bezier(.4,0,.2,1);--eo:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font:13.5px/1.55 -apple-system,"Inter","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:radial-gradient(1200px 800px at 70% 20%,#101318 0%,#08090d 60%);
+  color:var(--tx-1);display:flex;align-items:center;justify-content:center;
+  min-height:100vh;gap:36px;padding:28px;flex-wrap:wrap;
+  -webkit-font-smoothing:antialiased;letter-spacing:.01em;
+}
+.side{max-width:280px}
+.side h1{font-size:22px;color:var(--ac);font-weight:700;letter-spacing:.02em}
+.side p{color:var(--tx-3);font-size:12.5px;margin-top:10px;line-height:1.7}
+.side .tag{display:inline-block;margin-top:14px;padding:4px 10px;border:1px solid var(--br-2);
+  border-radius:999px;font-size:11px;color:var(--tx-2)}
+.side .warn{margin-top:18px;padding:10px 12px;border:1px solid rgba(245,165,36,.25);
+  border-radius:10px;background:rgba(245,165,36,.06);color:var(--wn);font-size:11.5px;line-height:1.6}
+
+/* ---- 手机框 ---- */
+.phone{
+  width:390px;height:844px;border-radius:46px;flex-shrink:0;position:relative;
+  background:var(--bg-0);border:1px solid #23262e;
+  box-shadow:0 0 0 10px #15171d,0 0 0 11px #262a33,0 40px 90px rgba(0,0,0,.65);
+  overflow:hidden;
+}
+.statusbar{
+  height:44px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;font-size:12.5px;font-weight:600;color:var(--tx-1);
+  background:rgba(8,9,13,.9);position:relative;z-index:5;
+}
+.statusbar .icons{display:flex;gap:5px;align-items:center;color:var(--tx-2)}
+.punch{position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:110px;height:26px;border-radius:14px;background:#000;border:1px solid #1c1f26}
+
+/* ---- 视图层 ---- */
+.views{position:absolute;inset:44px 0 0 0;display:flex;flex-direction:column}
+.view{display:none;flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 150px;scrollbar-width:none}
+.view::-webkit-scrollbar{display:none}
+.view.on{display:block;animation:vIn .32s var(--eo)}
+@keyframes vIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---- 搜索页 ---- */
+.brand{display:flex;align-items:baseline;gap:8px;padding:14px 2px 4px}
+.brand b{font-size:24px;font-weight:800;letter-spacing:.02em;
+  background:var(--g-ac);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand span{font-size:11px;color:var(--tx-4)}
+.searchbar{
+  margin-top:10px;display:flex;gap:8px;align-items:center;
+  background:var(--bg-2);border:1px solid var(--br-2);border-radius:14px;padding:11px 14px;
+}
+.searchbar:focus-within{border-color:rgba(0,224,184,.45)}
+.searchbar svg{flex-shrink:0;opacity:.5}
+.searchbar input{flex:1;background:none;border:0;outline:0;color:var(--tx-1);font-size:14.5px}
+.searchbar input::placeholder{color:var(--tx-4)}
+.aibtn{
+  margin-top:9px;width:100%;border:0;cursor:pointer;color:#fff;font-size:13.5px;font-weight:700;
+  padding:11px;border-radius:13px;background:var(--g-ai);letter-spacing:.06em;
+  transition:transform .15s var(--e),box-shadow .2s var(--e);box-shadow:var(--sd-2);
+}
+.aibtn:active{transform:scale(.97)}
+.chips{display:flex;gap:7px;margin-top:12px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:5px 13px;border-radius:999px;font-size:12px;cursor:pointer;
+  color:var(--tx-3);background:var(--bg-2);border:1px solid var(--br-1);transition:all .18s var(--e)}
+.chip.on{color:#062018;background:var(--g-ac);border-color:transparent;font-weight:700}
+
+/* 结果卡 */
+.sect{margin:16px 2px 8px;font-size:11.5px;color:var(--tx-3);letter-spacing:.08em}
+.song{
+  display:flex;gap:11px;align-items:center;padding:10px;border-radius:14px;
+  background:var(--bg-1);border:1px solid var(--br-1);margin-bottom:8px;
+  animation:sIn .4s var(--eo) backwards;cursor:pointer;transition:border-color .15s
+}
+.song:active{border-color:rgba(0,224,184,.4)}
+@keyframes sIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.cover{
+  width:46px;height:46px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:19px;font-weight:800;color:#05201a;
+}
+.cover.c1{background:linear-gradient(135deg,#00e0b8,#00b8d4)}
+.cover.c2{background:linear-gradient(135deg,#5b8cff,#8b5bff)}
+.cover.c3{background:linear-gradient(135deg,#a855f7,#ff4d6a)}
+.cover.c4{background:linear-gradient(135deg,#f5a524,#ff4d6a)}
+.smeta{flex:1;min-width:0}
+.smeta .t{font-size:14px;font-weight:600;color:var(--tx-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.smeta .a{font-size:11.5px;color:var(--tx-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badges{display:flex;gap:4px;margin-top:5px}
+.bd{font-size:9.5px;padding:1.5px 6px;border-radius:5px;border:1px solid var(--br-2);color:var(--tx-3)}
+.bd.q{color:var(--ac);border-color:rgba(0,224,184,.35)}
+.bd.vip{color:var(--wn);border-color:rgba(245,165,36,.35)}
+.dl{
+  flex-shrink:0;width:34px;height:34px;border-radius:10px;border:1px solid rgba(0,224,184,.3);
+  background:rgba(0,224,184,.08);color:var(--ac);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:15px;transition:transform .15s
+}
+.dl:active{transform:scale(.88)}
+.score{font-size:10px;color:var(--tx-4);margin-top:4px}
+.score b{color:var(--ac)}
+
+/* 播放页 */
+.np{position:fixed;inset:44px 0 0 0;background:var(--bg-0);z-index:8;display:none;flex-direction:column;padding:0 26px}
+.np.on{display:flex;animation:vIn .3s var(--eo)}
+.np .hd{display:flex;justify-content:space-between;align-items:center;padding:14px 0;color:var(--tx-3);font-size:12px}
+.np .hd .src{border:1px solid var(--br-2);padding:3px 10px;border-radius:999px;font-size:10.5px;color:var(--ac)}
+.np .art{
+  width:270px;height:270px;margin:18px auto 0;border-radius:26px;
+  background:linear-gradient(135deg,#00e0b8,#00b8d4);display:flex;align-items:center;justify-content:center;
+  font-size:96px;font-weight:800;color:#05201a;
+  box-shadow:0 24px 60px rgba(0,224,184,.18);transition:transform .5s var(--eo)
+}
+.np.playing .art{animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+.np .ti{margin-top:26px;text-align:center;font-size:19px;font-weight:700}
+.np .ar{margin-top:5px;text-align:center;font-size:12.5px;color:var(--tx-3)}
+.prog{margin-top:30px}
+.bar{height:4px;border-radius:2px;background:var(--bg-3);overflow:hidden}
+.bar i{display:block;height:100%;width:38%;border-radius:2px;background:var(--g-ac)}
+.pt{display:flex;justify-content:space-between;font-size:10.5px;color:var(--tx-4);margin-top:7px}
+.ctrl{display:flex;align-items:center;justify-content:center;gap:34px;margin-top:22px}
+.ctrl .m{color:var(--tx-3);font-size:19px;cursor:pointer}
+.play{
+  width:64px;height:64px;border-radius:50%;border:0;cursor:pointer;color:#05201a;font-size:24px;
+  background:var(--g-ac);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 26px rgba(0,224,184,.3);transition:transform .15s
+}
+.play:active{transform:scale(.93)}
+
+/* mini player + 底栏 */
+.mini{
+  position:absolute;left:12px;right:12px;bottom:74px;border-radius:16px;z-index:6;
+  background:rgba(18,21,28,.94);border:1px solid var(--br-2);padding:9px 12px;
+  display:flex;gap:10px;align-items:center;cursor:pointer;box-shadow:var(--sd-2);
+}
+.mini .cv{width:38px;height:38px;border-radius:9px;background:var(--g-ac);
+  display:flex;align-items:center;justify-content:center;color:#05201a;font-weight:800;font-size:16px}
+.mini .mt{flex:1;min-width:0}
+.mini .mt .t{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .mt .a{font-size:10.5px;color:var(--tx-3)}
+.mini .pp{width:34px;height:34px;border-radius:50%;border:1px solid var(--br-2);background:var(--bg-3);
+  color:var(--ac);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px}
+.navbar{
+  position:absolute;left:0;right:0;bottom:0;height:64px;z-index:6;
+  background:rgba(10,11,16,.96);border-top:1px solid var(--br-1);
+  display:flex;
+}
+.nav{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  color:var(--tx-4);font-size:10px;cursor:pointer;transition:color .2s}
+.nav svg{opacity:.75}
+.nav.on{color:var(--ac)}
+.nav.on svg{opacity:1}
+
+/* 队列 / 设置 */
+.qi{display:flex;gap:10px;align-items:center;padding:11px;border-radius:13px;
+  background:var(--bg-1);border:1px solid var(--br-1);margin-bottom:8px}
+.qi .n{width:20px;text-align:center;font-size:11px;color:var(--tx-4)}
+.qi.now{border-color:rgba(0,224,184,.4);background:rgba(0,224,184,.05)}
+.setrow{display:flex;justify-content:space-between;align-items:center;padding:14px 4px;
+  border-bottom:1px solid var(--br-1);font-size:13.5px;color:var(--tx-1)}
+.setrow small{display:block;color:var(--tx-4);font-size:11px;margin-top:2px}
+.toggle{width:44px;height:25px;border-radius:13px;background:var(--bg-4);position:relative;transition:background .2s}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;
+  background:var(--tx-3);transition:all .2s var(--e)}
+.toggle.on{background:rgba(0,224,184,.25)}
+.toggle.on::after{left:22px;background:var(--ac)}
+.sectt{font-size:11.5px;color:var(--tx-3);letter-spacing:.08em;margin:20px 2px 6px}
+
+/* 搜索中动画 */
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ac);
+  margin-left:4px;animation:dt 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes dt{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="side">
+  <h1>MelodySync<br>Android 预览</h1>
+  <p>设计令牌 100% 取自桌面版 <b>ui/index.html</b>：纯黑底 + 深色实底玻璃 + 青绿 #00e0b8。此页即阶段 2 WebView 的视觉基准。</p>
+  <span class="tag">可交互 · 点下方四个 Tab</span>
+  <div class="warn">⚠ 演示数据为 mock。实机版后端 = 桌面版同一份 C++ 代码（搜索聚合/评分/下载引擎），HTTP+WebSocket 桥接。</div>
+</div>
+
+<div class="phone">
+  <div class="punch"></div>
+  <div class="statusbar"><span>11:24</span>
+    <span class="icons">▮▮▮ ⌁ 87%</span></div>
+
+  <div class="views">
+    <!-- ============ 搜索 ============ -->
+    <div class="view on" id="v-search">
+      <div class="brand"><b>MelodySync</b><span>v1.1 · Android</span></div>
+      <div class="searchbar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" placeholder="歌名 · 歌手 · 一句话描述" value="">
+      </div>
+      <button class="aibtn" onclick="doSearch()">✦ AI 全网搜</button>
+      <div class="chips">
+        <div class="chip on">🌐 全网搜索</div>
+        <div class="chip">网易云</div>
+        <div class="chip">QQ音乐</div>
+      </div>
+
+      <div id="searching" class="hide" style="padding:34px 0;text-align:center;color:var(--tx-3)">
+        正在聚合全网结果<span class="dots"><span></span><span></span><span></span></span>
+        <div style="font-size:11px;margin-top:8px;color:var(--tx-4)">B 站 → 网易云 → QQ · 逐站级联</div>
+      </div>
+
+      <div id="results" class="hide">
+        <div class="sect">找到 6 条 · 已按 AI 匹配度排序</div>
+        <div class="song" style="animation-delay:.05s" onclick="openNP('Checklist','MAX · Chromeo','c1','C')">
+          <div class="cover c1">C</div>
+          <div class="smeta">
+            <div class="t">Checklist (feat. Chromeo) Official MV</div>
+            <div class="a">MAX — 全网搜索 · 2:15</div>
+            <div class="badges"><span class="bd q">FLAC 无损</span><span class="bd">免费</span><span class="bd">MV 音轨</span></div>
+            <div class="score">AI 匹配 <b>93</b> · 名称92 歌手100 时长98</div>
+          </div>
+          <div class="dl" onclick="event.stopPropagation();toast('已加入下载队列')">↓</div>
+        </div>
+        <div class="song" style="animation-delay:.1s" onclick="openNP('Checklist','MAX · Chromeo','c1','C')">
+          <div class="cover c1">C</div>
+          <div class="smeta">
+            <div class="t">Checklist — THE FIRST TAKE</div>
+            <div class="a">MAX — 全网搜索 · 2:18</div>
+            <div class="badges"><span class="bd q">320K</span><span class="bd">免费</span></div>
+            <div class="score">AI 匹配 <b>84</b></div>
+          </div>
+          <div class="dl" onclick="event.stopPropagation();toast('已加入下载队列')">↓</div>
+        </div>
+        <div class="song" style="animation-delay:.15s" onclick="openNP('Checklist','BILLKIN','c3','C')">
+          <div class="cover c3">C</div>
+          <div class="smeta">
+            <div class="t">《CHECKLIST》Official MV【中字】</div>
+            <div class="a">BILLKIN — 全网搜索 · 3:42</div>
+            <div class="badges"><span class="bd vip">同名异曲</span></div>
+            <div class="score">AI 匹配 <b>31</b> · 歌手闸门 ×0.6</div>
+          </div>
+          <div class="dl" style="border-color:var(--br-2);background:var(--bg-3);color:var(--tx-4)" onclick="event.stopPropagation();toast('低于 60 分，已放弃以免下错版本')">↓</div>
+        </div>
+        <div class="song" style="animation-delay:.2s" onclick="openNP('Miss Can\'t Be Tamed','MAX','c2','M')">
+          <div class="cover c2">M</div>
+          <div class="smeta">
+            <div class="t">Miss Can't Be Tamed</div>
+            <div class="a">MAX — 网易云 · 3:12</div>
+            <div class="badges"><span class="bd vip">需要会员</span></div>
+            <div class="score">AI 匹配 <b>58</b> · 同歌手另一首</div>
+          </div>
+          <div class="dl" onclick="event.stopPropagation();toast('VIP 曲 · 已转全网换源')">↓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 队列 ============ -->
+    <div class="view" id="v-queue">
+      <div class="brand"><b style="font-size:19px">下载队列</b></div>
+      <div class="qi now"><span class="n">●</span>
+        <div class="smeta"><div class="t">Checklist (feat. Chromeo)</div><div class="a">正在下载 · 6.2 MB / 34.8 MB · FLAC</div></div>
+        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="#00e0b8" stroke-width="2.4" fill="none" stroke-dasharray="40 17" stroke-linecap="round"/></svg>
+      </div>
+      <div class="qi"><span class="n">2</span>
+        <div class="smeta"><div class="t">だから僕は音楽を辞めた</div><div class="a">ずっと真夜中でいいのに。· 等待中</div></div>
+        <span style="color:var(--tx-4)">≡</span></div>
+      <div class="qi"><span class="n">3</span>
+        <div class="smeta"><div class="t">Idol - Yoasobi</div><div class="a">换源中 · 已试 1/2 候选</div></div>
+        <span style="color:var(--wn)">⟳</span></div>
+      <div class="qi"><span class="n">4</span>
+        <div class="smeta"><div class="t">Why We Lose</div><div class="a">Cartoon · 已完成 · 28.4 MB</div></div>
+        <span style="color:var(--ac)">✓</span></div>
+      <div class="sectt">历史（今日）</div>
+      <div class="qi"><span class="n">—</span>
+        <div class="smeta"><div class="t">Checklist</div><div class="a">MAX · 昨天 23:41 · 34.8 MB</div></div>
+        <span style="color:var(--tx-4)">▸</span></div>
+    </div>
+
+    <!-- ============ 歌单 ============ -->
+    <div class="view" id="v-pl">
+      <div class="brand"><b style="font-size:19px">歌单</b></div>
+      <div class="song"><div class="cover c1">♫</div>
+        <div class="smeta"><div class="t">我喜欢的音乐</div><div class="a">42 首 · 含 3 条仅试听</div></div><span style="color:var(--tx-4)">▸</span></div>
+      <div class="song"><div class="cover c2">♩</div>
+        <div class="smeta"><div class="t">深夜写码 BGM</div><div class="a">17 首 · 上次同步 10-09</div></div><span style="color:var(--tx-4)">▸</span></div>
+      <div class="song"><div class="cover c4">♬</div>
+        <div class="smeta"><div class="t">信奥刷题专用</div><div class="a">9 首 · 全部免费可下</div></div><span style="color:var(--tx-4)">▸</span></div>
+      <div class="setrow" style="border:0;margin-top:12px;color:var(--tx-3);font-size:12px">粘贴网易云/QQ 歌单链接即可导入 →<br><small style="color:var(--tx-4)">与桌面版共用同一解析口径</small></div>
+    </div>
+
+    <!-- ============ 设置 ============ -->
+    <div class="view" id="v-set">
+      <div class="brand"><b style="font-size:19px">设置</b></div>
+      <div class="sectt">搜索源</div>
+      <div class="setrow">全网搜索（B站等）<div class="toggle on"></div></div>
+      <div class="setrow">网易云<small>勾选后先平台后全网</small><div class="toggle"></div></div>
+      <div class="setrow">QQ 音乐<div class="toggle"></div></div>
+      <div class="sectt">下载</div>
+      <div class="setrow">保存到 Music/MelodySync<div class="toggle on"></div></div>
+      <div class="setrow">下完核对字节数<small>偏差 >3% 判失败重试</small><div class="toggle on"></div></div>
+      <div class="sectt">合规</div>
+      <div class="setrow">仅检索公开可下载内容<small>VIP 曲目如实标注，不绕过任何限制</small><div class="toggle on"></div></div>
+      <div style="text-align:center;color:var(--tx-4);font-size:10.5px;margin-top:22px">MelodySync Android · CHIT STUDIO · MIT</div>
+    </div>
+  </div>
+
+  <!-- ============ 播放页（覆盖层） ============ -->
+  <div class="np" id="np">
+    <div class="hd"><span onclick="closeNP()" style="cursor:pointer">▾ 返回</span><span class="src">全网搜索 · FLAC</span><span>⋮</span></div>
+    <div class="art" id="npArt">C</div>
+    <div class="ti" id="npTi">Checklist</div>
+    <div class="ar" id="npAr">MAX · Chromeo</div>
+    <div class="prog"><div class="bar"><i></i></div>
+      <div class="pt"><span>1:24</span><span>2:15</span></div></div>
+    <div class="ctrl">
+      <span class="m">⇄</span>
+      <span class="m">⏮</span>
+      <button class="play" id="npPlay" onclick="togglePlay()">❚❚</button>
+      <span class="m">⏭</span>
+      <span class="m">♥</span>
+    </div>
+  </div>
+
+  <!-- mini player -->
+  <div class="mini" id="mini" onclick="openNP('Checklist','MAX · Chromeo','c1','C')">
+    <div class="cv">C</div>
+    <div class="mt"><div class="t">Checklist (feat. Chromeo)</div><div class="a">MAX · FLAC 无损</div></div>
+    <div class="pp" onclick="event.stopPropagation();togglePlay()">❚❚</div>
+  </div>
+
+  <!-- 底栏 -->
+  <div class="navbar">
+    <div class="nav on" data-v="search" onclick="go('search',this)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>搜索</div>
+    <div class="nav" data-v="queue" onclick="go('queue',this)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>队列</div>
+    <div class="nav" data-v="pl" onclick="go('pl',this)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>歌单</div>
+    <div class="nav" data-v="set" onclick="go('set',this)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h.01a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>设置</div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const views = ['search','queue','pl','set'];
+let playing = true;
+
+function go(id, el){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  document.getElementById('v-' + id).classList.add('on');
+  document.querySelectorAll('.nav').forEach(n => n.classList.remove('on'));
+  (el || document.querySelector('.nav[data-v="' + id + '"]')).classList.add('on');
+}
+
+function openNP(t, a, cls, letter){
+  $('#npTi').textContent = t;
+  $('#npAr').textContent = a;
+  const art = $('#npArt');
+  art.className = 'art ' + cls;
+  art.textContent = letter;
+  $('#np').classList.add('on');
+  if(playing) $('#np').classList.add('playing');
+}
+
+function closeNP(){ $('#np').classList.remove('on'); }
+
+function togglePlay(){
+  playing = !playing;
+  $('#npPlay').textContent = playing ? '❚❚' : '▶';
+  $('#mini .pp').textContent = playing ? '❚❚' : '▶';
+  $('#np').classList.toggle('playing', playing);
+}
+
+function doSearch(){
+  const q = $('#q').value.trim() || 'Checklist MAX';
+  $('#q').value = q;
+  $('#searching').classList.remove('hide');
+  $('#results').classList.add('hide');
+  go('search');
+  setTimeout(() => {
+    $('#searching').classList.add('hide');
+    $('#results').classList.remove('hide');
+  }, 1400);
+}
+
+function toast(msg){
+  let t = document.getElementById('tst');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'tst';
+    t.style.cssText = 'position:absolute;left:50%;bottom:150px;transform:translateX(-50%);z-index:20;background:rgba(18,21,28,.96);border:1px solid rgba(0,224,184,.4);color:#00e0b8;font-size:12px;padding:8px 16px;border-radius:10px;white-space:nowrap;transition:opacity .3s;opacity:0;pointer-events:none';
+    document.querySelector('.phone').appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = 1;
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.style.opacity = 0, 1600);
+}
+
+document.getElementById('q').addEventListener('keydown', e => {
+  if(e.key === 'Enter') doSearch();
+});
+</script>
+</body>
+</html>

@@ -28,3 +28,7 @@ __pycache__/
 *.tmp
 .DS_Store
 Thumbs.db
+# ---- LeanCloud 凭证（发布机专用，绝不入库） ----
+cmake/secrets.cmake
+# ---- 安卓构建产物（安卓线冻结，现场保留在本地） ----
+android/build-android/
