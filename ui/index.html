@@ -46,21 +46,27 @@ body.light::before{opacity:.5}
 /* <select> 的下拉选项列表：Chromium 默认白底黑字，必须显式染色 */
 select.inp option, select.inp optgroup{background:var(--bg-2);color:var(--tx-1)}
 
-.app{display:grid;grid-template-rows:56px 1fr 76px;height:100vh;position:relative;z-index:1}
+.app{display:grid;grid-template-columns:216px 1fr;grid-template-rows:1fr 76px;
+  height:100vh;position:relative;z-index:1}
+
+/* 2026-10-16：布局从「顶部横 Tab」重排为「左侧边栏 + 内容区 + 底部全宽播放条」，
+   对齐主流流媒体桌面端（Spotify / Apple Music / 网易云）的信息架构：
+   导航纵向分组（发现 / 我的 / 系统），播放条横贯全宽。
+   JS 侧只依赖 .tab + data-p，DOM 迁移不触碰任何页面逻辑。 */
 
 /* 2026-09-23：全站不再使用 backdrop-filter（毛玻璃）。
    症状：整屏"忽明忽暗"，所有页面都有，闲置不动就不闪、一操作（移鼠标/滚动/点按）
    就闪。原因是 backdrop-filter 要让合成器把"背后已经画好的内容"当纹理读回来再
    做模糊+饱和，Qt WebEngine 的合成路径下这一步会产出两种不同的合成结果（带滤镜 /
    不带滤镜）交替呈现 —— 动静一有新帧就露出来。
-   顶栏、底栏在所有页面常驻，所以看起来是"整屏"在闪。
+   侧栏、底栏在所有页面常驻，所以看起来是"整屏"在闪。
    替代方案：深色玻璃实心底（把透明度提到 .92 以上）+ 原有的细边框，
    视觉上几乎看不出差别，但每帧不再需要回读背景。 */
-.topnav{display:flex;align-items:center;gap:20px;padding:0 20px;
-  border-bottom:1px solid var(--br-1);background:rgba(13,15,20,.92);
-  position:relative;z-index:20}
-body.light .topnav{background:rgba(255,255,255,.92)}
-.brand{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.side{grid-row:1;grid-column:1;display:flex;flex-direction:column;min-height:0;
+  padding:18px 12px 12px;border-right:1px solid var(--br-1);
+  background:rgba(10,12,17,.97);position:relative;z-index:20}
+body.light .side{background:#fff}
+.brand{display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:0 6px 14px}
 .logo{width:30px;height:30px;border-radius:9px;background:var(--g-ac);
   display:grid;place-items:center;
   box-shadow:0 1px 0 rgba(255,255,255,.3) inset,0 4px 12px rgba(0,224,184,.3)}
@@ -68,24 +74,30 @@ body.light .topnav{background:rgba(255,255,255,.92)}
 .bname{font-size:14px;font-weight:700;letter-spacing:-.015em}
 .bname small{display:block;font-size:9px;color:var(--tx-3);letter-spacing:1.5px;
   font-weight:500;margin-top:1px}
-.tabs{display:flex;gap:2px;flex:1;justify-content:center;max-width:860px;margin:0 auto}
-.tab{padding:6px 13px;border-radius:8px;background:transparent;border:none;
-  color:var(--tx-2);font-size:12.5px;font-weight:500;font-family:inherit;cursor:pointer;
-  transition:all .16s var(--e);position:relative;white-space:nowrap;
-  display:inline-flex;align-items:center;gap:5px}
+.snav{display:flex;flex-direction:column;gap:2px;flex:1;min-height:0;
+  overflow-y:auto;overflow-x:hidden;padding:2px 0}
+.snav::-webkit-scrollbar{width:6px}
+.snav-label{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--tx-4);
+  padding:15px 12px 5px}
+.snav .snav-label:first-child{padding-top:6px}
+.tab{width:100%;padding:9px 12px;border-radius:9px;background:transparent;border:none;
+  color:var(--tx-2);font-size:13px;font-weight:550;font-family:inherit;cursor:pointer;
+  transition:all .16s var(--e);position:relative;white-space:nowrap;text-align:left;
+  display:flex;align-items:center;gap:11px}
+.tab span.tt{overflow:hidden;text-overflow:ellipsis}
 .tab:hover{background:var(--bg-2);color:var(--tx-1)}
-.tab.on{color:var(--ac);font-weight:600;background:rgba(0,224,184,.08)}
-.tab.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;
-  background:var(--g-ac);border-radius:2px 2px 0 0;box-shadow:0 0 8px rgba(0,224,184,.6)}
-.tab svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--ac);font-weight:650;background:rgba(0,224,184,.10);
+  box-shadow:0 0 0 1px rgba(0,224,184,.14) inset}
+.tab svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round;flex:0 0 16px}
 .tab.ai{position:relative}
-.tab.ai.on{color:var(--ac-3);background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(0,224,184,.1))}
-.tab.ai.on::after{background:var(--g-ai)}
+.tab.ai.on{color:var(--ac-3);background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(0,224,184,.10));
+  box-shadow:0 0 0 1px rgba(168,85,247,.18) inset}
 .tab .n{display:inline-block;background:var(--ac);color:#04120e;font-size:9.5px;
-  font-weight:700;padding:1px 5px;border-radius:10px;margin-left:2px}
+  font-weight:700;padding:1px 6px;border-radius:10px;margin-left:auto;flex:0 0 auto}
 .tab .n:empty{display:none}
-.top-actions{display:flex;gap:6px;align-items:center;flex:0 0 auto}
+.side-foot{margin-top:10px;padding-top:10px;border-top:1px solid var(--br-1);
+  display:flex;gap:8px;align-items:center;flex:0 0 auto}
 .ibtn{width:32px;height:32px;border-radius:8px;background:transparent;
   border:1px solid transparent;color:var(--tx-2);cursor:pointer;
   display:grid;place-items:center;transition:all .16s var(--e)}
@@ -99,8 +111,9 @@ body.light .topnav{background:rgba(255,255,255,.92)}
 /* 2026-09-22：「正在播放 / 歌词」右侧常驻栏已移除。
    它只有 320px 宽，封面小、歌词窄，且长期占着 1/4 屏却只在放歌时才有用。
    现在改为整页的第二层（.layer），封面和歌词都能放大，播放列表也有了地方。 */
-.stage{display:grid;grid-template-columns:1fr;overflow:hidden}
-.content{overflow-y:auto;padding:24px 28px 32px}
+.stage{grid-row:1;grid-column:2;display:grid;grid-template-columns:1fr;
+  overflow:hidden;min-width:0}
+.content{overflow-y:auto;padding:26px 32px 44px}
 
 .pg{display:none;animation:fi .3s var(--eo)}
 .pg.on{display:block}
@@ -204,6 +217,37 @@ body.light .ai-search input{background:rgba(255,255,255,.8);border-color:var(--b
 .ai-search .ico svg{width:20px;height:20px;stroke:var(--ac-3);fill:none;
   stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ai-search .btn{padding:0 22px;font-size:13.5px;border-radius:12px}
+
+/* ============================================================
+   彩蛋卡：连续 10 次非中文搜索后，第一条结果被《人事口暗交》顶掉
+   （一次性触发后重新计数；无 backdrop-filter，纯实底渐变）
+   ============================================================ */
+.egg-card{margin:14px 0;padding:16px 18px;border-radius:14px;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,rgba(168,85,247,.13),rgba(0,224,184,.08) 55%,rgba(0,0,0,.22));
+  border:1px solid rgba(168,85,247,.35)}
+.egg-card::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(420px 130px at 15% 0%,rgba(168,85,247,.16),transparent 60%)}
+.egg-head{display:flex;align-items:center;gap:14px;position:relative}
+.egg-disc{width:46px;height:46px;border-radius:50%;flex:0 0 46px;
+  background:conic-gradient(from 0deg,#a855f7,#5b8cff,#00e0b8,#a855f7);
+  display:grid;place-items:center;color:#08090d;font-weight:800;font-size:18px;
+  box-shadow:0 0 0 4px rgba(168,85,247,.12),0 4px 14px rgba(0,0,0,.4);
+  animation:eggspin 7s linear infinite}
+@keyframes eggspin{to{transform:rotate(360deg)}}
+.egg-meta{min-width:0;flex:1}
+.egg-meta .tt{font-size:15.5px;font-weight:750;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.egg-meta .tt .sub{color:var(--tx-3);font-weight:500;font-size:12.5px}
+.egg-meta .st{font-size:11.5px;color:var(--tx-3);margin-top:3px;
+  display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.egg-head .btn{margin-left:auto;flex:0 0 auto}
+.egg-lyrics{margin-top:12px;padding:10px 14px;position:relative;
+  border-left:2px solid rgba(168,85,247,.5);display:flex;flex-direction:column;gap:3px}
+.egg-line{font-size:13px;color:var(--tx-2);transition:all .25s var(--eo)}
+.egg-line.done{color:var(--tx-4)}
+.egg-line.on{color:var(--ac-3);font-weight:650;transform:translateX(6px);
+  text-shadow:0 0 12px rgba(168,85,247,.45)}
+.egg-foot{margin-top:10px;font-size:11px;color:var(--tx-4);position:relative}
 .ai-hints{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;position:relative;z-index:1}
 .ai-hint{padding:6px 12px;border-radius:20px;background:rgba(255,255,255,.05);
   border:1px solid var(--br-2);font-size:11.5px;color:var(--tx-2);
@@ -653,7 +697,7 @@ body.light .ly-head{background:rgba(255,255,255,.92)}
   .qdrawer{width:100%;max-width:100%}
 }
 
-.player{display:grid;
+.player{grid-row:2;grid-column:1/-1;display:grid;
   grid-template-columns:minmax(200px,1fr) minmax(400px,2fr) minmax(200px,1fr);
   align-items:center;gap:16px;padding:0 20px;
   border-top:1px solid var(--br-1);background:rgba(13,15,20,.94);
@@ -772,7 +816,14 @@ body.light .nt{color:#9a6510}
   .res .a{grid-column:1/-1;justify-content:flex-end}
   .player{grid-template-columns:1fr auto;gap:12px;padding:0 14px}
   .pl-right{display:none}
-  .tabs{overflow-x:auto;justify-content:flex-start}
+  /* 窄窗：侧栏收成 64px 图标栏（文字/分组/徽标隐藏，图标居中） */
+  .app{grid-template-columns:64px 1fr}
+  .side{padding:14px 8px 10px}
+  .brand{justify-content:center;padding:0 0 12px}
+  .bname,.snav-label,.tab span.tt{display:none}
+  .tab{justify-content:center;padding:10px 0;gap:0}
+  .tab .n{position:absolute;top:5px;right:7px;margin:0}
+  .side-foot{justify-content:center}
 }
 </style>
 </head>
@@ -837,45 +888,48 @@ body.light .nt{color:#9a6510}
 
 <div class="app">
 
-  <header class="topnav">
+  <aside class="side">
     <div class="brand">
       <div class="logo"><svg><use href="#i-music"/></svg></div>
       <div class="bname">MelodySync<small>DESKTOP</small></div>
     </div>
-    <nav class="tabs" id="mainTabs">
+    <nav class="snav" id="mainTabs">
+      <div class="snav-label">发现</div>
       <button class="tab ai on" data-p="ai">
-        <svg><use href="#i-sparkle"/></svg>AI 全网搜
+        <svg><use href="#i-sparkle"/></svg><span class="tt">AI 全网搜</span>
       </button>
       <button class="tab" data-p="playlist">
-        <svg><use href="#i-import"/></svg>导入 &amp; 歌单
+        <svg><use href="#i-import"/></svg><span class="tt">导入 &amp; 歌单</span>
         <em class="n" id="bdgP"></em>
       </button>
       <button class="tab" data-p="library">
-        <svg><use href="#i-music"/></svg>音乐库
+        <svg><use href="#i-music"/></svg><span class="tt">音乐库</span>
         <em class="n" id="bdgL"></em>
       </button>
       <button class="tab" data-p="queue">
-        <svg><use href="#i-download"/></svg>下载
+        <svg><use href="#i-download"/></svg><span class="tt">下载</span>
         <em class="n" id="bdgQ"></em>
       </button>
+      <div class="snav-label">我的</div>
       <button class="tab" data-p="history">
-        <svg><use href="#i-history"/></svg>历史
+        <svg><use href="#i-history"/></svg><span class="tt">历史</span>
       </button>
       <button class="tab" data-p="analysis">
-        <svg><use href="#i-chart"/></svg>分析
+        <svg><use href="#i-chart"/></svg><span class="tt">分析</span>
       </button>
       <button class="tab" data-p="device">
-        <svg><use href="#i-device"/></svg>设备
+        <svg><use href="#i-device"/></svg><span class="tt">设备</span>
       </button>
+      <div class="snav-label">系统</div>
       <button class="tab" data-p="settings">
-        <svg><use href="#i-settings"/></svg>设置
+        <svg><use href="#i-settings"/></svg><span class="tt">设置</span>
       </button>
     </nav>
-    <div class="top-actions">
-      <button class="ibtn" id="bTheme"><svg><use href="#i-theme"/></svg></button>
+    <div class="side-foot">
+      <button class="ibtn" id="bTheme" title="明暗主题切换"><svg><use href="#i-theme"/></svg></button>
       <div class="avatar" id="userAvatarBtn" title="个人中心" style="cursor:pointer">M</div>
     </div>
-  </header>
+  </aside>
 
   <div class="stage">
     <main class="content" id="content">
@@ -3233,12 +3287,16 @@ function _candText(cands) {
 
 function renderAiResults(intent, results, nativeRes) {
   const el = $('#aiOutput');
+  // 彩蛋消费：触发后只在这一次渲染里出现，排序切换等重渲染不会复活
+  const showEgg = !!state.eggShow;
+  state.eggShow = false;
   if (!results.length) {
-    el.innerHTML = `<div class="ep">
+    el.innerHTML = `${showEgg ? eggCardHTML() : ''}<div class="ep">
       <div class="ic"><svg><use href="#i-search"/></svg></div>
       <div class="t">没有找到匹配结果</div>
       <div class="s">试试更宽泛的关键词，或在设置中启用更多源</div>
     </div>`;
+    if (showEgg) bindEgg();
     return;
   }
 
@@ -3278,6 +3336,7 @@ function renderAiResults(intent, results, nativeRes) {
     </div>` : '';
 
   el.innerHTML = `
+    ${showEgg ? eggCardHTML() : ''}
     <div class="ai-answer">
       <div class="h"><svg><use href="#i-sparkle"/></svg>AI 推荐</div>
       <div class="t">
@@ -3362,6 +3421,8 @@ function renderAiResults(intent, results, nativeRes) {
     </div>
   `;
 
+  if (showEgg) bindEgg();
+
   $$('.sbtn[data-sort]').forEach(b => b.onclick = () => {
     state.aiSort = b.dataset.sort;
     renderAiResults(intent, results, nativeRes);
@@ -3402,6 +3463,136 @@ function renderAiResults(intent, results, nativeRes) {
   });
 }
 
+/* ============================================================
+   彩蛋：《人事口暗交（暗被花掉了）》
+   ------------------------------------------------------------
+   连续 10 次搜索「不含中文字符」的关键词 → 下一次搜索结果渲染时，
+   第一条被这首来历不明的歌顶掉。任何一次中文搜索都会让计数清零。
+   触发是一次性的：唱完这一回，计数归零重新攒。
+   「听我唱」用 Web Speech Synthesis 逐行朗读，每行配不同的
+   音高/语速凑出旋律感；环境不支持语音合成时优雅降级为纯歌词卡。
+   ============================================================ */
+const EGG_THRESHOLD = 10;
+let eggStreak = 0;                    // 连续非中文搜索计数
+
+const EGG_SONG = {
+  title: '人事口暗交',
+  sub: '（暗被花掉了）',
+  artist: '？？？',
+  dur: '3:33',
+  lyrics: [
+    '红色的周家——实质',
+    '金色的不打',
+    '一边打全色之流忘在记十党的',
+    '打红色的经济',
+    '经济低的',
+    '扛了很多伤容',
+  ],
+  // 每行的音高与语速：凑一个起伏的"旋律"，别真让它念成新闻联播
+  melody: [
+    { pitch: 1.4, rate: .8 }, { pitch: 1.1, rate: .85 }, { pitch: 1.3, rate: .8 },
+    { pitch: 1.0, rate: .85 }, { pitch: 1.2, rate: .8 }, { pitch: .8, rate: .7 },
+  ],
+};
+
+let eggSpeaking = false;              // 正在唱（再次点击 = 停）
+
+function hasCJK(s) { return /[\u4e00-\u9fff]/.test(s); }
+
+/* 每次搜索完成都调一次；返回 true = 这次要触发彩蛋 */
+function bumpEgg(q) {
+  if (hasCJK(q)) { eggStreak = 0; return false; }
+  eggStreak++;
+  if (eggStreak >= EGG_THRESHOLD) { eggStreak = 0; return true; }
+  return false;
+}
+
+function eggCardHTML() {
+  return `
+    <div class="egg-card" id="eggCard">
+      <div class="egg-head">
+        <div class="egg-disc">?</div>
+        <div class="egg-meta">
+          <div class="tt">${esc(EGG_SONG.title)}<span class="sub">${esc(EGG_SONG.sub)}</span></div>
+          <div class="st">
+            <span>${esc(EGG_SONG.artist)}</span>
+            <span style="color:var(--tx-4)">·</span>
+            <span>来源不明</span>
+            <span style="color:var(--tx-4)">·</span>
+            <span>${EGG_SONG.dur}</span>
+            <span style="color:var(--tx-4)">·</span>
+            <span>匹配度 100%</span>
+            <span class="tg" style="border-color:rgba(168,85,247,.4);color:var(--ac-3)">隐藏曲目</span>
+          </div>
+        </div>
+        <button class="btn ai" id="eggSing">
+          <svg><use href="#i-mic"/></svg>听我唱
+        </button>
+      </div>
+      <div class="egg-lyrics">
+        ${EGG_SONG.lyrics.map(l => `<div class="egg-line">${esc(l)}</div>`).join('')}
+      </div>
+      <div class="egg-foot">它说它是被这十次搜索吵醒的。</div>
+    </div>`;
+}
+
+function bindEgg() {
+  const btn = $('#eggSing');
+  if (!btn) return;
+  btn.onclick = () => {
+    if (eggSpeaking) { stopEggSing(); return; }
+    eggSpeak();
+  };
+}
+
+function stopEggSing() {
+  eggSpeaking = false;
+  try { speechSynthesis.cancel(); } catch (e) {}
+  $$('#eggCard .egg-line').forEach(n => n.classList.remove('on', 'done'));
+  const b = $('#eggSing');
+  if (b) b.innerHTML = '<svg><use href="#i-mic"/></svg>再来一遍';
+}
+
+function eggSpeak() {
+  if (!('speechSynthesis' in window)) {
+    toast('这个环境没有语音合成，只能用眼睛唱了', 'w');
+    return;
+  }
+  eggSpeaking = true;
+  const btn = $('#eggSing');
+  if (btn) btn.innerHTML = '<span class="sp"></span> 演唱中…（再点停止）';
+
+  const nodes = $$('#eggCard .egg-line');
+  // Chromium 的音色表是异步加载的：先拿一次，拿不到就等 voiceschanged
+  const pickVoice = () => speechSynthesis.getVoices()
+    .find(v => /^zh/i.test(v.lang)) || null;
+  let voice = pickVoice();
+
+  let i = 0;
+  const singLine = () => {
+    if (!eggSpeaking || i >= EGG_SONG.lyrics.length) { stopEggSing(); return; }
+    const idx = i++;
+    nodes.forEach((n, k) => {
+      n.classList.toggle('on', k === idx);
+      n.classList.toggle('done', k < idx);
+    });
+    const m = EGG_SONG.melody[idx] || { pitch: 1, rate: .85 };
+    const u = new SpeechSynthesisUtterance(EGG_SONG.lyrics[idx]);
+    u.lang = 'zh-CN';
+    u.pitch = m.pitch;
+    u.rate = m.rate;
+    u.volume = 1;
+    if (voice) u.voice = voice;
+    else speechSynthesis.onvoiceschanged = () => { voice = pickVoice(); };
+    u.onend = () => setTimeout(singLine, 280);   // 句间小气口
+    u.onerror = () => { stopEggSing(); toast('语音合成出错了', 'w'); };
+    try { speechSynthesis.speak(u); } catch (e) {
+      stopEggSing(); toast('这个环境没有语音合成，只能用眼睛唱了', 'w');
+    }
+  };
+  singLine();
+}
+
 async function doAiSearch() {
   const q = $('#aiInput').value.trim();
   if (!q) { toast('请输入关键词', 'w'); $('#aiInput').focus(); return; }
@@ -3437,6 +3628,7 @@ async function doAiSearch() {
         const intent = res.intent || localIntent;
         renderThinkingSteps(intent, res);
         const results = (res.results || []).map(_normHit);
+        if (bumpEgg(q)) { state.eggShow = true; toast('🎵 隐藏曲目已被唤醒'); }
         renderAiResults(intent, results, res);
         toast(`AI 已找到 <b>${results.length}</b> 条匹配结果（去重前 ${res.rawCount || results.length} 条）`);
         return;
@@ -3459,6 +3651,7 @@ async function doAiSearch() {
     await runThinking(localIntent);
     await renderSrcGrid(localIntent);
     const results = generateResults(localIntent);
+    if (bumpEgg(q)) { state.eggShow = true; toast('🎵 隐藏曲目已被唤醒'); }
     renderAiResults(localIntent, results);
     toast(`AI 已找到 <b>${results.length}</b> 条匹配结果`);
   } catch (err) {
