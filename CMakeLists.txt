@@ -20,7 +20,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/secrets.cmake")
 endif()
 
 project(MelodySync
-    VERSION 1.0.0
+    VERSION 1.1.0
     DESCRIPTION "MelodySync - 歌单导入 / AI 全网搜 / 无损下载 / 设备同步"
     LANGUAGES CXX)
 

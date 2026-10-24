@@ -27,8 +27,8 @@ from PIL import Image, ImageDraw, ImageFont
 # 中文说明写在脚本里而不是命令行参数 —— 命令行传中文在 MSYS/Git Bash 下
 # 有 argv 编码风险，写死在源码（UTF-8）里最稳。要加新场景就往 PRESETS 里加一条。
 PRESETS = {
-    "lan": ("扫码下载 MelodySync 1.0.0", "（需与电脑连接同一个 WiFi）"),
-    "public": ("扫码下载 MelodySync 1.0.0", "（任何网络均可下载，手机流量也行）"),
+    "lan": ("扫码下载 MelodySync 1.1.0", "（需与电脑连接同一个 WiFi）"),
+    "public": ("扫码下载 MelodySync 1.1.0", "（任何网络均可下载，手机流量也行）"),
 }
 DEFAULT_PRESET = "lan"
 

@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  MelodySync - Inno Setup 6 打包脚本
 ;  用法：ISCC.exe installer\MelodySync.iss
-;  产物：dist\MelodySync-1.0.0-Setup.exe
+;  产物：dist\MelodySync-1.1.0-Setup.exe
 ;
 ;  说明：
 ;   - Qt6 运行库由 windeployqt 预先铺到 dist\MelodySync\（见 README 打包步骤）
@@ -9,7 +9,7 @@
 ; ============================================================================
 
 #define MyAppName        "MelodySync"
-#define MyAppVersion     "1.0.0"
+#define MyAppVersion     "1.1.0"
 #define MyAppPublisher   "MelodySync Project"
 #define MyAppExeName     "MelodySync.exe"
 #define MyBuildDir       "..\build\bin"

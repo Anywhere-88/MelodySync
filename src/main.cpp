@@ -579,7 +579,7 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
     QCoreApplication::setOrganizationName(QStringLiteral("MelodySync"));
     QCoreApplication::setApplicationName(QStringLiteral("MelodySync"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("1.0.0"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("1.1.0"));
 
     // 唯一还会出现的原生控件是 QMessageBox（数据库初始化失败时），
     // 不样式化就是一块刺眼的 Windows 默认白框 —— 全部按前端深色主题染色。
@@ -594,7 +594,7 @@ int main(int argc, char* argv[])
     installLogHandler();
 
     qInfo() << "============================================================";
-    qInfo() << " MelodySync 1.0.0 启动";
+    qInfo() << " MelodySync 1.1.0 启动";
     qInfo() << " Qt" << QT_VERSION_STR << "| 前端: QWebEngine + QWebChannel";
     qInfo() << " " << QString::fromUtf8(kLegalNotice);
     qInfo() << "============================================================";

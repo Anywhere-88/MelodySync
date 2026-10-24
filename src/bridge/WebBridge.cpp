@@ -1439,7 +1439,7 @@ QString WebBridge::appInfo()
 {
     QJsonObject o;
     o[QStringLiteral("name")]    = QStringLiteral("MelodySync");
-    o[QStringLiteral("version")] = QStringLiteral("1.0.0");
+    o[QStringLiteral("version")] = QStringLiteral("1.1.0");
     o[QStringLiteral("qt")]      = QStringLiteral(QT_VERSION_STR);
     o[QStringLiteral("dataDir")] = Database::instance().path();
     o[QStringLiteral("downloadDir")] = Settings::instance().downloadDir();

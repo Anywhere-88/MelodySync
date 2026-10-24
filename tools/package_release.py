@@ -26,7 +26,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 STAMP = time.strftime("%Y%m%d")
 DEFAULT_NAME = f"MelodySync-{VERSION}-win64-{STAMP}.zip"
 

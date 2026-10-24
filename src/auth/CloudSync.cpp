@@ -28,7 +28,7 @@ const char* kSessionTokKey = "cloud/apiToken";
 const char* kSessionUsrKey = "cloud/apiUsername";
 
 #ifndef MS_APP_VERSION
-#  define MS_APP_VERSION "1.0.0"
+#  define MS_APP_VERSION "1.1.0"
 #endif
 // 发布机构建注入（cmake/secrets.cmake，不入库）；没有时回退 Settings 里的值
 #ifndef MS_CLOUD_API_BASE
