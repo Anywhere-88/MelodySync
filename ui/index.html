@@ -5868,12 +5868,16 @@ class LyricParticles {
     const w = Math.max(1, rect.width | 0);
     const h = Math.max(1, rect.height | 0);
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    /* 尺寸没变就不动：ResizeObserver 首次 observe 必触发一次回调，
+       和构造函数里的 _resize 撞车——省掉一次全屏 getImageData + 建字形 */
+    if (w === this.W && h === this.H && dpr === this.dpr) return;
     this.W = w; this.H = h; this.dpr = dpr;
     this.canvas.width = Math.round(w * dpr);
     this.canvas.height = Math.round(h * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.off.width = w; this.off.height = h;
     this.octx.setTransform(1, 0, 0, 1, 0, 0);
+    this._rect = null;   /* 舞台尺寸变了，指针坐标换算的 rect 缓存作废 */
     if (this.currentText) this._buildWord(this.currentText, this.particles.length === 0);
   }
 
@@ -6175,6 +6179,7 @@ class LyricParticles {
     if (dt <= 0) dt = 1;
     /* 镜像/清唱链在隐藏态也要收尾：悬停中切走页面时，把 App 主音量还回去、
        镜像流停掉，不能因为"不画了"就把音频状态冻在半路 */
+    if (hidden && this.textHover) this.textHover = false;  /* 页面不可见即收悬停，清唱链随之下闸 */
     try { fxMirrorTick(!hidden); } catch (e2) {}
     try { fxUpdateAppFx(dt); } catch (e3) {}
     if (hidden) return;
@@ -6256,7 +6261,7 @@ class LyricParticles {
         drawY += cy / cd * bulge;
       }
 
-      const hue = ((p.hue | 0) % 360 + 360) % 360;
+      /* 颜色在 _makeParticle/_buildWord 里按色桶预预算进 p.col，循环里只查表 */
       let sz = p.size * grow * hoverGrow;
       if (sz > 9) sz = 9;
       if (p.col !== lastCol) { ctx.fillStyle = p.col; lastCol = p.col; }
@@ -6291,17 +6296,24 @@ class LyricParticles {
 
   _bindPointer() {
     const self = this, c = this.canvas;
+    /* rect 缓存：pointermove 逐事件 getBoundingClientRect 会强制同步布局，
+       缓存后在进入/按下/尺寸变化时刷新即可（舞台在页面内布局稳定） */
+    self._rect = null;
+    const refreshRect = () => { self._rect = c.getBoundingClientRect(); };
     const at = e => {
-      const r = c.getBoundingClientRect();
+      const r = self._rect || refreshRect();
       self.mouse.x = e.clientX - r.left;
       self.mouse.y = e.clientY - r.top;
       self.mouse.active = true;
     };
     c.addEventListener('pointermove', at);
-    c.addEventListener('pointerenter', at);
+    c.addEventListener('pointerenter', e => { refreshRect(); at(e); });
     c.addEventListener('pointerdown', e => {
+      refreshRect();
       at(e);
-      if (self.o.tapToPulse) self._pulse = Math.max(self._pulse, 0.8);
+      /* 抬 _pulseT（攻击目标）而不是直接写 _pulse——点击脉冲也走 ~50ms
+         攻击的呼吸包络，0→0.8 硬切正是当初「频闪」的同款根源 */
+      if (self.o.tapToPulse) self._pulseT = Math.max(self._pulseT, 0.8);
       /* 点画布 = 推一句：正在轮播就跳下一句，否则打一记节拍脉冲 */
       if (self.lyricRunning) self._nextLyric();
     });
@@ -6411,7 +6423,8 @@ class LyricParticles {
       this._bass(notes[0] / 2, t, this.STEP * 7, 0.22);
       this._kick(t, 0.6);
       const delayMs = Math.max(0, (t - this.actx.currentTime) * 1000);
-      setTimeout(() => { this._pulse = 1; }, delayMs);
+      /* 同 pointerdown：抬攻击目标 _pulseT，鼓点走呼吸包络不硬切 */
+      setTimeout(() => { this._pulseT = 1; }, delayMs);
     }
     if (s === 2 || s === 6 || s === 10 || s === 14) this._hat(t, 0.085);
     if (s % 2 === 0) {
