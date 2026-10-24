@@ -582,7 +582,14 @@ def check_embedded_frontend():
         print("  [FAIL] rcc 产物异常（不足 8 字节）")
         return
 
-    embedded_len = int.from_bytes(data[4:8], "big")     # rcc 记录的原始长度
+    # rcc 条目两种格式：压缩时 [0:4]=压缩后长度、[4:8]=原始长度；
+    # 未压缩直存时 [0:4] 即原始长度，[4:8] 起就是正文（此时读 [4:8] 会把
+    # 正文前四个字节拼成垃圾数，比如 "<!DO" → 1008813135）。两种都兼容。
+    len_uncomp = int.from_bytes(data[0:4], "big")
+    if len_uncomp == disk_len:
+        embedded_len = len_uncomp
+    else:
+        embedded_len = int.from_bytes(data[4:8], "big")     # 压缩格式：原始长度在第 2 个 u32
     if embedded_len != disk_len:
         failures.append("ui/index.html changed but not rebuilt "
                         "(embedded %d vs disk %d bytes)" % (embedded_len, disk_len))
