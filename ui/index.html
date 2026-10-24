@@ -5182,16 +5182,14 @@ function nowPageHtml() {
           <button class="heartbtn" id="nowModeBtn" title="点击切换循环模式">
             <span id="nowModeTxt">${MODE_LABEL[state.playMode] || '顺序播放'}</span>
           </button>
+          <button class="heartbtn" id="nowQueueBtn" title="播放列表">
+            <span id="nowQueueTxt">播放队列</span>
+          </button>
         </div>
       </div>
     </div>
     <div class="npq" id="npqPanel">
-      <h3><span id="npqTitle">歌词</span>
-        <span style="display:flex;align-items:center;gap:8px">
-          <button class="npq-tab on" data-tab="lyrics">歌词</button>
-          <button class="npq-tab" data-tab="queue">播放队列</button>
-        </span>
-      </h3>
+      <h3><span id="npqTitle">歌词</span></h3>
       <div class="now-lyr-wrap" id="npqLyrics">
         <div class="lyric-top">
           <div class="n" id="lyrTitle">${esc(s.name)}</div>
@@ -5205,7 +5203,7 @@ function nowPageHtml() {
   </div>`;
 }
 
-/* 右面板两个标签（歌词 / 播放队列），对应设计稿 .npq 的标题栏 */
+/* 右侧面板：歌词常驻，播放队列按需切换（不做并列 tab） */
 function npqTab(name) {
   const ly = $('#npqLyrics'), ql = $('#npqList');
   if (!ly || !ql) return;
@@ -5213,8 +5211,8 @@ function npqTab(name) {
   ly.style.display = isQ ? 'none' : 'flex';
   ql.style.display = isQ ? 'flex' : 'none';
   $('#npqTitle').textContent = isQ ? '播放队列' : '歌词';
-  $$('#npqPanel .npq-tab').forEach(t =>
-    t.classList.toggle('on', t.dataset.tab === (isQ ? 'queue' : 'lyrics')));
+  const btn = $('#nowQueueTxt');
+  if (btn) btn.textContent = isQ ? '查看歌词' : '播放队列';
   if (isQ) renderNowQueue();
 }
 
@@ -5227,7 +5225,11 @@ function bindNowPage() {
   $('#nowShuffle').onclick= () => setPlayMode(state.playMode === 'shuffle' ? 'order' : 'shuffle');
   $('#nowRepeat').onclick = () => cyclePlayMode();
   $('#nowTrack').onclick  = e => seekFromEvent(e, e.currentTarget);
-  $$('#npqPanel .npq-tab').forEach(t => t.onclick = () => npqTab(t.dataset.tab));
+  const qb = $('#nowQueueBtn');
+  if (qb) qb.onclick = () => {
+    const qOpen = $('#npqList') && $('#npqList').style.display !== 'none';
+    npqTab(qOpen ? 'lyrics' : 'queue');
+  };
   // 收藏 / 倍速 / 循环：设计稿 npacts 的三枚 heartbtn
   const like = $('#nowLike');
   if (like) {
