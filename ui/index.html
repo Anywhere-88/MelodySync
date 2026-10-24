@@ -128,6 +128,11 @@ body:not(.light) .side:hover .rail{box-shadow:10px 0 32px rgba(0,0,0,.55)}
   border:1px solid var(--br-2);display:grid;place-items:center;flex:0 0 auto;
   font-size:12.5px;font-weight:700;color:var(--ac);cursor:pointer}
 
+.side-foot .who{flex:1;min-width:0;opacity:0;transition:opacity .2s var(--e) .08s;white-space:nowrap}
+.side:hover .side-foot .who{opacity:1}
+.side-foot .who b{display:block;font-size:12.5px;font-weight:600}
+.side-foot .who span{font-size:11px;color:var(--tx-3)}
+
 /* ================= 内容区（重构稿 main/.page/.phead） ================= */
 .stage{grid-row:1;grid-column:2;display:grid;grid-template-columns:1fr;
   overflow:hidden;min-width:0}
@@ -194,29 +199,28 @@ select.inp{cursor:pointer;appearance:none;height:34px;border-radius:9px;
 .tg.pd{background:rgba(124,45,18,.14);color:#9A3412}
 body:not(.light) .tg.pd{color:#e07a5f}
 .tg.preview{background:var(--bg-3);color:var(--tx-2)}
+.tg.ok{background:rgba(61,139,95,.12);color:var(--ok)}
+.tg.dg{background:rgba(196,61,61,.10);color:var(--dg)}
 
-/* ---- AI 首页 hero（重构稿 .hero：无卡片底、大衬线标题） ---- */
+/* ---- AI 首页 hero（重构稿 .hero：kicker 在上 + 大衬线标题 + .field 搜索框） ---- */
 .ai-hero{padding:14px 0 20px}
-.ai-hero-inner{position:relative;z-index:1}
-.ai-title{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.ai-title h2{font-family:var(--serif);font-size:28px;font-weight:700;
+.ai-kick{font-size:11px;font-weight:700;letter-spacing:2.4px;color:var(--ac);margin-bottom:10px}
+.ai-hero h1{font-family:var(--serif);font-size:28px;font-weight:700;
   letter-spacing:.01em;line-height:1.25;color:var(--tx-1)}
-.ai-badge{display:inline-flex;align-items:center;gap:6px;
-  font-size:11px;font-weight:700;letter-spacing:2.4px;color:var(--ac)}
-.ai-badge svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2}
-.ai-desc{color:var(--tx-2);font-size:13.5px;line-height:1.65;margin-top:8px;max-width:640px}
-.ai-search{display:flex;gap:10px;margin:18px 0 14px;align-items:stretch}
-.ai-search .wrap{flex:1;position:relative}
-.ai-search input{background:var(--bg-1);border:1px solid var(--br-2);
-  border-radius:12px;height:50px;padding:0 16px 0 48px;
-  color:var(--tx-1);font:inherit;font-size:13.5px;outline:none;width:100%;
-  transition:border-color .15s var(--e)}
-.ai-search input:focus{border-color:var(--ac)}
-.ai-search .ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);
-  width:16px;height:16px;pointer-events:none}
-.ai-search .ico svg{width:16px;height:16px;stroke:var(--tx-3);fill:none;
-  stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.ai-search .btn{height:50px;border-radius:12px;padding:0 22px;font-size:13.5px}
+.ai-hero .sub{color:var(--tx-2);font-size:13.5px;margin-top:8px;max-width:640px;
+  line-height:1.65}
+.searchwrap{display:flex;gap:10px;margin:18px 0 14px;align-items:stretch}
+/* 重构稿 .field：46px 高、圆角 12、focus 珊瑚橙描边；搜索行内加高到 50 */
+.field{height:46px;border-radius:12px;background:var(--bg-1);border:1px solid var(--br-2);
+  display:flex;align-items:center;gap:11px;padding:0 16px;transition:border-color .15s var(--e)}
+.field:focus-within{border-color:var(--ac)}
+.field>svg{width:16px;height:16px;stroke:var(--tx-3);fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;flex:0 0 16px}
+.field input{flex:1;min-width:0;border:0;outline:0;background:transparent;
+  color:var(--tx-1);font:inherit;font-size:13.5px}
+.field input::placeholder{color:var(--tx-3)}
+.searchwrap .field{flex:1;height:50px;border-radius:12px}
+.searchwrap .btn{height:50px;border-radius:12px;padding:0 22px;font-size:13.5px}
 
 /* 彩蛋卡：连搜 10 次非中文歌触发，珊瑚暖色渐变（纯实底，无 backdrop-filter） */
 .egg-card{margin:14px 0;padding:16px 18px;border-radius:12px;position:relative;overflow:hidden;
@@ -248,13 +252,7 @@ body:not(.light) .egg-card{background:linear-gradient(160deg,rgba(232,89,12,.16)
   text-shadow:0 0 12px rgba(232,89,12,.35)}
 .egg-foot{margin-top:10px;font-size:11px;color:var(--tx-4);position:relative}
 
-/* 搜索提示 chips（重构稿 .chip 胶囊） */
-.ai-hints{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;position:relative;z-index:1}
-.ai-hint{height:30px;padding:0 14px;border-radius:99px;display:inline-flex;
-  align-items:center;background:transparent;border:1px solid var(--br-2);
-  font-size:12.5px;color:var(--tx-2);cursor:pointer;user-select:none;
-  transition:all .15s var(--e)}
-.ai-hint:hover{color:var(--tx-1);border-color:var(--tx-3)}
+/* 搜索提示 = 重构稿 .quick 卡片（由 .sect「热门搜索」标题引导） */
 
 /* AI 思考过程面板 */
 .think{background:var(--bg-1);border:1px solid var(--br-1);border-radius:12px;
@@ -348,11 +346,13 @@ body:not(.light) .egg-card{background:linear-gradient(160deg,rgba(232,89,12,.16)
 .sbtn:hover{color:var(--tx-1);border-color:var(--tx-3)}
 .sbtn.on{background:var(--tx-1);border-color:var(--tx-1);color:var(--bg-0);font-weight:600}
 
-/* 搜索结果行（重构稿 .res）：44px 封面 / 12px 14px 内距 / 卡片行 */
-.res{display:grid;grid-template-columns:44px 1fr auto;gap:14px;
+/* 搜索结果行（重构稿 .res）：44px 封面 / 标题+副行 / 时长 / 按钮 */
+.res{display:grid;grid-template-columns:44px 1fr auto auto;gap:14px;
   padding:12px 14px;margin-bottom:8px;
   background:var(--bg-1);border:1px solid var(--br-1);border-radius:12px;
   transition:border-color .15s var(--e);position:relative;cursor:pointer}
+.res .dur{font-size:12.5px;color:var(--tx-3);font-variant-numeric:tabular-nums;
+  align-self:center}
 .res:hover{border-color:var(--br-2)}
 .res.best{border-color:rgba(232,89,12,.45);background:var(--bg-1);
   box-shadow:0 0 0 1px rgba(232,89,12,.18) inset}
@@ -378,28 +378,37 @@ body:not(.light) .egg-card{background:linear-gradient(160deg,rgba(232,89,12,.16)
 .res .a{display:flex;gap:5px;align-items:center;align-self:center}
 .res .a .btn{padding:0 13px;height:30px;font-size:11px;border-radius:8px}
 
-/* 音乐库（重构稿 .tracks/.tr：整块卡片容器 + 行内分割线） */
-#lList{background:var(--bg-1);border:1px solid var(--br-1);border-radius:12px;
-  overflow:hidden}
+/* 音乐库（重构稿 .tracks/.tr：整块卡片容器 + 表头 + 6 列栅格行） */
+.tracks{border:1px solid var(--br-1);border-radius:12px;overflow:hidden;background:var(--bg-1)}
 #lList>.ep{margin:10px;border-color:var(--br-2)}
-.lrow{display:flex;align-items:center;gap:14px;padding:10px 16px;
-  border-bottom:1px solid var(--br-1);transition:background .12s var(--e);cursor:pointer}
-.lrow:last-child{border-bottom:0}
+.tr,.lrow{display:grid;grid-template-columns:36px 44px 1fr 130px 90px 120px;gap:14px;
+  align-items:center;padding:10px 16px;border-bottom:1px solid var(--br-1);
+  background:var(--bg-1);transition:background .12s var(--e);position:relative}
+.tr:last-child,.lrow:last-child{border-bottom:0}
+.lrow{cursor:pointer}
 .lrow:hover{background:var(--bg-0)}
 .lrow.play,.lrow.playing{background:var(--bg-3);box-shadow:inset 2px 0 0 var(--ac)}
-.lrow .ix{width:22px;color:var(--tx-3);font-size:12.5px;text-align:right;
-  font-variant-numeric:tabular-nums;flex:0 0 22px}
-.lrow .cv{width:40px;height:40px;border-radius:10px;flex:0 0 40px;
-  display:grid;place-items:center;font-size:16px;color:#FFFDF9;
+.tr.head{background:var(--bg-3);color:var(--tx-2);font-size:11px;font-weight:700;
+  letter-spacing:1.2px;padding:9px 16px;cursor:default}
+.tr .idx,.lrow .ix{color:var(--tx-3);font-size:12.5px;text-align:center;
+  font-variant-numeric:tabular-nums}
+.tr .cov,.lrow .cv{width:40px;height:40px;border-radius:10px}
+.lrow .cv{display:grid;place-items:center;font-size:16px;color:#FFFDF9;
   position:relative;overflow:hidden}
-.lrow .meta{flex:1;min-width:0}
-.lrow .tt{font-size:13.5px;font-weight:600;letter-spacing:-.005em;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lrow .st{font-size:12.5px;color:var(--tx-3);margin-top:2px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lrow .du{font-size:12.5px;color:var(--tx-3);width:50px;text-align:right;
-  flex:0 0 50px;font-variant-numeric:tabular-nums}
-.lrow .acts{display:flex;gap:4px;flex:0 0 auto;opacity:0;transition:opacity .16s}
+.lrow .t{min-width:0}
+.lrow .t .tt{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.005em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .t .st{display:block;font-size:12.5px;color:var(--tx-3);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .cell{font-size:12.5px;color:var(--tx-2);font-variant-numeric:tabular-nums;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .cell.r{text-align:right}
+.lrow .du{font-size:12.5px;color:var(--tx-3);text-align:right;
+  font-variant-numeric:tabular-nums}
+.lrow .acts{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  display:flex;gap:4px;opacity:0;transition:opacity .16s;
+  background:var(--bg-1);border:1px solid var(--br-1);border-radius:9px;
+  padding:3px 5px;box-shadow:0 4px 14px rgba(31,29,26,.10)}
 .lrow:hover .acts{opacity:1}
 .lrow .acts .ibtn{width:28px;height:28px}
 .lrow .acts .ibtn svg{width:13px;height:13px}
@@ -414,55 +423,84 @@ input[type=checkbox]:checked::after{content:"";position:absolute;
   left:4.5px;top:2px;width:4px;height:8px;
   border:solid #FFFDF9;border-width:0 2px 2px 0;transform:rotate(45deg)}
 
-/* 下载队列（重构稿 .job：卡片 16px 18px 内距） */
-.qi{display:flex;align-items:center;gap:12px;padding:16px 18px;border-radius:12px;
-  background:var(--bg-1);border:1px solid var(--br-1);margin-bottom:10px;
-  transition:border-color .15s var(--e)}
-.qi:hover{border-color:var(--br-2)}
-.qi .cv{width:40px;height:40px;border-radius:10px;flex:0 0 40px;
+/* 下载队列（重构稿 .job：卡片 16px 18px 内距 + .pct 珊瑚橙 + .prog） */
+.job{padding:16px 18px;margin-bottom:10px;background:var(--bg-1);
+  border:1px solid var(--br-1);border-radius:12px;transition:border-color .15s var(--e)}
+.job:hover{border-color:var(--br-2)}
+.job .top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.job .top .cv{width:40px;height:40px;border-radius:10px;flex:0 0 40px;
   background:var(--bg-3);display:grid;place-items:center;border:1px solid var(--br-1)}
-.qi .cv svg{width:15px;height:15px;stroke:var(--ac);fill:none;stroke-width:1.8}
-.qi .b{flex:1;min-width:0}
-.qi .nm{font-size:13.5px;font-weight:600;letter-spacing:-.005em}
-.qi .sub{font-size:12.5px;color:var(--tx-3);margin-top:3px;
-  display:flex;align-items:center;gap:6px}
-.qi .bar{height:4px;background:var(--bg-3);border-radius:99px;margin-top:8px;
-  overflow:hidden}
-.qi .bar i{display:block;height:100%;width:0;background:var(--ac);
+.job .top .cv svg{width:15px;height:15px;stroke:var(--ac);fill:none;stroke-width:1.8}
+.job .info{flex:1;min-width:0}
+.job .info .nm{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.005em}
+.job .info .sub{display:block;font-size:12.5px;color:var(--tx-3);margin-top:3px;
+  display:flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums}
+.job .pct{font-size:13.5px;font-weight:700;color:var(--ac);font-variant-numeric:tabular-nums}
+.job .prog{height:4px;border-radius:99px;background:var(--bg-3);overflow:hidden}
+.job .prog i{display:block;height:100%;width:0;background:var(--ac);
   border-radius:99px;transition:width .3s}
-.qi .s{font-size:11px;color:var(--tx-3);width:82px;text-align:right;flex:0 0 82px;
-  font-variant-numeric:tabular-nums}
-.qi .s.ok{color:var(--ok);font-weight:600}
-.qi .s.err{color:var(--dg);font-weight:600}
+.job .prog i.ok{background:var(--ok)}
+.job .prog i.pause{background:var(--tx-3)}
 /* 失败原因必须直接可见（历史教训：只塞 title 等于没显示） */
-.qi .qerr{font-size:10.5px;color:var(--dg);margin-top:5px;line-height:1.5;
+.job .qerr{font-size:10.5px;color:var(--dg);margin-top:5px;line-height:1.5;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   word-break:break-all}
 
-/* 设备卡（重构稿 .dev：44px 图标 + 横向信息行） */
-.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:10px;margin-bottom:16px}
+/* 统计卡（重构稿 .qa + .stat：衬线大数字） */
+.qa{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat{padding:16px 18px;background:var(--bg-1);border:1px solid var(--br-1);
+  border-radius:12px;transition:border-color .15s var(--e)}
+.stat:hover{border-color:var(--br-2)}
+.stat .v{font-family:var(--serif);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .k{font-size:12.5px;color:var(--tx-3);margin-top:2px}
+
+/* 播放队列面板（重构稿 .npq）与队列条目（重构稿 .qi） */
+.npq{background:transparent;border-left:1px solid var(--br-1);padding:20px;
+  display:flex;flex-direction:column;min-height:0;min-width:0}
+.npq h3{font-family:var(--serif);font-size:15px;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:baseline}
+.npq h3 span{font-family:-apple-system,"Segoe UI",sans-serif;font-size:12.5px;color:var(--tx-3);
+  display:flex;align-items:center;gap:8px}
+.npq .npq-tabs{display:flex;gap:6px;margin-bottom:10px}
+.npq .npq-tab{border:1px solid var(--br-2);background:transparent;color:var(--tx-2);
+  height:28px;padding:0 13px;border-radius:99px;font-size:12px;font-family:inherit;
+  cursor:pointer;transition:all .15s var(--e)}
+.npq .npq-tab.on{background:var(--tx-1);border-color:var(--tx-1);color:var(--bg-0);font-weight:600}
+.qlist{overflow-y:auto;display:flex;flex-direction:column;gap:2px;flex:1;min-height:0}
+.qi{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer}
+.qi:hover{background:var(--bg-3)}
+.qi.on{background:var(--bg-3);box-shadow:inset 2px 0 0 var(--ac)}
+.qi .cov{width:34px;height:34px;border-radius:8px;flex:0 0 34px;
+  display:grid;place-items:center;font-size:13px;color:#FFFDF9;overflow:hidden}
+.qi .m{flex:1;min-width:0}
+.qi .m b{display:block;font-size:12.5px;font-weight:600;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.qi .m span{font-size:11px;color:var(--tx-3)}
+.qi .d{font-size:11px;color:var(--tx-3);font-variant-numeric:tabular-nums}
+.qi .rm{opacity:0;transition:opacity .15s}
+.qi:hover .rm{opacity:1}
+
+/* 设备卡（重构稿 .dev：44px 图标 + 横向信息行 + 右侧标签） */
+#dGrid{margin-bottom:16px}
 .dv{background:var(--bg-1);border:1px solid var(--br-1);border-radius:12px;
-  padding:18px;cursor:pointer;transition:border-color .15s var(--e),box-shadow .15s var(--e);
-  position:relative;display:grid;grid-template-columns:44px 1fr;
-  column-gap:14px;row-gap:3px;align-items:center}
+  padding:18px;cursor:pointer;transition:border-color .15s var(--e);
+  display:flex;align-items:center;gap:14px;margin-bottom:10px;position:relative}
 .dv:hover{border-color:var(--br-2)}
-.dv .ic{grid-row:1/4;width:44px;height:44px;border-radius:12px;background:var(--bg-3);
-  border:1px solid var(--br-1);display:grid;place-items:center;font-size:19px}
-.dv .ic span{line-height:1}
-.dv .nm{grid-column:2;font-size:13.5px;font-weight:600;letter-spacing:-.005em;
+.dv .dic{width:44px;height:44px;border-radius:12px;background:var(--bg-3);
+  border:1px solid var(--br-1);display:grid;place-items:center;font-size:19px;flex:0 0 44px}
+.dv .dic span{line-height:1}
+.dv .meta{flex:1;min-width:0}
+.dv .meta .nm{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.005em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dv .ty{grid-column:2;font-size:12.5px;color:var(--tx-3);
+.dv .meta .ty{display:block;font-size:12.5px;color:var(--tx-3);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dv .bar{grid-column:2;height:4px;background:var(--bg-3);border-radius:99px;
-  overflow:hidden;margin-top:3px}
-.dv .bar i{display:block;height:100%;background:var(--ac);border-radius:99px}
-.dv .info{grid-column:2;font-size:11px;color:var(--tx-3);display:flex;
-  justify-content:space-between;font-variant-numeric:tabular-nums}
-.dv.on{border-color:rgba(232,89,12,.5);background:var(--bg-1);
-  box-shadow:0 0 0 1px rgba(232,89,12,.25) inset}
-.dv.on::after{content:"";position:absolute;top:14px;right:14px;
-  width:8px;height:8px;border-radius:50%;background:var(--ac)}
+.dv .meta .cap{display:block;font-size:11px;color:var(--tx-3);margin-top:3px;
+  font-variant-numeric:tabular-nums}
+.dv .meta .bar{height:4px;background:var(--bg-3);border-radius:99px;
+  overflow:hidden;margin-top:6px;max-width:220px}
+.dv .meta .bar i{display:block;height:100%;background:var(--ac);border-radius:99px}
+.dv.on{border-color:rgba(232,89,12,.5);box-shadow:0 0 0 1px rgba(232,89,12,.25) inset}
+.dv .r{display:flex;align-items:center;gap:8px;flex:0 0 auto}
 
 /* 设置行（.sr）与开关（.sw = 重构稿 .tgl 40×22） */
 .sr{display:flex;align-items:center;gap:16px;padding:14px 0;
@@ -489,6 +527,97 @@ input[type=checkbox]:checked::after{content:"";position:absolute;
 .ro.on{background:var(--tx-1);border-color:var(--tx-1);color:var(--bg-0);font-weight:600}
 
 /* ============================================================================
+   重构稿组件补齐（原文规格）：.sect / .seg / .kbd / .quick / .pls(.pl) /
+   .hrow / 分析页（.angrid .donut .legend .fmt）/ 设置分组（.sgroup）
+   ========================================================================== */
+.sect{display:flex;align-items:baseline;gap:10px;margin:26px 0 12px}
+.sect .no{font-family:var(--serif);font-size:15px;font-weight:700;color:var(--ac)}
+.sect h2{font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:.02em}
+.sect .rl{flex:1;height:1px;background:var(--br-1)}
+.sect a,.sect .lk{font-size:12.5px;color:var(--tx-3);text-decoration:none;cursor:pointer}
+.sect a:hover,.sect .lk:hover{color:var(--tx-1)}
+
+.seg{display:inline-flex;background:var(--bg-3);border:1px solid var(--br-1);
+  border-radius:10px;padding:3px;gap:2px}
+.seg button,.seg .ro{border:0;background:transparent;color:var(--tx-2);font-size:12.5px;
+  padding:6px 14px;border-radius:8px;cursor:pointer;font-family:inherit;height:auto;
+  display:inline-flex;align-items:center}
+.seg button.on,.seg .ro.on{background:var(--bg-1);color:var(--tx-1);font-weight:600;
+  box-shadow:0 1px 3px rgba(31,29,26,.10)}
+
+.kbd{font-size:11px;color:var(--tx-3);border:1px solid var(--br-2);
+  border-radius:6px;padding:2px 7px;background:var(--bg-0);white-space:nowrap}
+
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px}
+.quick .q{padding:14px;border-radius:12px;background:var(--bg-1);
+  border:1px solid var(--br-1);cursor:pointer;transition:border-color .15s var(--e)}
+.quick .q:hover{border-color:var(--ac)}
+.quick .q b{display:block;font-size:13.5px;font-weight:600}
+.quick .q span{font-size:12.5px;color:var(--tx-3)}
+
+.pls{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pl{padding:12px;cursor:pointer;background:var(--bg-1);border:1px solid var(--br-1);
+  border-radius:12px;transition:border-color .15s var(--e);position:relative}
+.pl:hover{border-color:var(--br-2)}
+.pl .cv{width:100%;aspect-ratio:1;border-radius:10px;position:relative;
+  display:grid;place-items:center;font-size:34px;color:#FFFDF9;overflow:hidden}
+.pl .cv .cnt{position:absolute;right:8px;bottom:8px;font-size:11px;
+  background:rgba(31,29,26,.78);color:var(--bg-0);border-radius:99px;padding:3px 9px;
+  font-variant-numeric:tabular-nums}
+.pl>b{display:block;margin-top:10px;font-size:13.5px;font-weight:600}
+.pl>span{font-size:12.5px;color:var(--tx-3)}
+.pl .pldel{position:absolute;top:10px;right:10px;z-index:2}
+
+/* 历史（重构稿 .hrow：独立小卡片行） */
+.hrow{display:flex;align-items:center;gap:14px;padding:11px 16px;background:var(--bg-1);
+  border:1px solid var(--br-1);border-radius:12px;margin-bottom:8px}
+.hrow .cv{width:38px;height:38px;border-radius:9px;flex:0 0 38px;
+  display:grid;place-items:center;font-size:15px;color:#FFFDF9;overflow:hidden}
+.hrow .meta{flex:1;min-width:0;cursor:pointer}
+.hrow .meta .tt{display:block;font-size:13.5px;font-weight:600}
+.hrow .meta .st{display:block;font-size:12.5px;color:var(--tx-3)}
+.hrow .when{font-size:12.5px;color:var(--tx-3);font-variant-numeric:tabular-nums;
+  flex:0 0 auto}
+#hList>.ep{margin:0}
+
+/* 分析（重构稿 .angrid + .donut + .legend + .fmt） */
+.angrid{display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:stretch}
+.donut{width:170px;height:170px;border-radius:50%;margin:10px auto;
+  display:grid;place-items:center}
+.donut i{width:110px;height:110px;border-radius:50%;background:var(--bg-1);
+  display:grid;place-items:center;font-style:normal;text-align:center}
+.donut i b{display:block;font-family:var(--serif);font-size:20px;font-weight:700;
+  font-variant-numeric:tabular-nums}
+.donut i span{font-size:11px;color:var(--tx-3)}
+.legend{display:flex;flex-direction:column;gap:10px;justify-content:center}
+.lg{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--tx-2)}
+.lg i{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+.lg b{margin-left:auto;color:var(--tx-1);font-variant-numeric:tabular-nums}
+.fmt{padding:16px 18px;margin-top:14px;border:1px solid var(--br-1);border-radius:12px}
+.fmt .fr{display:flex;align-items:center;gap:12px;margin:9px 0}
+.fmt .fr .nm{width:64px;font-size:12.5px;color:var(--tx-2)}
+.fmt .fr .prog{flex:1;height:4px;border-radius:99px;background:var(--bg-3);overflow:hidden}
+.fmt .fr .prog i{display:block;height:100%;border-radius:99px;background:var(--ac)}
+.fmt .fr .pc{width:44px;text-align:right;font-size:12.5px;color:var(--tx-3);
+  font-variant-numeric:tabular-nums}
+
+/* 设置页：组标题（.sect）+ 重构稿 .srow 连排分组（.sgroup 内 .sr 行） */
+.sgroup>.sr{border:1px solid var(--br-1);background:var(--bg-1);
+  padding:15px 18px;margin-top:-1px}
+.sgroup>.sr:first-of-type{border-radius:12px 12px 0 0;margin-top:0}
+.sgroup>.sr:last-of-type{border-radius:0 0 12px 12px}
+.sgroup .sgnote{border:1px solid var(--br-1);border-top:0;background:var(--bg-1);
+  padding:0 18px 14px;font-size:12.5px;color:var(--tx-3);line-height:1.7;margin-top:-1px}
+.sgroup>.sr:last-of-type,.sgroup .sgnote:last-child{border-radius:0 0 12px 12px}
+/* 设置组内的选项胶囊呈现为重构稿 .seg 分段控件观感 */
+.sgroup .rgs{display:inline-flex;background:var(--bg-3);border:1px solid var(--br-1);
+  border-radius:10px;padding:3px;gap:2px}
+.sgroup .ro{height:auto;border:0;background:transparent;color:var(--tx-2);
+  font-size:12.5px;padding:6px 14px;border-radius:8px}
+.sgroup .ro.on{background:var(--bg-1);color:var(--tx-1);font-weight:600;
+  box-shadow:0 1px 3px rgba(31,29,26,.10)}
+
+/* ============================================================================
    第二层页面（layer）—— 歌单详情 / 正在播放
    ========================================================================== */
 .layer{position:fixed;inset:0;z-index:9000;display:none;flex-direction:column;
@@ -513,61 +642,70 @@ input[type=checkbox]:checked::after{content:"";position:absolute;
 .ly-body{flex:1;overflow-y:auto;padding:22px 24px 30px;position:relative}
 .ly-inner{max-width:1020px;margin:0 auto}
 
-/* ---- 正在播放：左（封面+信息+控制） / 右（滚动歌词） ---- */
-.now{display:grid;grid-template-columns:minmax(260px,352px) 1fr;gap:34px;
-  max-width:1200px;height:100%;margin:0 auto;padding:6px 2px 0}
-.now-left{min-width:0;display:flex;flex-direction:column}
-.now-cover{width:100%;aspect-ratio:1;border-radius:16px;position:relative;
-  overflow:hidden;display:grid;place-items:center;font-size:76px;font-weight:700;
-  color:rgba(255,253,249,.92);text-shadow:0 4px 24px rgba(0,0,0,.35);
-  box-shadow:0 24px 60px rgba(31,29,26,.18);
-  transition:transform .45s var(--eo),box-shadow .45s var(--e)}
-body:not(.light) .now-cover{box-shadow:0 24px 60px rgba(0,0,0,.5)}
-.now-cover:hover{transform:scale(1.012)}
-.now-cover img{width:100%;height:100%;object-fit:cover;display:block}
-.now-cover .disc{position:absolute;left:50%;top:50%;width:36%;height:36%;
-  transform:translate(-50%,-50%);border-radius:50%;overflow:hidden;
-  opacity:0;transition:opacity .4s var(--e);pointer-events:none;
-  box-shadow:0 6px 22px rgba(0,0,0,.45)}
-.now-cover .disc i{display:block;width:100%;height:100%;border-radius:50%;
-  background:radial-gradient(circle at 50% 50%,#0a0c11 0 30%,
-    rgba(255,255,255,.16) 31% 32%,#0a0c11 33% 100%);
-  border:2px solid rgba(255,255,255,.14)}
-.now-cover.play .disc{opacity:1}
-.now-cover.play .disc i{animation:discSpin 9s linear infinite}
-@keyframes discSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.now-meta{margin-top:20px;min-width:0}
-.now-name{font-family:var(--serif);font-size:28px;font-weight:700;letter-spacing:.01em;
-  line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.now-art{font-size:13.5px;color:var(--tx-2);margin-top:6px;line-height:1.5;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.now-tags{display:flex;gap:8px;margin-top:14px;align-items:center}
-.now-prog{display:flex;align-items:center;gap:10px;margin-top:18px}
-.now-btns{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:16px}
-.now-btns .pl-b{width:38px;height:38px}
-.now-btns .pl-b svg{width:17px;height:17px}
-.now-btns .pl-b.big{width:48px;height:48px}
-.now-btns .pl-b.big svg{width:17px;height:17px}
-.now-extra{margin-top:18px;padding-top:16px;border-top:1px solid var(--br-1);
-  display:flex;flex-direction:column;gap:14px}
-.now-row{display:flex;flex-direction:column;gap:8px;min-width:0}
-.now-row .lb{font-size:11.5px;color:var(--tx-3)}
-.now-row .rgs{display:grid;gap:6px}
-.now-row .ro{text-align:center;padding:6px 4px;white-space:nowrap;height:auto}
-#nowSpeed{grid-template-columns:repeat(3,1fr)}
-#nowMode{grid-template-columns:repeat(2,1fr)}
-/* 状态按钮（随机 / 循环）：开启后主色标出 */
-.pl-b{position:relative}
-.pl-b.on{color:var(--ac);background:rgba(232,89,12,.10)}
+/* ---- 正在播放（重构稿 .npov：纸面全屏 / nptop / npleft 横排 264px 封面） ---- */
+.layer{position:fixed;inset:0;z-index:9000;display:none;flex-direction:column;
+  background:var(--bg-0);overflow:hidden}
+.layer.on{display:flex;animation:lyIn .3s var(--eo)}
+@keyframes lyIn{from{opacity:0}}
+/* nptop：设计稿顶部行 = 左「NOW PLAYING · 暖纸编辑部」lbl + 右 xbtn */
+.ly-head{display:flex;align-items:center;justify-content:space-between;
+  padding:20px 28px;flex:0 0 auto;position:relative;z-index:6}
+.ly-back{width:38px;height:38px;border-radius:10px;border:1px solid var(--br-2);
+  background:var(--bg-1);color:var(--tx-2);cursor:pointer;display:grid;
+  place-items:center;transition:all .16s var(--e);flex:0 0 38px}
+.ly-back:hover{color:var(--tx-1);border-color:var(--tx-3)}
+.ly-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.1;
+  stroke-linecap:round;stroke-linejoin:round}
+.ly-title{font-size:11px;font-weight:700;letter-spacing:2.4px;color:var(--ac);
+  min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ly-title small{font-size:11px;font-weight:700;letter-spacing:2.4px}
+.ly-acts{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.ly-body{flex:1;overflow:hidden;display:flex;min-height:0;position:relative}
+.ly-inner{max-width:1120px;margin:0 auto;width:100%;min-height:0;display:flex}
 
-.now-right{min-width:0;display:flex;flex-direction:column;min-height:0}
-.now-lyr-wrap{position:relative;flex:1;min-height:0;display:flex;overflow:hidden;
-  border-radius:14px}
-.now-lyr-wrap::before,.now-lyr-wrap::after{content:"";position:absolute;left:0;
-  right:0;height:74px;pointer-events:none;z-index:2}
-.now-lyr-wrap::before{top:0;background:linear-gradient(180deg,var(--bg-0),transparent)}
-.now-lyr-wrap::after{bottom:0;background:linear-gradient(0deg,var(--bg-0),transparent)}
-.lyric-scroll{flex:1;overflow-y:auto;padding:34% 10px;text-align:center;
+/* npbody：左（封面 264 + 信息） 1fr / 右面板 320px */
+.npbody{flex:1;display:grid;grid-template-columns:1fr 320px;gap:0;width:100%;
+  min-height:0}
+.npleft{display:flex;align-items:center;justify-content:center;gap:44px;min-width:0;
+  padding:8px 40px 28px;overflow-y:auto}
+.npcov{width:264px;height:264px;border-radius:16px;flex:0 0 264px;
+  display:grid;place-items:center;font-size:64px;font-weight:700;
+  color:rgba(255,253,249,.92);text-shadow:0 4px 24px rgba(0,0,0,.35);
+  box-shadow:0 24px 60px rgba(31,29,26,.18);overflow:hidden}
+body:not(.light) .npcov{box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.npcov img{width:100%;height:100%;object-fit:cover;display:block}
+.npinfo{min-width:0;max-width:520px}
+.npinfo .kick{font-size:11px;font-weight:700;letter-spacing:2.2px;color:var(--ac);margin-bottom:10px}
+.npinfo h2{font-family:var(--serif);font-size:28px;font-weight:700;margin-bottom:6px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.npinfo .art{font-size:13.5px;color:var(--tx-2);margin-bottom:14px}
+.nptags{display:flex;gap:8px;margin-bottom:22px;align-items:center;flex-wrap:wrap}
+.npprog{display:flex;align-items:center;gap:12px;max-width:460px}
+.npprog .pl-track{flex:1}
+.npprog .pl-time{width:38px}
+.npctl{display:flex;align-items:center;gap:20px;margin-top:18px}
+.npacts{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.heartbtn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px;
+  border-radius:10px;border:1px solid var(--br-2);background:var(--bg-1);
+  font-size:12.5px;font-weight:600;color:var(--tx-2);cursor:pointer;transition:all .15s;
+  font-family:inherit}
+.heartbtn svg{width:14px;height:14px;fill:var(--tx-3);stroke:none;transition:fill .15s}
+.heartbtn:hover{color:var(--tx-1);border-color:var(--tx-3)}
+.heartbtn.liked{border-color:rgba(232,89,12,.4);background:rgba(232,89,12,.06);color:var(--ac)}
+.heartbtn.liked svg{fill:var(--ac)}
+.heartbtn .sp{width:12px;height:12px}
+
+/* 右侧面板：设计稿 .npq（歌词 / 播放队列 两个 tab，内容同规格） */
+.npq .lyric-top{flex:0 0 auto;text-align:left;padding:0 0 10px}
+.npq .lyric-top .n{font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:.01em}
+.npq .lyric-top .a{font-size:12.5px;color:var(--tx-3);margin-top:3px}
+.npq .lyric-top .s{font-size:11px;color:var(--tx-4);margin-top:6px}
+.npq .now-lyr-wrap{position:relative;flex:1;min-height:0;display:flex;overflow:hidden}
+.npq .now-lyr-wrap::before,.npq .now-lyr-wrap::after{content:"";position:absolute;left:0;
+  right:0;height:64px;pointer-events:none;z-index:2}
+.npq .now-lyr-wrap::before{top:0;background:linear-gradient(180deg,var(--bg-0),transparent)}
+.npq .now-lyr-wrap::after{bottom:0;background:linear-gradient(0deg,var(--bg-0),transparent)}
+.lyric-scroll{flex:1;overflow-y:auto;padding:30% 10px;text-align:center;
   scroll-behavior:smooth;scrollbar-width:none}
 .lyric-scroll::-webkit-scrollbar{width:0;height:0}
 .lyric-scroll .lyr{padding:9px 16px;border-radius:9px;color:var(--tx-4);
@@ -578,73 +716,36 @@ body:not(.light) .now-cover{box-shadow:0 24px 60px rgba(0,0,0,.5)}
 .lyric-scroll .lyr.cur{color:var(--ac);font-size:21px;font-weight:700;opacity:1;
   transform:scale(1.02)}
 .lyric-scroll .lyr.near{color:var(--tx-2);opacity:.95}
-.lyric-top{flex:0 0 auto;text-align:center;padding:2px 0 10px}
-.lyric-top .n{font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:.01em}
-.lyric-top .a{font-size:12.5px;color:var(--tx-3);margin-top:3px}
-.lyric-top .s{font-size:11px;color:var(--tx-4);margin-top:6px}
+.npq .qlist{padding-right:2px}
+.npq .qlist .qi{flex:0 0 auto}
 
-/* ---- 播放列表抽屉 ---- */
-.qdrawer{position:absolute;top:0;right:0;bottom:0;width:372px;max-width:88vw;
-  z-index:8;display:flex;flex-direction:column;
-  background:var(--bg-0);border-left:1px solid var(--br-1);
-  box-shadow:-16px 0 48px rgba(31,29,26,.10);
-  transform:translateX(101%);transition:transform .36s var(--eo)}
-body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
-.qdrawer.on{transform:none}
-.qd-head{display:flex;align-items:center;gap:9px;padding:14px 16px;flex:0 0 auto;
+/* ---- 歌单详情（重构稿 .plov：压暗纸面 + 640px plcard 弹层） ---- */
+.layer.plmode{background:rgba(31,29,26,.32);align-items:center;justify-content:center;
+  display:none}
+.layer.plmode.on{display:flex}
+.layer.plmode .ly-head{display:none}
+.layer.plmode .ly-body{overflow:visible;display:block;padding:20px}
+.plcard{width:640px;max-width:92vw;max-height:80vh;margin:0 auto;background:var(--bg-0);
+  border-radius:16px;display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 32px 80px rgba(31,29,26,.28);animation:pgin .25s var(--eo)}
+.plchead{display:flex;align-items:center;gap:14px;padding:18px 20px;
   border-bottom:1px solid var(--br-1)}
-.qd-head .t{font-family:var(--serif);font-size:15px;font-weight:700}
-.qd-head .c{font-size:12.5px;color:var(--tx-3)}
-.qd-head .x{margin-left:auto;width:28px;height:28px;border-radius:8px;flex:0 0 28px;
-  display:grid;place-items:center;cursor:pointer;color:var(--tx-3);font-size:17px;
-  transition:all .15s var(--e)}
-.qd-head .x:hover{color:var(--ac);background:var(--hov)}
-.qd-body{flex:1;overflow-y:auto;padding:8px 8px 16px}
-.qrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;
-  cursor:pointer;transition:background .14s var(--e)}
-.qrow:hover{background:var(--bg-0)}
-.qrow.on{background:var(--bg-3);box-shadow:inset 2px 0 0 var(--ac)}
-.qrow .n{width:20px;flex:0 0 20px;text-align:right;font-size:11px;
-  color:var(--tx-4);font-variant-numeric:tabular-nums}
-.qrow.on .n{color:var(--ac);font-weight:700}
-.qrow .b{flex:1;min-width:0}
-.qrow .t{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;
-  text-overflow:ellipsis}
-.qrow.on .t{color:var(--tx-1)}
-.qrow .s{font-size:11px;color:var(--tx-3);margin-top:2px;white-space:nowrap;
+.plchead .cv{width:64px;height:64px;border-radius:12px;flex:0 0 64px;
+  display:grid;place-items:center;font-size:28px;color:#FFFDF9;overflow:hidden}
+.plchead .m{flex:1;min-width:0}
+.plchead h3{font-family:var(--serif);font-size:18px;white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis}
-.qrow .d{font-size:11px;color:var(--tx-3);flex:0 0 auto;
-  font-variant-numeric:tabular-nums}
-.qrow .rm{opacity:0;flex:0 0 auto;transition:opacity .15s}
-.qrow:hover .rm{opacity:1}
-.qrow .eq{display:flex;align-items:flex-end;gap:2px;height:11px;flex:0 0 12px}
-.qrow .eq i{width:2.5px;background:var(--ac);border-radius:1px;height:40%;
-  animation:eqb .9s var(--e) infinite alternate}
-.qrow .eq i:nth-child(2){animation-delay:.18s;height:80%}
-.qrow .eq i:nth-child(3){animation-delay:.36s;height:55%}
-.qrow .eq.stop i{animation-play-state:paused}
-@keyframes eqb{from{height:22%}to{height:100%}}
-
-/* ---- 歌单详情（第二层） ---- */
-.pld-hero{display:flex;align-items:center;gap:18px;padding:20px;
-  background:var(--bg-1);border:1px solid var(--br-1);border-radius:16px;
-  margin-bottom:18px}
-.pld-hero .cv{width:88px;height:88px;border-radius:16px;flex:0 0 88px;
-  display:grid;place-items:center;font-size:38px;position:relative;overflow:hidden;
-  color:#FFFDF9}
-.pld-hero .b{flex:1;min-width:0}
-.pld-hero .b h2{font-family:var(--serif);font-size:22px;font-weight:700;
-  letter-spacing:.01em;margin-bottom:6px;white-space:nowrap;overflow:hidden;
-  text-overflow:ellipsis}
-.pld-hero .b .m{font-size:12.5px;color:var(--tx-3);display:flex;gap:8px;
-  align-items:center;flex-wrap:wrap}
-.pld-hero .b .acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.plchead span{font-size:12.5px;color:var(--tx-3)}
+.plchead .acts{display:flex;gap:8px;flex:0 0 auto}
+.plclist{overflow-y:auto;padding:10px}
+.plclist .hrow:hover .rm{opacity:1!important}
 
 @media(max-width:960px){
-  .now{grid-template-columns:1fr;height:auto;gap:22px}
-  .now-left{max-width:360px;margin:0 auto;width:100%}
-  .lyric-scroll{padding:22px 6px;max-height:52vh}
-  .qdrawer{width:100%;max-width:100%}
+  .npbody{grid-template-columns:1fr}
+  .npleft{flex-direction:column;gap:22px;padding:8px 20px 24px}
+  .npcov{width:220px;height:220px;flex-basis:220px}
+  .ly-body{overflow-y:auto;display:block}
+  .npq{border-left:0;border-top:1px solid var(--br-1)}
   .player{grid-template-columns:minmax(160px,1fr) 2fr minmax(160px,1fr)}
 }
 
@@ -674,17 +775,18 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
 .pl-fav.on svg{fill:currentColor}
 .pl-center{display:flex;flex-direction:column;gap:7px;align-items:center}
 .pl-btns{display:flex;gap:16px;align-items:center}
-.pl-b{width:32px;height:32px;border-radius:50%;background:transparent;border:none;
+/* 重构稿 .bar .btns .sv：裸 svg 15px，hover 变墨色，on = 珊瑚橙 */
+.pl-b{width:auto;height:auto;border-radius:0;background:transparent;border:none;
   color:var(--tx-3);cursor:pointer;display:grid;place-items:center;
-  transition:all .16s var(--e)}
-.pl-b:hover{color:var(--tx-1);background:var(--hov)}
-.pl-b svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;
-  stroke-linecap:round;stroke-linejoin:round}
-.pl-b.big{width:40px;height:40px;background:var(--g-ac);color:#FFFDF9;
+  transition:fill .15s,color .15s;padding:0;position:relative}
+.pl-b:hover{color:var(--tx-1);background:transparent}
+.pl-b svg{width:15px;height:15px;fill:currentColor;stroke:none;flex:0 0 15px}
+.pl-b.big{width:40px;height:40px;border-radius:99px;background:var(--ac);color:#FFFDF9;
   transition:transform .12s var(--e),background .15s}
-.pl-b.big:hover{background:var(--ac-2);transform:none}
+.pl-b.big:hover{background:var(--ac-2);transform:none;color:#FFFDF9}
 .pl-b.big:active{transform:scale(.93)}
-.pl-b.big svg{fill:#FFFDF9;stroke:none}
+.pl-b.big svg{fill:#FFFDF9;stroke:none;width:15px;height:15px}
+.pl-b.on{color:var(--ac);background:transparent}
 .pl-prog{display:flex;align-items:center;gap:10px;width:min(520px,100%)}
 .pl-time{font-size:11px;color:var(--tx-3);width:38px;text-align:center;
   flex:0 0 38px;font-variant-numeric:tabular-nums}
@@ -694,9 +796,19 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
 .pl-track i{display:block;height:100%;width:0;background:var(--tx-1);
   border-radius:99px;transition:width .3s linear}
 .pl-right{display:flex;gap:12px;align-items:center;justify-content:flex-end}
-.pl-right .ibtn{color:var(--tx-3)}
-.pl-right .ibtn:hover{color:var(--tx-1)}
-.pl-right .ibtn svg{width:16px;height:16px}
+.pl-right .ibtn{width:auto;height:auto;border-radius:0;background:transparent;border:none;
+  color:var(--tx-3);cursor:pointer;display:grid;place-items:center;padding:0;
+  transition:fill .15s,color .15s}
+.pl-right .ibtn:hover{color:var(--tx-1);background:transparent}
+.pl-right .ibtn svg{width:16px;height:16px;fill:currentColor;stroke:none}
+.pl-right .ibtn.muted{opacity:.4}
+/* 重构稿 .bar .vol：96px 音量条 + hover 显墨色拖点 */
+.vol{width:96px;height:14px;display:flex;align-items:center;cursor:pointer;flex:0 0 96px}
+.vol .trk{position:relative;width:100%;height:4px;border-radius:99px;background:var(--bg-3)}
+.vol i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--tx-2)}
+.vol i::after{content:"";position:absolute;right:-5px;top:50%;transform:translateY(-50%);
+  width:10px;height:10px;border-radius:99px;background:var(--tx-1);opacity:0;transition:opacity .15s}
+.vol:hover i::after{opacity:1}
 
 /* 空态（重构稿 .empty：虚线框） */
 .ep{text-align:center;padding:36px 20px;color:var(--tx-3);font-size:13.5px;
@@ -832,6 +944,17 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
   <symbol id="i-speed" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 1 8-8"/><polyline points="12 12 17 8"/><circle cx="12" cy="12" r="1.6"/></symbol>
   <symbol id="i-repeat1" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><text x="12" y="15.4" font-size="9" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none">1</text></symbol>
   <symbol id="i-queue" viewBox="0 0 24 24"><line x1="3" y1="6" x2="14" y2="6"/><line x1="3" y1="12" x2="14" y2="12"/><line x1="3" y1="18" x2="10" y2="18"/><polygon points="17 9 22 12 17 15" fill="currentColor" stroke="none"/></symbol>
+  <!-- 重构稿播放条的填充式图标（fill 体系，与 stroke 体系符号并存） -->
+  <symbol id="i-play2" viewBox="0 0 24 24"><path d="M7 4.5l13 7.5-13 7.5v-15z"/></symbol>
+  <symbol id="i-pause2" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></symbol>
+  <symbol id="i-prev2" viewBox="0 0 24 24"><path d="M6 5h2v14H6V5zm12 .8v12.4L9.5 12 18 5.8z"/></symbol>
+  <symbol id="i-next2" viewBox="0 0 24 24"><path d="M16 5h2v14h-2V5zM6 5.8L14.5 12 6 18.2V5.8z"/></symbol>
+  <symbol id="i-shuf2" viewBox="0 0 24 24"><path d="M17 3l5 4-5 4V8.5h-3.2c-.6 2.1-2.5 3.5-4.8 3.5H7v6h9v2H5v-10h4c1.4 0 2.6-.8 3.2-2H6V6h6.2c-.6-1.2-1.8-2-3.2-2H6V2h11v1z"/></symbol>
+  <symbol id="i-rep2" viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></symbol>
+  <symbol id="i-rep12" viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/><text x="17.5" y="20" font-size="9.5" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none">1</text></symbol>
+  <symbol id="i-heart2" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.6 8.6 2.6 5 6.1 5c2 0 3.6 1.1 4.4 2.7l1.5 2.7 1.5-2.7C14.3 6.1 15.9 5 17.9 5c3.5 0 5.5 3.6 4.1 6.7C19.5 16.4 12 21 12 21z"/></symbol>
+  <symbol id="i-dl2" viewBox="0 0 24 24"><path d="M12 3v10.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4L10 13.2V3h2zM4 19h16v2H4v-2z"/></symbol>
+  <symbol id="i-vol2" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></symbol>
 </svg>
 
 <div class="app">
@@ -840,7 +963,7 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
    <div class="rail">
     <div class="brand">
       <div class="logo"><svg><use href="#i-music"/></svg></div>
-      <div class="bname">MelodySync<small>DESKTOP</small></div>
+      <div class="bname">MelodySync<small>DESKTOP · v1.0</small></div>
     </div>
     <nav class="snav" id="mainTabs">
       <div class="snav-label">发现</div>
@@ -875,8 +998,11 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
       </button>
     </nav>
     <div class="side-foot">
-      <button class="ibtn" id="bTheme" title="明暗主题切换"><svg><use href="#i-theme"/></svg></button>
       <div class="avatar" id="userAvatarBtn" title="个人中心" style="cursor:pointer">M</div>
+      <div class="who" id="userWhoBtn" title="个人中心" style="cursor:pointer;min-width:0">
+        <b>本地用户</b><span>MelodySync 桌面版</span>
+      </div>
+      <button class="ibtn" id="bTheme" title="明暗主题切换"><svg><use href="#i-theme"/></svg></button>
     </div>
    </div>
   </aside>
@@ -886,34 +1012,19 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
 
       <section class="pg on" id="pg-ai">
         <div class="ai-hero">
-          <div class="ai-hero-inner">
-            <div class="ai-title">
-              <h2>AI 全网搜</h2>
-              <span class="ai-badge">
-                <svg><use href="#i-sparkle"/></svg>POWERED BY AI
-              </span>
+          <div class="ai-kick">AI 全网搜 · ISSUE 001</div>
+          <h1>一句话，找到全网的歌</h1>
+          <div class="sub">支持关键词、歌手、甚至一整句歌词描述，或直接粘贴
+            B站 / YouTube / SoundCloud 链接，自动识别来源与最优音质。</div>
+          <div class="searchwrap">
+            <div class="field">
+              <svg viewBox="0 0 24 24"><use href="#i-search"/></svg>
+              <input id="aiInput" placeholder="搜索歌曲、歌手，或粘贴链接…">
+              <span class="kbd">Ctrl F</span>
             </div>
-            <p class="ai-desc">
-              输入歌名、歌手，甚至一整句话都可以。直接在
-              <b style="color:var(--ac)">全网</b>（哔哩哔哩 / YouTube / SoundCloud）检索，
-              搜到的每一条都能下载 —— 不再出现"搜出来是原唱、点下载却是仅试听"。
-              排序按 <b style="color:var(--ac)">歌名（多语言）+ 原唱 + 热度 + 音质 + 免费</b> 综合打分。
-            </p>
-            <div class="ai-search">
-              <div class="wrap">
-                <div class="ico"><svg><use href="#i-sparkle"/></svg></div>
-                <input id="aiInput" placeholder="周杰伦 晴天 / 那首'故事的小黄花' / 安静的钢琴背景乐">
-              </div>
-              <button class="btn ai" id="bAiSearch">
-                <svg><use href="#i-sparkle"/></svg>AI 搜索
-              </button>
-            </div>
-            <div class="ai-hints">
-              <div class="ai-hint" data-q="周杰伦 晴天">周杰伦 晴天</div>
-              <div class="ai-hint" data-q="故事的小黄花">"故事的小黄花" 开头</div>
-              <div class="ai-hint" data-q="安静 钢琴 背景乐">安静的钢琴背景乐</div>
-              <div class="ai-hint" data-q="CC 免费 爵士">CC 协议免费爵士</div>
-            </div>
+            <button class="btn pri" id="bAiSearch">
+              <svg><use href="#i-sparkle"/></svg>搜索
+            </button>
           </div>
         </div>
         <div id="aiResult">
@@ -922,6 +1033,13 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
             <div class="t">输入关键词，让 AI 帮你找</div>
             <div class="s">支持自然语言 · 跨源聚合 · 按匹配度排序<br>免费源优先 · 保留原始音质</div>
           </div>
+        </div>
+        <div class="sect"><span class="no">01</span><h2>热门搜索</h2><div class="rl"></div></div>
+        <div class="quick" id="quickHints">
+          <div class="q" data-q="周杰伦 晴天"><b>周杰伦 晴天</b><span>歌名 + 歌手直搜</span></div>
+          <div class="q" data-q="故事的小黄花"><b>"故事的小黄花"</b><span>歌词片段找歌</span></div>
+          <div class="q" data-q="安静 钢琴 背景乐"><b>安静的钢琴背景乐</b><span>自然语言描述场景</span></div>
+          <div class="q" data-q="CC 免费 爵士"><b>CC 协议免费爵士</b><span>只搜可下载的免费源</span></div>
         </div>
       </section>
 
@@ -970,10 +1088,8 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
           </div>
         </div>
         <div id="plRes"></div>
-        <div style="display:flex;align-items:center;gap:10px;margin:18px 0 14px">
-          <h2 style="font-size:15.5px;font-weight:650">我的歌单</h2>
-          <span style="font-size:11.5px;color:var(--tx-3)" id="plHint">共 0 个</span>
-        </div>
+        <div class="sect"><span class="no">02</span><h2>我的歌单</h2><div class="rl"></div>
+          <span class="lk" id="plHint">共 0 个</span></div>
         <div id="plBody"></div>
       </section>
 
@@ -990,7 +1106,10 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
             </button>
           </div>
         </div>
-        <div id="lList"></div>
+        <div class="tracks">
+          <div class="tr head"><span class="idx">#</span><span></span><span>标题 / 歌手</span><span>专辑</span><span>音质</span><span style="text-align:right">时长</span></div>
+          <div id="lList"></div>
+        </div>
       </section>
 
       <section class="pg" id="pg-queue">
@@ -1008,12 +1127,17 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
             </button>
           </div>
         </div>
+        <div class="qa">
+          <div class="stat"><div class="v" id="qSpeed">0.0 MB/s</div><div class="k">当前速度</div></div>
+          <div class="stat"><div class="v" id="qDone">0</div><div class="k">已完成</div></div>
+        </div>
         <div id="qList"></div>
       </section>
 
       <section class="pg" id="pg-history">
         <div class="page-head">
-          <div><h1>下载历史</h1><div class="sub" id="hSum">共 0 条</div></div>
+          <div><h1>历史</h1><div class="sub" id="hSum">共 0 条</div></div>
+          <div class="acts"><button class="btn" id="bClearHist">清空历史</button></div>
         </div>
         <div id="hList"></div>
       </section>
@@ -1022,10 +1146,9 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
         <div class="page-head">
           <div><h1>存储分析</h1><div class="sub">按歌手、专辑、音质统计占用</div></div>
         </div>
-        <div id="statCards" style="display:grid;
-          grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-          gap:12px;margin-bottom:22px"></div>
         <div id="analysisBody"></div>
+        <!-- 统计卡放内容之后：与重构稿一致（angrid 在上，.qa 统计在下） -->
+        <div id="statCards" class="qa" style="margin-top:14px"></div>
       </section>
 
       <section class="pg" id="pg-device">
@@ -1047,7 +1170,7 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
                 勾选要传到设备的歌曲；增量同步仍会自动跳过设备上已有的同名文件
               </div>
             </div>
-            <div class="rgs" id="syncScope">
+            <div class="seg" id="syncScope">
               <div class="ro on" data-scope="sel">手动勾选</div>
               <div class="ro" data-scope="all">整个曲库</div>
             </div>
@@ -1085,11 +1208,11 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
           <div><h1>设置</h1><div class="sub">AI、音质、网络和外观</div></div>
         </div>
 
-        <div class="cd">
-          <div style="font-size:15.5px;font-weight:650;margin-bottom:14px">外观</div>
+        <div class="sect"><span class="no">01</span><h2>外观</h2><div class="rl"></div></div>
+        <div class="sgroup">
           <div class="sr">
             <div><div class="sl">主题</div>
-              <div class="sd">深色 / 浅色</div></div>
+              <div class="sd">炭黑编辑部（深色）/ 暖纸编辑部（浅色）</div></div>
             <div class="sc">
               <div class="rgs" id="themeSel">
                 <div class="ro" data-t="dark">🌙 炭黑</div>
@@ -1099,8 +1222,8 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
           </div>
         </div>
 
-        <div class="cd">
-          <div style="font-size:15.5px;font-weight:650;margin-bottom:14px">AI 配置</div>
+        <div class="sect"><span class="no">02</span><h2>AI 配置</h2><div class="rl"></div></div>
+        <div class="sgroup">
           <div class="sr">
             <div><div class="sl">AI 服务商</div>
               <div class="sd">用于意图解析和匹配度评分</div></div>
@@ -1136,7 +1259,7 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
               <input class="inp" id="aiModel" type="text" placeholder="自动" style="width:220px">
             </div>
           </div>
-          <div id="aiStatus" class="sd" style="margin-top:6px;line-height:1.7"></div>
+          <div id="aiStatus" class="sgnote" style="padding:0 18px 12px"></div>
           <div class="sr">
             <div><div class="sl">显示 AI 思考过程</div>
               <div class="sd">展开可查看每一步的推理</div></div>
@@ -1146,19 +1269,21 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
           </div>
         </div>
 
-        <div class="cd">
-          <div style="font-size:15.5px;font-weight:650;margin-bottom:14px">搜索源</div>
-          <div class="sd" style="margin:-8px 0 12px;line-height:1.7">
-            默认只走<b>全网</b>：搜到的每一条都能下载。勾上<b>平台直连</b>会恢复
-            "先平台、再全网"的两层检索 —— 平台元数据更准，但会员/付费曲目只能标注
-            "仅试听"，会出现"搜出来是原唱、点下载却下不了"。
+        <div class="sect"><span class="no">03</span><h2>搜索源</h2><div class="rl"></div></div>
+        <div class="sgroup">
+          <div class="sr" style="display:block">
+            <div class="sd" style="margin:0 0 12px;line-height:1.7">
+              默认只走<b>全网</b>：搜到的每一条都能下载。勾上<b>平台直连</b>会恢复
+              "先平台、再全网"的两层检索 —— 平台元数据更准，但会员/付费曲目只能标注
+              "仅试听"，会出现"搜出来是原唱、点下载却下不了"。
+            </div>
+            <div id="sourceList" style="display:grid;
+              grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px"></div>
           </div>
-          <div id="sourceList" style="display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px"></div>
         </div>
 
-        <div class="cd">
-          <div style="font-size:15.5px;font-weight:650;margin-bottom:14px">存储位置</div>
+        <div class="sect"><span class="no">04</span><h2>存储位置</h2><div class="rl"></div></div>
+        <div class="sgroup">
           <div class="sr">
             <div><div class="sl">下载目录</div>
               <div class="sd">歌曲保存到哪里 · 修改后自动创建目录并校验可写，即时生效（不影响已下载的文件）</div></div>
@@ -1170,11 +1295,11 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
               </button>
             </div>
           </div>
-          <div id="dlDirStatus" class="sd" style="margin-top:4px;line-height:1.7"></div>
+          <div id="dlDirStatus" class="sgnote" style="padding:0 18px 12px"></div>
         </div>
 
-        <div class="cd">
-          <div style="font-size:15.5px;font-weight:650;margin-bottom:14px">下载音质</div>
+        <div class="sect"><span class="no">05</span><h2>下载音质</h2><div class="rl"></div></div>
+        <div class="sgroup">
           <div class="sr">
             <div><div class="sl">默认音质</div>
               <div class="sd">无损源可用时直接保存 FLAC</div></div>
@@ -1203,15 +1328,17 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
           </div>
         </div>
 
-        <div class="cd">
-          <div style="font-size:15.5px;font-weight:650;margin-bottom:14px">合规声明</div>
-          <div style="font-size:12px;color:var(--tx-3);line-height:1.85">
-            本软件仅限个人学习与研究使用，不得用于任何商业目的。<br>
-            AI 全网搜仅聚合 CC 协议 / 公版 等合法免费源，
-            以及各平台官方网页播放器自身使用的公开接口返回的音频地址。<br>
-            不提供任何绕过 DRM 或平台会员限制的功能 ——
-            需要会员/付费的曲目平台会明确拒绝，程序如实标注并停止，不重试、不变通。<br>
-            用户应自行承担因下载受版权保护内容而产生的全部法律责任。
+        <div class="sect"><span class="no">06</span><h2>合规声明</h2><div class="rl"></div></div>
+        <div class="sgroup">
+          <div class="sr" style="display:block">
+            <div style="font-size:12px;color:var(--tx-3);line-height:1.85">
+              本软件仅限个人学习与研究使用，不得用于任何商业目的。<br>
+              AI 全网搜仅聚合 CC 协议 / 公版 等合法免费源，
+              以及各平台官方网页播放器自身使用的公开接口返回的音频地址。<br>
+              不提供任何绕过 DRM 或平台会员限制的功能 ——
+              需要会员/付费的曲目平台会明确拒绝，程序如实标注并停止，不重试、不变通。<br>
+              用户应自行承担因下载受版权保护内容而产生的全部法律责任。
+            </div>
           </div>
         </div>
       </section>
@@ -1221,24 +1348,21 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
 
   <footer class="player">
     <div class="pl-left">
-      <div class="pl-cover" style="background:var(--g-ac2)" id="plCover" title="点开播放页">♪</div>
-      <div class="pl-info" id="plInfo" title="点开播放页">
+      <div class="pl-cover" style="background:var(--g-ac2)" id="plCover" title="打开听歌界面">♪</div>
+      <div class="pl-info" id="plInfo" title="打开听歌界面">
         <div class="pl-title" id="plTitle">—</div>
         <div class="pl-artist" id="plArtist">选择一首歌开始播放</div>
       </div>
-      <button class="pl-fav" id="plFav">
-        <svg><use href="#i-heart"/></svg>
-      </button>
     </div>
     <div class="pl-center">
       <div class="pl-btns">
-        <button class="pl-b" id="plShuffle" title="随机播放"><svg><use href="#i-shuffle"/></svg></button>
-        <button class="pl-b" id="plPrev" title="上一首"><svg><use href="#i-prev"/></svg></button>
+        <button class="pl-b" id="plShuffle" title="随机播放"><svg><use href="#i-shuf2"/></svg></button>
+        <button class="pl-b" id="plPrev" title="上一首"><svg><use href="#i-prev2"/></svg></button>
         <button class="pl-b big" id="plToggle">
-          <svg id="plIcon"><use href="#i-play"/></svg>
+          <svg id="plIcon"><use href="#i-play2"/></svg>
         </button>
-        <button class="pl-b" id="plNext" title="下一首"><svg><use href="#i-next"/></svg></button>
-        <button class="pl-b" id="plRepeat" title="循环模式"><svg><use href="#i-repeat"/></svg></button>
+        <button class="pl-b" id="plNext" title="下一首"><svg><use href="#i-next2"/></svg></button>
+        <button class="pl-b" id="plRepeat" title="循环模式"><svg><use href="#i-rep2"/></svg></button>
       </div>
       <div class="pl-prog">
         <span class="pl-time" id="plTimeCur">0:00</span>
@@ -1247,8 +1371,9 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
       </div>
     </div>
     <div class="pl-right">
-      <button class="ibtn" id="plQueue" title="播放列表"><svg><use href="#i-queue"/></svg></button>
-      <button class="ibtn" id="plLyricBtn" title="播放页（歌词 / 倍速 / 循环）"><svg><use href="#i-up"/></svg></button>
+      <button class="ibtn" id="bGoQueue" title="下载队列"><svg><use href="#i-dl2"/></svg></button>
+      <button class="ibtn" id="bVolIc" title="静音"><svg><use href="#i-vol2"/></svg></button>
+      <div class="vol" id="vol"><div class="trk"><i id="volFill" style="width:100%"></i></div></div>
     </div>
   </footer>
 </div>
@@ -1266,18 +1391,6 @@ body:not(.light) .qdrawer{box-shadow:-16px 0 48px rgba(0,0,0,.45)}
     <div class="ly-acts" id="lyActs"></div>
   </div>
   <div class="ly-body" id="lyBody"></div>
-
-  <!-- 播放列表抽屉：正在播放页右侧滑出，主播放页和它共用同一份播放上下文 -->
-  <div class="qdrawer" id="qDrawer">
-    <div class="qd-head">
-      <svg style="width:15px;height:15px;stroke:var(--ac);fill:none;stroke-width:1.9;
-        stroke-linecap:round;stroke-linejoin:round"><use href="#i-queue"/></svg>
-      <span class="t">播放列表</span>
-      <span class="c" id="qdCount"></span>
-      <div class="x" id="qdClose">×</div>
-    </div>
-    <div class="qd-body" id="qdBody"></div>
-  </div>
 </div>
 
 <div class="mk" id="mk"><div class="mkb" id="mkb"></div></div>
@@ -2360,6 +2473,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
   }
 
   userBtn.onclick = openProfile;
+  var whoBtn = document.getElementById('userWhoBtn');
+  if (whoBtn) whoBtn.onclick = openProfile;   // 侧栏「本地用户」名签 → 同一个个人中心
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
@@ -3121,7 +3236,7 @@ $$('#themeSel .ro').forEach(o => o.onclick = () => {
 /* 右侧「正在播放 / 歌词」栏已移除：它的两个 tab 现在是第二层播放页
    （见 openLayer('now')），所以这里不再需要 tab 切换逻辑。 */
 
-$$('.ai-hint').forEach(h => h.onclick = () => {
+$$('.quick .q').forEach(h => h.onclick = () => {
   $('#aiInput').value = h.dataset.q;
   doAiSearch();
 });
@@ -3381,29 +3496,27 @@ function renderAiResults(intent, results, nativeRes) {
           : '';
         return `
           <div class="res ${isBest?'best':''}" data-i="${i}">
-            <div class="si">${srcIcon(r.src)}</div>
+            <div class="si" style="background:${coverFor(r).bg}">${esc(coverFor(r).ch)}</div>
             <div class="b">
               <div class="tt">
                 ${esc(r.ttl)}
                 <span class="m ${mCls}">${r.match}% 匹配</span>
                 ${origTag}
-                ${canDl ? '<span class="tg free">可下载</span>' : ''}
+                ${canDl ? '' : `<span class="tg preview" title="${esc(r.note || '该源仅提供官方试听')}">仅试听</span>`}
               </div>
               <div class="st">
                 <span>${esc(r.art)}</span>
                 <span style="color:var(--tx-4)">·</span>
                 <span class="sn">${srcName(r.src)}</span>
                 <span style="color:var(--tx-4)">·</span>
-                <span>${r.dur}</span>
-              </div>
-              <div class="tags">
-                <span class="tg ${r.qual==='FLAC'?'f':r.qual==='320K'?'p':'l'}">${r.qual}</span>
-                <span class="tg ${rCls}">${r.right}</span>
-                ${heatTag}
-                ${r.size > 0 ? `<span class="tg l">${r.size.toFixed ? r.size.toFixed(1) : r.size} MB</span>` : ''}
-                ${!canDl && r.note ? `<span class="tg preview" title="${esc(r.note)}">${esc(r.note)}</span>` : ''}
+                <span>${r.qual}</span>
+                <span style="color:var(--tx-4)">·</span>
+                <span>${esc(r.right)}</span>
+                ${r.heatText ? `<span style="color:var(--tx-4)">·</span><span>${esc(r.heatText)}</span>` : ''}
+                ${r.size > 0 ? `<span style="color:var(--tx-4)">·</span><span>${r.size.toFixed ? r.size.toFixed(1) : r.size} MB</span>` : ''}
               </div>
             </div>
+            <span class="dur">${r.dur}</span>
             <div class="a">
               <button class="btn gh sm" data-act="preview" title="在线试听">
                 <svg><use href="#i-play"/></svg>
@@ -3923,27 +4036,20 @@ function renderPlaylists() {
     return;
   }
   $('#plHint').textContent = `共 ${n} 个`;
-  $('#plBody').innerHTML = `<div style="display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+  $('#plBody').innerHTML = `<div class="pls">
     ${state.playlists.map((p,i) => `
-      <div class="plcard" data-id="${p.id}" style="background:linear-gradient(180deg,var(--bg-1),var(--bg-2));
-        border:1px solid var(--br-1);border-radius:12px;padding:16px;cursor:pointer;
-        transition:all .2s;position:relative"
-        onmouseover="this.style.borderColor='var(--br-3)';this.style.transform='translateY(-2px)'"
-        onmouseout="this.style.borderColor='';this.style.transform=''">
-        <div style="width:44px;height:44px;border-radius:11px;background:${grad(i)};
-          display:grid;place-items:center;font-size:20px;margin-bottom:10px">${p.icon}</div>
-        <div style="font-size:13px;font-weight:620">${esc(p.name)}</div>
-        <div style="font-size:11px;color:var(--tx-3);margin-top:3px">
-          ${(p.count != null ? p.count : p.songs.length)} 首${p.source ? ' · ' + esc(p.source) : ''}
-        </div>
+      <div class="pl" data-id="${p.id}">
+        <div class="cv" style="background:${grad(i)}">${esc(p.icon || '🎵')}
+          <span class="cnt">${(p.count != null ? p.count : p.songs.length)} 首</span></div>
+        <b>${esc(p.name)}</b>
+        <span>${p.source ? esc(p.source) + ' · ' : ''}歌单</span>
         ${MS.native ? `<button class="ibtn pldel" data-del="${p.id}"
-          style="position:absolute;top:10px;right:10px"><svg><use href="#i-trash"/></svg></button>` : ''}
+          title="删除歌单"><svg><use href="#i-trash"/></svg></button>` : ''}
       </div>
     `).join('')}
   </div>`;
 
-  $$('#plBody .plcard').forEach(c => c.onclick = e => {
+  $$('#plBody .pl').forEach(c => c.onclick = e => {
     if (e.target.closest('.pldel')) return;
     openPlaylistDetail(c.dataset.id);
   });
@@ -4036,36 +4142,42 @@ function renderQueue() {
 
   $('#qList').innerHTML = q.map(x => {
     const pct = Math.min(100, x.progress);
-    let st = '等待中', cls = '';
-    // 这里以前没有 failed / canceled 分支：失败的任务会掉进默认值，
-    // 显示成「等待中」，错误原因（x.error）永远不会出现在界面上。
-    // 用户看到的就是"点了下载，然后就一直卡在等待中" —— 正是这个 bug
-    // 让「下载失败」变成一件完全无从下手的事。
-    if (x.status === 'downloading') st = x.speed.toFixed(1) + ' MB/s';
-    else if (x.status === 'done') { st = '✓ 已完成'; cls = 'ok'; }
-    else if (x.status === 'paused') st = '已暂停';
-    else if (x.status === 'failed') { st = '✗ 失败'; cls = 'err'; }
-    else if (x.status === 'canceled') st = '已取消';
+    // 右侧徽标 / 进度条填充色：done=绿 / pause=灰 / run=珊瑚橙百分比
+    const right = x.status === 'done'
+      ? '<span class="tg ok">已完成</span>'
+      : x.status === 'downloading' ? `<span class="pct">${Math.round(pct)}%</span>`
+      : x.status === 'paused' ? '<span class="tg p">已暂停</span>'
+      : x.status === 'failed' ? '<span class="tg dg">✗ 失败</span>'
+      : x.status === 'canceled' ? '<span class="tg p">已取消</span>'
+      : '<span class="tg p">等待中</span>';
+    const fill = x.status === 'done' ? 'ok' : x.status === 'paused' ? 'pause' : '';
     const errLine = (x.status === 'failed' && x.error)
       ? `<div class="qerr" title="${esc(x.error)}">${esc(x.error)}</div>` : '';
     const retryBtn = (x.status === 'failed')
       ? `<button class="ibtn" data-retry="${x.id}" title="重试这一首">
            <svg><use href="#i-refresh"/></svg></button>` : '';
-    return `<div class="qi">
-      <div class="cv"><svg><use href="#i-music"/></svg></div>
-      <div class="b">
-        <div class="nm">${esc(x.name)}</div>
-        <div class="sub">${esc(x.artist)} · ${esc(x.album||'')}
-          <span class="tg ${x.quality==='flac'?'f':'p'}">${qLbl(x.quality)}</span>
+    return `<div class="job">
+      <div class="top">
+        <div class="cv"><svg><use href="#i-music"/></svg></div>
+        <div class="info">
+          <span class="nm">${esc(x.name)}</span>
+          <span class="sub">${esc(x.artist)} · ${esc(x.album||'')}
+            <span class="tg ${x.quality==='flac'?'f':'p'}">${qLbl(x.quality)}</span>
+            · ${Number(x.size || 0).toFixed(1)} MB</span>
         </div>
-        <div class="bar"><i style="width:${pct}%"></i></div>
-        ${errLine}
+        ${right}
+        ${retryBtn}
+        <button class="ibtn" data-del="${x.id}" title="移出队列"><svg><use href="#i-trash"/></svg></button>
       </div>
-      <div class="s ${cls}">${st}</div>
-      ${retryBtn}
-      <button class="ibtn" data-del="${x.id}"><svg><use href="#i-trash"/></svg></button>
+      <div class="prog"><i class="${fill}" style="width:${pct}%"></i></div>
+      ${errLine}
     </div>`;
   }).join('');
+  // 统计卡（重构稿 .qa）：当前速度 / 已完成数
+  const spd = q.filter(x => x.status === 'downloading')
+    .reduce((s, x) => s + (x.speed || 0), 0);
+  if ($('#qSpeed')) $('#qSpeed').textContent = spd.toFixed(1) + ' MB/s';
+  if ($('#qDone')) $('#qDone').textContent = String(dn);
   $$('[data-del]').forEach(b => b.onclick = () => {
     if (MS.native) { MS.removeTask(b.dataset.del); return; }   // 后端会回推 queueUpdated
     state.queue = state.queue.filter(x => x.id !== b.dataset.del);
@@ -4150,18 +4262,18 @@ function renderLib() {
   const sz = state.library.reduce((a,x) => a + x.size, 0);
   $('#lSum').textContent = `共 ${state.library.length} 首 · ${fmtSize(sz)}`;
   $('#lList').innerHTML = l.map((s,i) => `
-    <div class="lrow" data-i="${i}">
+    <div class="lrow${state.currentSong && s.path && state.currentSong.path === s.path ? ' playing' : ''}" data-i="${i}">
       <div class="ix">${i+1}</div>
       <div class="cv" style="background:${coverFor(s).bg}">${esc(coverFor(s).ch)}</div>
-      <div class="meta">
-        <div class="tt">${esc(s.name)}</div>
-        <div class="st">${esc(s.artist)} · ${esc(s.album||'')} · ${s.size.toFixed(1)} MB${
-          s.format ? ' · ' + esc(String(s.format).toUpperCase()) : ''}</div>
+      <div class="t">
+        <span class="tt">${esc(s.name)}</span>
+        <span class="st">${esc(s.artist)}</span>
       </div>
-      <span class="tg ${String(s.quality).toUpperCase()==='FLAC'?'f':'p'}">${qLbl(s.quality)}</span>
-      <div class="du">${s.dur}</div>
+      <span class="cell">${esc(s.album || '未知专辑')}</span>
+      <span class="cell"><span class="tg ${String(s.quality).toUpperCase()==='FLAC'?'f':'p'}">${qLbl(s.quality)}</span></span>
+      <span class="cell r">${s.dur}</span>
       <div class="acts">
-        <button class="ibtn" data-play="${i}"><svg><use href="#i-play"/></svg></button>
+        <button class="ibtn" data-play="${i}" title="播放"><svg><use href="#i-play"/></svg></button>
         ${s.path ? `<button class="ibtn" data-folder="${esc(s.path)}" title="在资源管理器中显示">
           <svg><use href="#i-folder"/></svg></button>` : ''}
         ${MS.native && s.id && s.path ? `<button class="ibtn del" data-del="${s.id}" title="删除歌曲文件（移入回收站，可恢复）">
@@ -4217,22 +4329,22 @@ function renderHistory() {
   $('#hList').innerHTML = list.map((s,i) => {
     const good = s.status === 'ok' || s.status === 'success' || s.status === 'done';
     return `
-    <div class="lrow"${s.path && good ? ` data-open="${esc(s.path)}"` : ''}>
-      <div style="width:22px;color:var(--tx-4);font-size:12px;text-align:right">${i+1}</div>
+    <div class="hrow"${s.path && good ? ` data-open="${esc(s.path)}"` : ''}>
       <div class="cv" style="background:${coverFor(s).bg}">${esc(coverFor(s).ch)}</div>
       <div class="meta">
-        <div class="tt">${esc(s.name)}</div>
-        <div class="st">${esc(s.artist)} · ${new Date(s.ts).toLocaleString()}${
-          s.src ? ' · ' + esc(s.src) : ''}</div>
+        <span class="tt">${esc(s.name)}</span>
+        <span class="st">${esc(s.artist)} · ${new Date(s.ts).toLocaleString()}${
+          s.src ? ' · ' + esc(s.src) : ''}</span>
       </div>
-      <span class="tg ${s.quality==='FLAC'?'f':'p'}">${esc(s.quality)}</span>
+      <span class="tg ${String(s.quality).toUpperCase()==='FLAC'?'f':'p'}">${esc(s.quality)}</span>
       ${good
-        ? '<div style="font-size:11px;font-weight:600;color:var(--ac)">✓ 成功</div>'
-        : `<div style="font-size:11px;font-weight:600;color:var(--dg)" title="${esc(s.error || '')}">✗ 失败</div>`}
+        ? '<span class="tg ok">✓ 成功</span>'
+        : `<span class="tg dg" title="${esc(s.error || '')}">✗ 失败</span>`}
+      <span class="when">#${i+1}</span>
     </div>`;
   }).join('');
 
-  $$('#hList .lrow[data-open]').forEach(r => r.onclick = () => MS.openInExplorer(r.dataset.open));
+  $$('#hList .hrow[data-open]').forEach(r => r.onclick = () => MS.openInExplorer(r.dataset.open));
 }
 $('#bClearHist') && ($('#bClearHist').onclick = async () => {
   if (!state.history.length) return;
@@ -4244,7 +4356,6 @@ $('#bClearHist') && ($('#bClearHist').onclick = async () => {
 function renderAnalysis() {
   const lib = state.library;
   const totalMB = lib.reduce((a,x) => a + x.size, 0);
-  const artists = new Set(lib.map(x => x.artist)).size;
   // 后端给的是 SQL 聚合（byArtist / byAlbum / byQuality TOP20），
   // 优先级高于前端内存统计；没连后端时用内存数据自行聚合。
   const a = state.analysis || {};
@@ -4252,52 +4363,18 @@ function renderAnalysis() {
   const sizeMB = a.totalSize ? a.totalSize / 1048576 : totalMB;
   const useBackend = !!state.analysis;
 
-  const cell = (val, label) => `
-    <div class="cd" style="text-align:center">
-      <div style="font-size:24px;font-weight:750;background:var(--g-ac);
-        -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">
-        ${val}
-      </div>
-      <div style="font-size:11.5px;color:var(--tx-3);margin-top:4px">${label}</div>
-    </div>`;
-
-  $('#statCards').innerHTML =
-    cell(count, '歌曲总数') +
-    cell(artists, '不同歌手') +
-    cell(fmtSize(sizeMB), '总占用');
+  // 设计稿 .qa：两张衬线大数字统计卡
+  $('#statCards').innerHTML = `
+    <div class="stat"><div class="v">${count} 首</div><div class="k">歌曲总数</div></div>
+    <div class="stat"><div class="v">${fmtSize(sizeMB)}</div><div class="k">总占用</div></div>`;
 
   if (!count) {
-    $('#analysisBody').innerHTML = `<div class="cd">
-      <div style="color:var(--tx-3);font-size:12px;padding:20px 0;text-align:center">
-        下载一些歌曲后这里会显示详细统计
-      </div>
+    $('#analysisBody').innerHTML = `<div class="ep">
+      <div class="t">暂无统计数据</div>
+      <div class="s">下载一些歌曲后这里会显示详细统计</div>
     </div>`;
     return;
   }
-
-  // 横向条形榜（占用空间前 12 名）：条宽按最大值归一化
-  const bars = (rows, unit) => {
-    const max = Math.max(1, ...rows.map(r => r.size || r.count || 0));
-    const total = rows.reduce((s,r) => s + (r.size || r.count || 0), 0) || 1;
-    return rows.slice(0, 12).map((r, i) => {
-      const v = r.size || r.count || 0;
-      const pct = Math.max(4, (v / max) * 100);
-      const share = ((v / total) * 100).toFixed(1);
-      return `
-      <div style="margin-bottom:12px">
-        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:5px">
-          <div style="font-size:12.5px;font-weight:550;flex:1;min-width:0;
-            overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.name || '未知')}</div>
-          <div style="font-size:11px;color:var(--tx-3)">${r.count} 首 · ${share}%${
-            r.size ? ' · ' + fmtSize(r.size / 1048576) : ''}</div>
-        </div>
-        <div style="height:7px;border-radius:4px;background:var(--bg-2);overflow:hidden">
-          <div style="height:100%;width:${pct}%;border-radius:4px;
-            background:${grad(i)};transition:width .5s cubic-bezier(.34,1.56,.64,1)"></div>
-        </div>
-      </div>`;
-    }).join('');
-  };
 
   const byArtist = useBackend ? (a.byArtist || [])
     : Object.entries(lib.reduce((m,x) => {
@@ -4323,24 +4400,67 @@ function renderAnalysis() {
         return m;
       }, {})).map(([,v]) => v).sort((x,y) => y.count - x.count);
 
-  const card = (title, inner) => `<div class="cd" style="margin-bottom:14px">
-    <div style="font-size:14px;font-weight:620;margin-bottom:14px">${title}</div>
-    ${inner}</div>`;
+  // 横向条形榜（占用空间前 12 名）：条宽按最大值归一化
+  const bars = (rows) => {
+    const max = Math.max(1, ...rows.map(r => r.size || r.count || 0));
+    const total = rows.reduce((s,r) => s + (r.size || r.count || 0), 0) || 1;
+    return rows.slice(0, 12).map((r, i) => {
+      const v = r.size || r.count || 0;
+      const pct = Math.max(4, (v / max) * 100);
+      const share = ((v / total) * 100).toFixed(1);
+      return `
+      <div style="margin-bottom:12px">
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:5px">
+          <div style="font-size:12.5px;font-weight:550;flex:1;min-width:0;
+            overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.name || '未知')}</div>
+          <div style="font-size:11px;color:var(--tx-3)">${r.count} 首 · ${share}%${
+            r.size ? ' · ' + fmtSize(r.size / 1048576) : ''}</div>
+        </div>
+        <div style="height:7px;border-radius:4px;background:var(--bg-2);overflow:hidden">
+          <div style="height:100%;width:${pct}%;border-radius:4px;
+            background:var(--ac);transition:width .5s cubic-bezier(.34,1.56,.64,1)"></div>
+        </div>
+      </div>`;
+    }).join('');
+  };
 
-  $('#analysisBody').innerHTML =
-    card('占用最多的歌手', bars(byArtist)) +
-    card('专辑分布', bars(byAlbum)) +
-    card('音质构成', `<div style="display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
-      ${byQual.map((r,i) => `
-        <div style="padding:12px;border-radius:10px;background:var(--bg-2);
-          border:1px solid var(--br-1)">
-          <div style="font-size:18px;font-weight:750">${r.count}</div>
-          <div style="font-size:11.5px;color:var(--tx-3);margin-top:3px">
-            ${esc(r.name)}${r.size ? ' · ' + fmtSize(r.size / 1048576) : ''}</div>
-          <div style="height:5px;border-radius:3px;margin-top:8px;background:${grad(i)}"></div>
-        </div>`).join('')}
-    </div>`);
+  /* 甜甜圈 + 图例 + 比例条（重构稿 .angrid / .donut / .legend / .fmt）。
+     甜甜圈三色与重构稿一致：珊瑚 / 浅珊瑚 / 纸灰。 */
+  const segColors = ['var(--ac)', 'var(--ac-3)', 'var(--tx-3)'];
+  const totalCnt = byQual.reduce((s,r) => s + r.count, 0) || 1;
+  let acc = 0;
+  const segs = byQual.slice(0, 3).map((r, i) => {
+    const from = acc; acc += (r.count / totalCnt) * 100;
+    return `${segColors[i]} ${from.toFixed(1)}% ${acc.toFixed(1)}%`;
+  });
+  if (acc < 100) segs.push(`var(--bg-3) ${acc.toFixed(1)}% 100%`);
+  const legend = byQual.slice(0, 3).map((r, i) => `
+    <div class="lg"><i style="background:${segColors[i]}"></i>${esc(r.name)}
+      <b>${r.count} 首 · ${Math.round(r.count / totalCnt * 100)}%</b></div>`).join('');
+  const fmtRows = byQual.slice(0, 3).map((r, i) => {
+    const pct = Math.round(r.count / totalCnt * 100);
+    return `<div class="fr"><span class="nm">${esc(r.name)}</span>
+      <div class="prog"><i style="width:${pct}%;${
+        i === 1 ? 'background:var(--ac-3)' : i === 2 ? 'background:var(--tx-3)' : ''}"></i></div>
+      <span class="pc">${pct}%</span></div>`;
+  }).join('');
+
+  $('#analysisBody').innerHTML = `
+    <div class="angrid">
+      <div class="cd" style="padding:18px">
+        <div class="donut" style="background:conic-gradient(${segs.join(',')})">
+          <i><b>${fmtSize(sizeMB)}</b><span>音乐库占用</span></i>
+        </div>
+      </div>
+      <div class="cd" style="padding:18px;display:flex;flex-direction:column;justify-content:center">
+        <div class="legend">${legend}</div>
+        <div class="fmt">${fmtRows}</div>
+      </div>
+    </div>
+    <div class="sect"><span class="no">01</span><h2>占用最多的歌手</h2><div class="rl"></div></div>
+    <div class="cd">${bars(byArtist)}</div>
+    <div class="sect"><span class="no">02</span><h2>专辑分布</h2><div class="rl"></div></div>
+    <div class="cd">${bars(byAlbum)}</div>`;
 }
 
 function renderDev() {
@@ -4374,13 +4494,15 @@ function renderDev() {
       .map(x => String(x).toUpperCase()).join(' · ');
     return `
     <div class="dv ${state.selDev===d.id?'on':''}" data-id="${d.id}">
-      <div class="ic"><span>${d.icon || '📻'}</span></div>
-      <div class="nm">${esc(d.name)}</div>
-      <div class="ty">${esc(d.type || '')}</div>
-      <div class="bar"><i style="width:${pct}%"></i></div>
-      <div class="info">
-        <span>${d.total > 0 ? d.used + ' / ' + d.total + ' GB' : '容量未知'}</span>
-        <span>${sup}</span>
+      <div class="dic"><span>${d.icon || '📻'}</span></div>
+      <div class="meta">
+        <span class="nm">${esc(d.name)}</span>
+        <span class="ty">${esc(d.type || '')} · ${sup}</span>
+        <span class="cap">${d.total > 0 ? d.used + ' / ' + d.total + ' GB · 已用 ' + Math.round(pct) + '%' : '容量未知'}</span>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+      </div>
+      <div class="r">
+        <span class="tg ${state.selDev===d.id ? 'f' : 'ok'}">${state.selDev===d.id ? '已选择' : '在线'}</span>
       </div>
     </div>`;
   }).join('');
@@ -4616,10 +4738,9 @@ function _audio() {
 /* 播放/暂停图标有 3 处（底栏、播放页大按钮、封面唱片），集中一处改，
    避免只改一半导致"显示在暂停但声音在响"。 */
 function setPlayIcon(paused) {
-  const html = `<use href="#${paused ? 'i-play' : 'i-pause'}"/>`;
+  const html = `<use href="#${paused ? 'i-play2' : 'i-pause2'}"/>`;
   const a = $('#plIcon'); if (a) a.innerHTML = html;
   const b = $('#nowIcon'); if (b) b.innerHTML = html;
-  const c = $('#nowCover'); if (c) c.classList.toggle('play', !paused);
 }
 
 const _isAudioUrl = u => {
@@ -4668,7 +4789,7 @@ function syncModeUI() {
   const rp = $('#plRepeat');
   if (rp) {
     rp.classList.toggle('on', lp);
-    rp.innerHTML = `<svg><use href="#${one ? 'i-repeat1' : 'i-repeat'}"/></svg>`;
+    rp.innerHTML = `<svg><use href="#${one ? 'i-rep12' : 'i-rep2'}"/></svg>`;
     rp.title = '循环模式：' + MODE_LABEL[state.playMode] + '（点击切换）';
   }
   const nsh = $('#nowShuffle'); if (nsh) nsh.classList.toggle('on', sh);
@@ -4676,16 +4797,19 @@ function syncModeUI() {
   if (nrp) {
     nrp.classList.toggle('on', lp);
     $('#nowRepeatIcon') && ($('#nowRepeatIcon').innerHTML =
-      `<use href="#${one ? 'i-repeat1' : 'i-repeat'}"/>`);
+      `<use href="#${one ? 'i-rep12' : 'i-rep2'}"/>`);
   }
-  $$('#nowMode .ro').forEach(o => o.classList.toggle('on', o.dataset.m === state.playMode));
+  // 设计稿 npacts 的循环按钮：文案随模式变
+  const nm = $('#nowModeTxt');
+  if (nm) nm.textContent = MODE_LABEL[state.playMode] || '顺序播放';
 }
 
 function setSpeed(v) {
   state.speed = Number(v) || 1;
   const a = _audio();
   try { a.playbackRate = state.speed; } catch (e) {}
-  $$('#nowSpeed .ro').forEach(o => o.classList.toggle('on', parseFloat(o.dataset.v) === state.speed));
+  const st = $('#nowSpeedTxt');
+  if (st) st.textContent = '倍速 ' + state.speed + '×';
   toast(`倍速 <b>${state.speed}×</b>`);
 }
 
@@ -4809,7 +4933,8 @@ function playPrev() {
 
 function updPlaybar() {
   const pct = state.playDur ? (state.playPos / state.playDur) * 100 : 0;
-  const f = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+  // 重构稿时间用两位分钟补零（00:00）
+  const f = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
   $('#plFill').style.width = pct + '%';
   $('#plTimeCur').textContent = f(state.playPos);
   $('#plTimeTot').textContent = f(state.playDur);
@@ -4870,20 +4995,43 @@ $('#plToggle').onclick = () => {
   renderNowQueue();      // 电平条要跟着停/动
 };
 $('#plTrack').onclick = e => seekFromEvent(e, e.currentTarget);
-$('#plFav').onclick = () => {
-  $('#plFav').classList.toggle('on');
-  toast($('#plFav').classList.contains('on') ? '已加入喜欢' : '已取消喜欢');
-};
 
 /* ---------------- 底栏：播放控制 + 入口 ---------------- */
 $('#plPrev').onclick   = () => playPrev();
 $('#plNext').onclick   = () => playNext(false);
 $('#plShuffle').onclick= () => setPlayMode(state.playMode === 'shuffle' ? 'order' : 'shuffle');
 $('#plRepeat').onclick = () => cyclePlayMode();
-$('#plLyricBtn').onclick = () => toggleLayer({ type:'now' });
-$('#plQueue').onclick = () => { openLayer({ type:'now' }); qDrawer(true); };
 $('#plCover').onclick = () => toggleLayer({ type:'now' });
 $('#plInfo').onclick  = () => toggleLayer({ type:'now' });
+
+/* ---------------- 底栏右侧（设计稿 .bar .rt）：下载队列 + 音量 ---------------- */
+$('#bGoQueue').onclick = () => { closeLayer(); go('queue'); };
+
+let msVol = 100, msPrevVol = 100;
+function setMsVol(v) {
+  msVol = Math.max(0, Math.min(100, Math.round(v)));
+  const a = _audio();
+  try { a.volume = msVol / 100; } catch (e) {}
+  $('#volFill').style.width = msVol + '%';
+  const ic = $('#bVolIc');
+  if (ic) ic.classList.toggle('muted', msVol === 0);
+}
+$('#bVolIc').onclick = () => {
+  if (msVol > 0) { msPrevVol = msVol; setMsVol(0); toast('已静音'); }
+  else { setMsVol(msPrevVol || 100); toast('已取消静音'); }
+};
+(() => {
+  const volEl = $('#vol');
+  if (!volEl) return;
+  let dragging = false;
+  const fromEvent = e => {
+    const r = volEl.getBoundingClientRect();
+    setMsVol((e.clientX - r.left) / r.width * 100);
+  };
+  volEl.addEventListener('pointerdown', e => { dragging = true; fromEvent(e); });
+  window.addEventListener('pointermove', e => { if (dragging) fromEvent(e); });
+  window.addEventListener('pointerup', () => dragging = false);
+})();
 
 /* ============================================================================
    第二层页面：通用容器 + 两种内容（playing / playlist）
@@ -4908,19 +5056,23 @@ function toggleLayer(l) {
   openLayer(l);
 }
 function qDrawer(on) {
-  $('#qDrawer').classList.toggle('on', !!on);
-  if (on) renderNowQueue();
+  // 兼容保留：播放队列抽屉已并入设计稿 .npq 右面板（renderNowQueue 直接渲染），
+  // 这个入口只负责在播放页打开时把右面板切到「播放队列」标签。
+  if (on && curLayer() && curLayer().type === 'now') npqTab('queue');
 }
 
 function renderLayer() {
   const l = curLayer();
-  if (!l) { $('#layer').classList.remove('on'); qDrawer(false); return; }
+  if (!l) { $('#layer').classList.remove('on','plmode'); return; }
   $('#layer').classList.add('on');
+  $('#layer').classList.toggle('plmode', l.type === 'playlist');
   if (l.type === 'now') {
-    $('#lyTitle').innerHTML = '正在播放';
+    // 设计稿 .nptop：左侧「NOW PLAYING · …」小字标签，右侧关闭按钮（无返回键）
+    $('#lyBack').style.display = 'none';
+    $('#lyTitle').innerHTML = 'NOW PLAYING · MELODYSYNC';
     $('#lyActs').innerHTML =
-      `<button class="btn sm" id="lyQueueBtn"><svg><use href="#i-queue"/></svg>播放列表</button>`;
-    $('#lyQueueBtn').onclick = () => qDrawer(!$('#qDrawer').classList.contains('on'));
+      `<button class="ly-back" id="lyCloseBtn" title="关闭 (Esc)"><svg><use href="#i-x"/></svg></button>`;
+    $('#lyCloseBtn').onclick = () => closeLayer();
     $('#lyBody').innerHTML = nowPageHtml();
     bindNowPage();
     renderNowLyrics();     // 内部会调 updateLyrics 定位当前行
@@ -4929,7 +5081,13 @@ function renderLayer() {
     updPlaybar();
     return;
   }
-  if (l.type === 'playlist') { renderPlaylistLayer(l); return; }
+  if (l.type === 'playlist') {
+    $('#lyBack').style.display = '';
+    $('#lyTitle').innerHTML = '';
+    $('#lyActs').innerHTML = '';
+    renderPlaylistLayer(l);
+    return;
+  }
   closeLayer();
 }
 
@@ -4988,61 +5146,76 @@ function nowPageHtml() {
   const img = coverUrl ? `<img src="${esc(coverUrl)}" alt="" referrerpolicy="no-referrer">` : '';
   const tag = String(s.quality || '').toLowerCase() === 'flac' || /FLAC/i.test(String(s.quality || ''));
   return `
-  <div class="now">
-    <div class="now-left">
-      <div class="now-cover ${state.playPaused ? '' : 'play'}" id="nowCover"
-           style="background:${img ? 'var(--bg-3)' : c.bg}">
+  <div class="npbody">
+    <div class="npleft">
+      <div class="npcov" id="nowCover" style="background:${img ? 'var(--bg-3)' : c.bg}">
         ${img || esc(c.ch)}
-        <div class="disc"><i></i></div>
       </div>
-      <div class="now-meta">
-        <div class="now-name" title="${esc(s.name)}">${esc(s.name)}</div>
-        <div class="now-art">${esc(s.artist || '未知')}${s.album ? ' · ' + esc(s.album) : ''}</div>
-        <div class="now-tags">
+      <div class="npinfo">
+        <div class="kick">正在收听</div>
+        <h2 title="${esc(s.name)}">${esc(s.name)}</h2>
+        <div class="art">${esc(s.artist || '未知')}${s.album ? ' · ' + esc(s.album) : ''}</div>
+        <div class="nptags">
           <span class="tg ${tag ? 'f' : 'p'}">${qLbl(s.quality)}</span>
           <span class="tg l" id="nowIdx"></span>
         </div>
-      </div>
-      <div class="now-prog">
-        <span class="pl-time" id="nowTimeCur">0:00</span>
-        <div class="pl-track" id="nowTrack"><i id="nowFill"></i></div>
-        <span class="pl-time" id="nowTimeTot">0:00</span>
-      </div>
-      <div class="now-btns">
-        <button class="pl-b" id="nowShuffle" title="随机播放"><svg><use href="#i-shuffle"/></svg></button>
-        <button class="pl-b" id="nowPrev" title="上一首"><svg><use href="#i-prev"/></svg></button>
-        <button class="pl-b big" id="nowToggle"><svg id="nowIcon"><use href="#i-play"/></svg></button>
-        <button class="pl-b" id="nowNext" title="下一首"><svg><use href="#i-next"/></svg></button>
-        <button class="pl-b" id="nowRepeat" title="循环模式">
-          <svg id="nowRepeatIcon"><use href="#i-repeat"/></svg></button>
-      </div>
-      <div class="now-extra">
-        <div class="now-row">
-          <span class="lb">倍速</span>
-          <div class="rgs" id="nowSpeed">
-            ${SPEEDS.map(v => `<div class="ro ${v === state.speed ? 'on' : ''}"
-              data-v="${v}">${v}×</div>`).join('')}
-          </div>
+        <div class="npprog">
+          <span class="pl-time" id="nowTimeCur">0:00</span>
+          <div class="pl-track" id="nowTrack"><i id="nowFill"></i></div>
+          <span class="pl-time" id="nowTimeTot">0:00</span>
         </div>
-        <div class="now-row">
-          <span class="lb">循环</span>
-          <div class="rgs" id="nowMode">
-            ${['order','all','one','shuffle'].map(m =>
-              `<div class="ro ${state.playMode === m ? 'on' : ''}"
-                data-m="${m}">${MODE_LABEL[m]}</div>`).join('')}
-          </div>
+        <div class="npctl">
+          <button class="pl-b" id="nowShuffle" title="随机播放"><svg><use href="#i-shuf2"/></svg></button>
+          <button class="pl-b" id="nowPrev" title="上一首"><svg><use href="#i-prev2"/></svg></button>
+          <button class="pl-b big" id="nowToggle"><svg id="nowIcon"><use href="#i-play2"/></svg></button>
+          <button class="pl-b" id="nowNext" title="下一首"><svg><use href="#i-next2"/></svg></button>
+          <button class="pl-b" id="nowRepeat" title="循环模式">
+            <svg id="nowRepeatIcon"><use href="#i-rep2"/></svg></button>
+        </div>
+        <div class="npacts">
+          <button class="heartbtn" id="nowLike">
+            <svg><use href="#i-heart2"/></svg><span id="nowLikeTxt">收藏</span>
+          </button>
+          <button class="heartbtn" id="nowSpeedBtn" title="点击切换倍速">
+            <span id="nowSpeedTxt">倍速 ${state.speed}×</span>
+          </button>
+          <button class="heartbtn" id="nowModeBtn" title="点击切换循环模式">
+            <span id="nowModeTxt">${MODE_LABEL[state.playMode] || '顺序播放'}</span>
+          </button>
         </div>
       </div>
     </div>
-    <div class="now-right">
-      <div class="lyric-top">
-        <div class="n" id="lyrTitle">${esc(s.name)}</div>
-        <div class="a">${esc(s.artist || '')}${s.album ? ' · ' + esc(s.album) : ''}</div>
-        <div class="s" id="lyrSource"></div>
+    <div class="npq" id="npqPanel">
+      <h3><span id="npqTitle">歌词</span>
+        <span style="display:flex;align-items:center;gap:8px">
+          <button class="npq-tab on" data-tab="lyrics">歌词</button>
+          <button class="npq-tab" data-tab="queue">播放队列</button>
+        </span>
+      </h3>
+      <div class="now-lyr-wrap" id="npqLyrics">
+        <div class="lyric-top">
+          <div class="n" id="lyrTitle">${esc(s.name)}</div>
+          <div class="a">${esc(s.artist || '')}${s.album ? ' · ' + esc(s.album) : ''}</div>
+          <div class="s" id="lyrSource"></div>
+        </div>
+        <div class="lyric-scroll" id="lyrPanel"></div>
       </div>
-      <div class="now-lyr-wrap"><div class="lyric-scroll" id="lyrPanel"></div></div>
+      <div class="qlist" id="npqList" style="display:none"></div>
     </div>
   </div>`;
+}
+
+/* 右面板两个标签（歌词 / 播放队列），对应设计稿 .npq 的标题栏 */
+function npqTab(name) {
+  const ly = $('#npqLyrics'), ql = $('#npqList');
+  if (!ly || !ql) return;
+  const isQ = name === 'queue';
+  ly.style.display = isQ ? 'none' : 'flex';
+  ql.style.display = isQ ? 'flex' : 'none';
+  $('#npqTitle').textContent = isQ ? '播放队列' : '歌词';
+  $$('#npqPanel .npq-tab').forEach(t =>
+    t.classList.toggle('on', t.dataset.tab === (isQ ? 'queue' : 'lyrics')));
+  if (isQ) renderNowQueue();
 }
 
 function bindNowPage() {
@@ -5054,8 +5227,25 @@ function bindNowPage() {
   $('#nowShuffle').onclick= () => setPlayMode(state.playMode === 'shuffle' ? 'order' : 'shuffle');
   $('#nowRepeat').onclick = () => cyclePlayMode();
   $('#nowTrack').onclick  = e => seekFromEvent(e, e.currentTarget);
-  $$('#nowSpeed .ro').forEach(o => o.onclick = () => setSpeed(parseFloat(o.dataset.v)));
-  $$('#nowMode .ro').forEach(o => o.onclick = () => setPlayMode(o.dataset.m));
+  $$('#npqPanel .npq-tab').forEach(t => t.onclick = () => npqTab(t.dataset.tab));
+  // 收藏 / 倍速 / 循环：设计稿 npacts 的三枚 heartbtn
+  const like = $('#nowLike');
+  if (like) {
+    like.classList.toggle('liked', !!state.likedCur);
+    like.onclick = () => {
+      state.likedCur = !state.likedCur;
+      like.classList.toggle('liked', state.likedCur);
+      $('#nowLikeTxt').textContent = state.likedCur ? '已收藏' : '收藏';
+      toast(state.likedCur ? `已收藏「<b>${esc(s.name)}</b>」` : '已取消收藏');
+    };
+  }
+  const sp = $('#nowSpeedBtn');
+  if (sp) sp.onclick = () => {
+    const at = SPEEDS.indexOf(state.speed);
+    setSpeed(SPEEDS[(at + 1) % SPEEDS.length]);
+  };
+  const md = $('#nowModeBtn');
+  if (md) md.onclick = () => cyclePlayMode();
 }
 
 /* 歌词区单独渲染：歌没换时不重建整页，否则滚动位置和动画会一直被打断 */
@@ -5096,11 +5286,9 @@ function renderNowLyrics() {
 }
 
 function renderNowQueue() {
-  const body = $('#qdBody');
+  const body = $('#npqList');
   if (!body) return;
   const q = state.playQueue;
-  const cnt = $('#qdCount');
-  if (cnt) cnt.textContent = q.length ? `共 ${q.length} 首` : '';
   if (!q.length) {
     body.innerHTML = `<div class="ep" style="padding:52px 14px">
       <div class="t">播放列表是空的</div>
@@ -5109,26 +5297,24 @@ function renderNowQueue() {
     return;
   }
   body.innerHTML = q.map((s, i) => `
-    <div class="qrow ${i === state.playIndex ? 'on' : ''}" data-i="${i}">
-      ${i === state.playIndex
-        ? `<span class="eq ${state.playPaused ? 'stop' : ''}"><i></i><i></i><i></i></span>`
-        : `<span class="n">${i + 1}</span>`}
-      <span class="b">
-        <span class="t">${esc(s.name)}</span>
-        <span class="s">${esc(s.artist || '未知')}</span>
-      </span>
+    <div class="qi ${i === state.playIndex ? 'on' : ''}" data-i="${i}">
+      <div class="cov" style="background:${coverFor(s).bg}">${esc(coverFor(s).ch)}</div>
+      <div class="m">
+        <b>${esc(s.name)}</b>
+        <span>${esc(s.artist || '未知')}</span>
+      </div>
       <span class="d">${esc(s.dur || '--:--')}</span>
       <span class="ibtn rm" data-rm="${i}" title="从播放列表移除"
-            style="width:26px;height:26px"><svg><use href="#i-x"/></svg></span>
+            style="width:26px;height:26px;flex:0 0 26px"><svg><use href="#i-x"/></svg></span>
     </div>`).join('');
-  $$('#qdBody .qrow').forEach(r => {
+  $$('#npqList .qi').forEach(r => {
     r.onclick = e => {
       if (e.target.closest('[data-rm]')) return;
       const i = Number(r.dataset.i);
       playSong(q[i], null, i);
     };
   });
-  $$('#qdBody [data-rm]').forEach(b => b.onclick = e => {
+  $$('#npqList [data-rm]').forEach(b => b.onclick = e => {
     e.stopPropagation();
     removeFromPlayQueue(Number(b.dataset.rm));
   });
@@ -5150,11 +5336,9 @@ function removeFromPlayQueue(i) {
   updNowIdx();
 }
 
-/* ---------------- 歌单详情（第二层） ---------------- */
+/* ---------------- 歌单详情（设计稿 .plov：压暗纸面 + 640px plcard 弹层） ---------------- */
 function renderPlaylistLayer(l) {
   const body = $('#lyBody');
-  $('#lyTitle').innerHTML = '歌单详情';
-  $('#lyActs').innerHTML = '';
   // 把详情画出来。缓存命中与首次拿到走的是同一条路径。
   const paint = detail => {
     const platform = detail.platform || '';
@@ -5164,43 +5348,38 @@ function renderPlaylistLayer(l) {
     const songs = tracks.map(t => playlistTrackToSong(t, platform));
     const have = songs.filter(s => s.path).length;
 
-    $('#lyTitle').innerHTML = `${esc(detail.name || '歌单')}
-      <small>${songs.length} 首${platform ? ' · ' + esc(platform) : ''}</small>`;
-
-    body.innerHTML = `<div class="ly-inner">
-      <div class="pld-hero">
+    body.innerHTML = `
+    <div class="plcard">
+      <div class="plchead">
         <div class="cv" style="background:${grad(0)}">${esc(playlistIcon(platform))}</div>
-        <div class="b">
-          <h2>${esc(detail.name || '歌单')}</h2>
-          <div class="m">
-            <span class="tg l">${songs.length} 首</span>
-            ${platform ? `<span class="tg l">${esc(platform)}</span>` : ''}
-            ${detail.creator ? `<span>创建者 ${esc(detail.creator)}</span>` : ''}
-            ${have ? `<span class="tg p">已下载 ${have} 首可直接播放</span>` : ''}
-          </div>
-          <div class="acts">
-            <button class="btn pri" id="plPlayAll"><svg><use href="#i-play"/></svg>播放全部</button>
-            <button class="btn" id="plQueueAll"><svg><use href="#i-plus"/></svg>加入下载队列</button>
-            <button class="btn gh" id="plDlAll"><svg><use href="#i-download"/></svg>全部下载</button>
-          </div>
+        <div class="m">
+          <h3>${esc(detail.name || '歌单')}</h3>
+          <span>${songs.length} 首${platform ? ' · ' + esc(platform) : ''}${
+            detail.creator ? ' · 创建者 ' + esc(detail.creator) : ''}${
+            have ? ` · 已下载 ${have} 首可直接播放` : ''}</span>
+        </div>
+        <div class="acts">
+          <button class="btn sm pri" id="plPlayAll">播放全部</button>
+          <button class="btn sm" id="plQueueAll">加入队列</button>
+          <button class="btn sm" id="plDlAll">全部下载</button>
+          <button class="btn sm" id="plClose2">关闭</button>
         </div>
       </div>
-      <div class="cd" style="padding:6px 10px">
+      <div class="plclist">
         ${songs.length ? songs.map((s, i) => `
-          <div class="lrow" data-i="${i}">
-            <div class="ix">${i + 1}</div>
+          <div class="hrow" style="border:0;background:transparent;margin-bottom:2px;
+            padding:8px 10px" data-i="${i}">
             <div class="cv" style="background:${coverFor(s).bg}">${esc(coverFor(s).ch)}</div>
             <div class="meta">
-              <div class="tt">${esc(s.name)}</div>
-              <div class="st">${esc(s.artist || '未知')}${s.album ? ' · ' + esc(s.album) : ''}${
-                s.path ? ' · 已在音乐库' : ''}</div>
+              <span class="tt">${esc(s.name)}</span>
+              <span class="st">${esc(s.artist || '未知')}${s.album ? ' · ' + esc(s.album) : ''}${
+                s.path ? ' · 已在音乐库' : ''}</span>
             </div>
             <span class="tg ${String(s.quality).toLowerCase() === 'flac' ? 'f' : 'p'}">${qLbl(s.quality)}</span>
-            <div class="du">${esc(s.dur || '--:--')}</div>
-            <div class="acts">
-              <button class="ibtn" data-play="${i}" title="播放"><svg><use href="#i-play"/></svg></button>
-              <button class="ibtn" data-one="${i}" title="加入下载队列"><svg><use href="#i-download"/></svg></button>
-            </div>
+            <span class="when">${esc(s.dur || '--:--')}</span>
+            <button class="ibtn rm" data-one="${i}" title="加入下载队列"
+              style="width:26px;height:26px;flex:0 0 26px;opacity:0">
+              <svg><use href="#i-download"/></svg></button>
           </div>`).join('')
         : '<div class="ep"><div class="t">这个歌单还没有曲目</div></div>'}
       </div>
@@ -5230,14 +5409,14 @@ function renderPlaylistLayer(l) {
     $('#plPlayAll').onclick = playAll;
     $('#plDlAll').onclick = () => queueAll(true);
     $('#plQueueAll').onclick = () => queueAll(false);
+    $('#plClose2').onclick = () => closeLayer();
 
-    $$('#lyBody .lrow').forEach(r => {
+    $$('#lyBody .hrow').forEach(r => {
       const i = Number(r.dataset.i);
       r.onclick = e => {
-        if (e.target.closest('[data-play]') || e.target.closest('[data-one]')) return;
+        if (e.target.closest('[data-one]')) return;
         playSong(songs[i], songs, i, true);
       };
-      r.querySelector('[data-play]').onclick = e => { e.stopPropagation(); playSong(songs[i], songs, i, true); };
       r.querySelector('[data-one]').onclick = e => {
         e.stopPropagation();
         const s = songs[i];
@@ -5254,12 +5433,13 @@ function renderPlaylistLayer(l) {
   const hit = state.plData[Number(l.id)];
   if (hit) { paint(hit); return; }
 
-  body.innerHTML = `<div class="ly-inner"><div class="ep" style="padding-top:90px">
-    <div class="sp"></div><div class="t" style="margin-top:14px">正在读取歌单…</div>
-  </div></div>`;
+  body.innerHTML = `<div class="plcard" style="align-items:center;justify-content:center;
+    min-height:180px"><div class="ep" style="border:0"><span class="sp"></span>
+    <div class="t" style="margin-top:14px">正在读取歌单…</div></div></div>`;
 
   if (!MS.native) {
-    body.innerHTML = `<div class="ly-inner"><div class="ep"><div class="t">歌单详情需要 C++ 后端</div></div></div>`;
+    body.innerHTML = `<div class="plcard" style="min-height:140px">
+      <div class="ep" style="border:0;margin:auto"><div class="t">歌单详情需要 C++ 后端</div></div></div>`;
     return;
   }
 
@@ -5268,7 +5448,8 @@ function renderPlaylistLayer(l) {
     const top = curLayer();
     if (!top || top.type !== 'playlist' || top.id !== Number(l.id)) return;
     if (!detail || !detail.id) {
-      body.innerHTML = `<div class="ly-inner"><div class="ep"><div class="t">读取歌单失败</div></div></div>`;
+      body.innerHTML = `<div class="plcard" style="min-height:140px">
+        <div class="ep" style="border:0;margin:auto"><div class="t">读取歌单失败</div></div></div>`;
       return;
     }
     state.plData[Number(l.id)] = detail;   // 失败的结果不进缓存
@@ -5355,7 +5536,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') { e.preventDefault(); playNext(false); return; }
     if (e.key === 'ArrowLeft')  { e.preventDefault(); playPrev(); return; }
     if (e.key === 'ArrowUp')    { e.preventDefault(); cyclePlayMode(); return; }
-    if (e.key === 'ArrowDown')  { e.preventDefault(); qDrawer(!$('#qDrawer').classList.contains('on')); return; }
+    if (e.key === 'ArrowDown')  { e.preventDefault(); npqTab('queue'); return; }
   }
   if (e.key === ' ' && !typing) { e.preventDefault(); $('#plToggle').click(); return; }
   // Esc 先关弹窗，再退第二层 —— 两级都要能退，不能一按就全没了
@@ -5365,7 +5546,6 @@ document.addEventListener('keydown', e => {
   }
 });
 
-$('#qdClose').onclick = () => qDrawer(false);
 $('#lyBack').onclick = () => closeLayer();
 
 $$('.sw').forEach(sw => sw.onclick = () => {
