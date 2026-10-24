@@ -879,7 +879,7 @@ copy "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\*\x
 3. 确认 `MyBuildDir` / `MyDistDir` 两个宏与你的实际输出目录一致；
 4. `Build → Compile`（Ctrl+F9），或命令行 `ISCC.exe installer\MelodySync.iss`。
 
-产物：`dist\MelodySync-1.0.0-Setup.exe`
+产物：`dist\MelodySync-1.1.0-Setup.exe`
 
 脚本要点（已在 `.iss` 里配好）：
 
