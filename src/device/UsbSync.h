@@ -69,6 +69,15 @@ public:
                           const Options& opt,
                           const CancelTokenPtr& cancel = CancelTokenPtr());
 
+    // 选择性同步：用调用方给定的文件清单生成计划（不再扫描 sourceDir）。
+    // 「勾选歌曲再同步」功能走这条路 —— 文件清单由 WebBridge 按音乐库 id 解析出来。
+    // files 里的非音频/不存在的路径会被静默跳过（isAudioFile + exists 双重过滤）。
+    static Plan buildPlanForFiles(const QStringList& files,
+                                  const QString& sourceDir,
+                                  const DeviceInfo& device,
+                                  const Options& opt,
+                                  const CancelTokenPtr& cancel = CancelTokenPtr());
+
     // 执行计划。onProgress(percent, currentIndex, totalCount, currentFileName)
     bool execute(const Plan& plan,
                  const Options& opt,

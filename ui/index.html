@@ -6,23 +6,32 @@
 <title>MelodySync</title>
 <style>
 :root{
-  --bg-0:#08090d;--bg-1:#0d0f14;--bg-2:#12151c;--bg-3:#181c25;--bg-4:#1f242f;
-  --br-1:rgba(255,255,255,.06);--br-2:rgba(255,255,255,.09);--br-3:rgba(255,255,255,.14);
-  --tx-1:#f0f2f7;--tx-2:#a8b0c0;--tx-3:#6b7488;--tx-4:#4a5162;
-  --ac:#00e0b8;--ac-2:#5b8cff;--ac-3:#a855f7;
-  --g-ac:linear-gradient(135deg,#00e0b8,#00b8d4);
-  --g-ac2:linear-gradient(135deg,#5b8cff,#8b5bff);
-  --g-ai:linear-gradient(135deg,#a855f7,#5b8cff 50%,#00e0b8);
+  /* 深色主题 =「炭黑编辑部」：暖黑底 + 珊瑚橙主色（2026-10-24 全站换装） */
+  --bg-0:#16130f;--bg-1:#1c1814;--bg-2:#241f19;--bg-3:#2b251e;--bg-4:#342d24;
+  --br-1:rgba(255,255,255,.07);--br-2:rgba(255,255,255,.10);--br-3:rgba(255,255,255,.16);
+  --tx-1:#f2efe9;--tx-2:#b0a89a;--tx-3:#7d7568;--tx-4:#5a5348;
+  --ac:#F0762E;--ac-2:#E8590C;--ac-3:#F08C4A;
+  --g-ac:linear-gradient(135deg,#F0762E,#E8590C);
+  --g-ac2:linear-gradient(135deg,#F0762E,#F5B08A);
+  --g-ai:linear-gradient(135deg,#E8590C,#F0A03C 50%,#C74A08);
   --wn:#f5a524;--dg:#ff4d6a;
   --sd-2:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.25);
   --sd-3:0 4px 8px rgba(0,0,0,.3),0 12px 32px rgba(0,0,0,.4);
   --e:cubic-bezier(.4,0,.2,1);--eo:cubic-bezier(.16,1,.3,1);
+  --serif:"Noto Serif SC","Source Han Serif SC","STSong","SimSun",serif;
 }
 body.light{
-  --bg-0:#f7f8fb;--bg-1:#fff;--bg-2:#fbfcfe;--bg-3:#f2f4f8;--bg-4:#e8ecf3;
-  --br-1:rgba(0,0,0,.06);--br-2:rgba(0,0,0,.08);--br-3:rgba(0,0,0,.12);
-  --tx-1:#0d1117;--tx-2:#4a5162;--tx-3:#7a8394;--tx-4:#a8b0c0;
-  --ac:#00b894;--ac-2:#4f6ef7;
+  /* 浅色主题 =「暖纸编辑部」（默认）：纸面 #FAF7F2 / 炭黑 #1F1D1A / 珊瑚橙 #E8590C */
+  --bg-0:#FAF7F2;--bg-1:#FFFFFF;--bg-2:#F7F3EA;--bg-3:#F3EEE4;--bg-4:#E8E2D6;
+  --br-1:#E8E2D6;--br-2:#D8D0C0;--br-3:#C4B99F;
+  --tx-1:#1F1D1A;--tx-2:#5C554A;--tx-3:#8A8378;--tx-4:#A39B8F;
+  --ac:#E8590C;--ac-2:#C74A08;--ac-3:#C2410C;
+  --g-ac:linear-gradient(135deg,#E8590C,#F0762E);
+  --g-ac2:linear-gradient(135deg,#E8590C,#F5B08A);
+  --g-ai:linear-gradient(135deg,#E8590C,#F0762E 50%,#C74A08);
+  --wn:#B45309;--dg:#C43D3D;
+  --sd-2:0 1px 2px rgba(31,29,26,.05),0 4px 14px rgba(31,29,26,.06);
+  --sd-3:0 4px 10px rgba(31,29,26,.08),0 14px 36px rgba(31,29,26,.13);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font:13.5px/1.55 -apple-system,"Inter","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
@@ -30,9 +39,9 @@ body{font:13.5px/1.55 -apple-system,"Inter","Segoe UI","PingFang SC","Microsoft 
   -webkit-font-smoothing:antialiased;letter-spacing:-.005em;
   font-feature-settings:"tnum" 1;transition:background .3s,color .3s}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(900px 400px at 15% -10%,rgba(0,224,184,.07),transparent 60%),
-             radial-gradient(800px 400px at 100% 105%,rgba(168,85,247,.06),transparent 60%)}
-body.light::before{opacity:.5}
+  background:radial-gradient(900px 400px at 15% -10%,rgba(232,89,12,.08),transparent 60%),
+             radial-gradient(800px 400px at 100% 105%,rgba(180,83,9,.06),transparent 60%)}
+body.light::before{opacity:.55}
 ::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:var(--br-3);border-radius:5px;
   border:2.5px solid transparent;background-clip:padding-box}
 ::-webkit-scrollbar-thumb:hover{background:var(--tx-4);background-clip:padding-box;
@@ -46,13 +55,16 @@ body.light::before{opacity:.5}
 /* <select> 的下拉选项列表：Chromium 默认白底黑字，必须显式染色 */
 select.inp option, select.inp optgroup{background:var(--bg-2);color:var(--tx-1)}
 
-.app{display:grid;grid-template-columns:216px 1fr;grid-template-rows:1fr 76px;
+.app{display:grid;grid-template-columns:64px 1fr;grid-template-rows:1fr 76px;
   height:100vh;position:relative;z-index:1}
 
 /* 2026-10-16：布局从「顶部横 Tab」重排为「左侧边栏 + 内容区 + 底部全宽播放条」，
    对齐主流流媒体桌面端（Spotify / Apple Music / 网易云）的信息架构：
    导航纵向分组（发现 / 我的 / 系统），播放条横贯全宽。
-   JS 侧只依赖 .tab + data-p，DOM 迁移不触碰任何页面逻辑。 */
+   JS 侧只依赖 .tab + data-p，DOM 迁移不触碰任何页面逻辑。
+
+   2026-10-24：「暖纸编辑部」改版 —— 侧栏收成 64px 图标轨道，悬停展开 236px
+   （见文件末尾的 override 段），JS 钩子依旧零改动。 */
 
 /* 2026-09-23：全站不再使用 backdrop-filter（毛玻璃）。
    症状：整屏"忽明忽暗"，所有页面都有，闲置不动就不闪、一操作（移鼠标/滚动/点按）
@@ -70,7 +82,7 @@ body.light .side{background:#fff}
 .logo{width:30px;height:30px;border-radius:9px;background:var(--g-ac);
   display:grid;place-items:center;
   box-shadow:0 1px 0 rgba(255,255,255,.3) inset,0 4px 12px rgba(0,224,184,.3)}
-.logo svg{width:15px;height:15px;fill:#04120e}
+.logo svg{width:15px;height:15px;fill:#FFFDF9}
 .bname{font-size:14px;font-weight:700;letter-spacing:-.015em}
 .bname small{display:block;font-size:9px;color:var(--tx-3);letter-spacing:1.5px;
   font-weight:500;margin-top:1px}
@@ -93,7 +105,7 @@ body.light .side{background:#fff}
 .tab.ai{position:relative}
 .tab.ai.on{color:var(--ac-3);background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(0,224,184,.10));
   box-shadow:0 0 0 1px rgba(168,85,247,.18) inset}
-.tab .n{display:inline-block;background:var(--ac);color:#04120e;font-size:9.5px;
+.tab .n{display:inline-block;background:var(--ac);color:#FFFDF9;font-size:9.5px;
   font-weight:700;padding:1px 6px;border-radius:10px;margin-left:auto;flex:0 0 auto}
 .tab .n:empty{display:none}
 .side-foot{margin-top:10px;padding-top:10px;border-top:1px solid var(--br-1);
@@ -139,7 +151,7 @@ body.light .side{background:#fff}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 .btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;
   stroke-linecap:round;stroke-linejoin:round;flex:0 0 13px}
-.btn.pri{background:var(--g-ac);border-color:transparent;color:#04120e;font-weight:650;
+.btn.pri{background:var(--g-ac);border-color:transparent;color:#FFFDF9;font-weight:650;
   box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 2px 8px rgba(0,224,184,.25)}
 .btn.pri:hover{filter:brightness(1.08)}
 .btn.ai{background:var(--g-ai);border-color:transparent;color:#fff;font-weight:650;
@@ -229,7 +241,7 @@ body.light .ai-search input{background:rgba(255,255,255,.8);border-color:var(--b
   background:radial-gradient(420px 130px at 15% 0%,rgba(168,85,247,.16),transparent 60%)}
 .egg-head{display:flex;align-items:center;gap:14px;position:relative}
 .egg-disc{width:46px;height:46px;border-radius:50%;flex:0 0 46px;
-  background:conic-gradient(from 0deg,#a855f7,#5b8cff,#00e0b8,#a855f7);
+  background:conic-gradient(from 0deg,#a855f7,#5b8cff,var(--ac),#a855f7);
   display:grid;place-items:center;color:#08090d;font-weight:800;font-size:18px;
   box-shadow:0 0 0 4px rgba(168,85,247,.12),0 4px 14px rgba(0,0,0,.4);
   animation:eggspin 7s linear infinite}
@@ -290,7 +302,7 @@ body.light .ai-hint{background:rgba(0,0,0,.03)}
 .step .n{width:18px;height:18px;border-radius:50%;flex:0 0 18px;
   background:var(--bg-3);border:1px solid var(--br-2);display:grid;
   place-items:center;font-size:9.5px;font-weight:700;color:var(--tx-3);margin-top:1px}
-.step.done .n{background:var(--g-ac);border-color:transparent;color:#04120e}
+.step.done .n{background:var(--g-ac);border-color:transparent;color:#FFFDF9}
 .step.run .n{background:var(--g-ai);border-color:transparent;color:#fff;
   animation:spin 1.2s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -421,7 +433,7 @@ input[type=checkbox]:checked{background:var(--g-ac);border-color:transparent;
   box-shadow:0 0 0 1px rgba(0,224,184,.4)}
 input[type=checkbox]:checked::after{content:"";position:absolute;
   left:4.5px;top:2px;width:4px;height:8px;
-  border:solid #04120e;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  border:solid #FFFDF9;border-width:0 2px 2px 0;transform:rotate(45deg)}
 
 .qi{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;
   background:var(--bg-1);border:1px solid var(--br-1);margin-bottom:8px;
@@ -733,7 +745,7 @@ body.light .player{background:rgba(255,255,255,.94)}
 .pl-b:hover{color:var(--tx-1);background:var(--bg-2)}
 .pl-b svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;
   stroke-linecap:round;stroke-linejoin:round}
-.pl-b.big{width:38px;height:38px;background:var(--g-ac);color:#04120e;
+.pl-b.big{width:38px;height:38px;background:var(--g-ac);color:#FFFDF9;
   box-shadow:0 2px 10px rgba(0,224,184,.35)}
 .pl-b.big:hover{filter:brightness(1.1);transform:scale(1.06)}
 .pl-b.big svg{fill:#04120e;stroke:none;width:14px;height:14px}
@@ -784,7 +796,7 @@ body.light .nt{color:#9a6510}
 .ts.ot{animation:so3 .24s var(--e) forwards}
 @keyframes so3{to{opacity:0;transform:translateX(30px)}}
 
-.mk{position:fixed;inset:0;background:rgba(0,0,0,.7);
+.mk{position:fixed;inset:0;background:rgba(31,29,26,.45);
   z-index:100000;display:none;
   align-items:center;justify-content:center;padding:20px}
 .mk.on{display:flex;animation:mkin .2s var(--e)}
@@ -816,15 +828,145 @@ body.light .nt{color:#9a6510}
   .res .a{grid-column:1/-1;justify-content:flex-end}
   .player{grid-template-columns:1fr auto;gap:12px;padding:0 14px}
   .pl-right{display:none}
-  /* 窄窗：侧栏收成 64px 图标栏（文字/分组/徽标隐藏，图标居中） */
-  .app{grid-template-columns:64px 1fr}
-  .side{padding:14px 8px 10px}
-  .brand{justify-content:center;padding:0 0 12px}
-  .bname,.snav-label,.tab span.tt{display:none}
-  .tab{justify-content:center;padding:10px 0;gap:0}
-  .tab .n{position:absolute;top:5px;right:7px;margin:0}
-  .side-foot{justify-content:center}
+  /* 窄窗：侧栏本来就是 64px 轨道（悬停展开由 override 段统一处理），无需再收 */
 }
+
+/* ============================================================================
+   暖纸编辑部 · 换装覆盖层（2026-10-24）
+   原则：只覆盖、不重写 —— 上文所有选择器 / class / id / data-* 全部保留，
+   功能钩子（JS 选择器）零改动。这一段负责三件事：
+   ① 侧栏改成 64px 图标轨道，悬停展开 236px 浮在内容区上方（对照重构稿 .rail）
+   ② 标题换衬线、页头加珊瑚橙下划线（对照重构稿 .phead 的观感）
+   ③ 把散落的 teal/blue/purple 硬编码色统一到 珊瑚橙 / 琥珀 / 橄榄
+   ========================================================================== */
+
+/* ---- ① 侧栏：悬停伸缩轨道 ---- */
+.side{position:relative;z-index:40;display:block;padding:0;
+  border-right:0;background:transparent;overflow:visible}
+.rail{position:absolute;left:0;top:0;bottom:0;width:64px;overflow:hidden;z-index:40;
+  background:var(--bg-2);border-right:1px solid var(--br-1);
+  display:flex;flex-direction:column;padding:18px 0 14px;
+  transition:width .28s var(--eo),box-shadow .28s var(--eo)}
+.side:hover .rail{width:236px;box-shadow:10px 0 32px rgba(31,29,26,.12)}
+body:not(.light) .side:hover .rail{box-shadow:10px 0 32px rgba(0,0,0,.55)}
+.brand{width:236px;flex:0 0 auto;padding:0 15px 18px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--g-ac);
+  box-shadow:0 4px 12px rgba(232,89,12,.35)}
+.logo svg{width:16px;height:16px;fill:#FFFDF9}
+.bname{font-family:var(--serif);font-size:15px;font-weight:700;opacity:0;
+  transition:opacity .2s var(--e) .08s;white-space:nowrap}
+.side:hover .bname{opacity:1}
+.bname small{letter-spacing:1.6px}
+.snav-label{white-space:nowrap;opacity:0;transition:opacity .2s var(--e) .06s}
+.side:hover .snav-label{opacity:1}
+.tab{width:236px;height:40px;padding:0 15px;border-radius:0;gap:12px;font-size:13.5px}
+.tab svg{width:18px;height:18px;flex:0 0 18px}
+.tab .tt{opacity:0;transition:opacity .2s var(--e) .08s}
+.side:hover .tab .tt{opacity:1}
+.tab .n{opacity:0;transition:opacity .2s var(--e) .08s;margin-left:auto;
+  background:var(--ac);color:#FFFDF9}
+.side:hover .tab .n{opacity:1}
+.tab:hover{background:var(--bg-1);color:var(--tx-1)}
+.tab.on,.tab.ai.on{background:var(--bg-1);color:var(--ac);
+  box-shadow:inset 2px 0 0 var(--ac)}
+.side-foot{width:236px;margin-top:8px;padding:12px 15px 0;
+  border-top:1px solid var(--br-1)}
+.avatar{width:32px;height:32px;background:var(--bg-1);border:1px solid var(--br-2);
+  color:var(--ac);box-shadow:none}
+
+/* ---- ② 衬线标题 + 页头下划线 ---- */
+.page-head h1,.ai-title h2,.mkt,.ly-title,.now-name,.pld-hero h2,.pl-title{
+  font-family:var(--serif);letter-spacing:.01em}
+.page-head{border-bottom:1px solid var(--br-1);padding-bottom:16px;
+  position:relative;margin-bottom:20px}
+.page-head::after{content:"";position:absolute;left:0;bottom:-1px;width:56px;height:3px;
+  background:var(--ac);border-radius:2px}
+body.light .cd{background:var(--bg-1);box-shadow:var(--sd-2)}
+
+/* ---- ③ 组件色统一（原 teal/blue/purple → 珊瑚/琥珀/橄榄） ---- */
+.btn.pri{color:#FFFDF9;
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 2px 8px rgba(232,89,12,.25)}
+.pl-b.big{color:#FFFDF9}
+.pl-b.big svg{fill:#FFFDF9}
+input[type=checkbox]:hover{border-color:var(--ac)}
+input[type=checkbox]:checked{background:var(--g-ac);
+  box-shadow:0 0 0 1px rgba(232,89,12,.4)}
+input[type=checkbox]:checked::after{border-color:#FFFDF9}
+
+.tg.f{background:rgba(232,89,12,.12);color:var(--ac)}
+.tg.p{background:rgba(138,131,120,.16);color:var(--tx-2)}
+.tg.free{background:rgba(232,89,12,.14);color:var(--ac);
+  box-shadow:0 0 0 1px rgba(232,89,12,.3) inset}
+.tg.cc{background:rgba(180,83,9,.14);color:#B45309}
+body:not(.light) .tg.cc{color:#e0a35c}
+.tg.pd{background:rgba(124,45,18,.16);color:#9A3412}
+body:not(.light) .tg.pd{color:#e07a5f}
+.m.high{background:rgba(232,89,12,.14);color:var(--ac)}
+.m.mid{background:rgba(180,83,9,.14);color:#B45309}
+body:not(.light) .m.mid{color:#e0a35c}
+
+.ai-hero{background:linear-gradient(135deg,rgba(232,89,12,.10),
+  rgba(240,160,60,.06) 40%,rgba(196,74,8,.08))}
+.ai-hero::before{background:radial-gradient(circle,rgba(232,89,12,.20),transparent 70%)}
+.ai-hero::after{background:radial-gradient(circle,rgba(240,160,60,.14),transparent 70%)}
+.ai-badge{background:linear-gradient(135deg,rgba(232,89,12,.16),rgba(240,160,60,.12));
+  border-color:rgba(232,89,12,.35);color:var(--ac)}
+.ai-hint:hover{border-color:rgba(232,89,12,.4);color:var(--ac);
+  background:rgba(232,89,12,.07)}
+.ai-search input:focus{border-color:rgba(232,89,12,.5);
+  box-shadow:0 0 0 4px rgba(232,89,12,.10),0 0 30px rgba(232,89,12,.12)}
+body.light .ai-search input{background:var(--bg-1);border-color:var(--br-2)}
+
+.res.best{border-color:rgba(232,89,12,.45);
+  background:linear-gradient(180deg,rgba(232,89,12,.05),var(--bg-2));
+  box-shadow:0 0 0 1px rgba(232,89,12,.18) inset}
+.res.best::before{background:var(--g-ac);box-shadow:0 2px 8px rgba(232,89,12,.4)}
+
+.src.done{border-color:rgba(61,139,95,.30);background:rgba(61,139,95,.05)}
+.src.done .c{color:#3D8B5F}
+body:not(.light) .src.done .c{color:#6fbf8f}
+.src.run{border-color:rgba(232,89,12,.35);background:rgba(232,89,12,.05)}
+
+.qi .bar i{box-shadow:0 0 8px rgba(232,89,12,.35)}
+.pl-track i{box-shadow:0 0 8px rgba(232,89,12,.35)}
+.qi .cv::before{background:radial-gradient(circle at 30% 20%,rgba(232,89,12,.15),transparent 70%)}
+.dv .ic::before{background:radial-gradient(circle at 30% 20%,rgba(232,89,12,.16),transparent 70%)}
+.dv.on{border-color:rgba(232,89,12,.5);
+  background:linear-gradient(160deg,rgba(232,89,12,.06),var(--bg-1) 60%);
+  box-shadow:0 0 0 3px rgba(232,89,12,.1),var(--sd-2)}
+.dv.on::after{background:var(--ac);
+  box-shadow:0 0 10px var(--ac),0 0 0 3px rgba(232,89,12,.2)}
+
+.ro.on{background:linear-gradient(135deg,rgba(232,89,12,.14),rgba(240,118,46,.06));
+  border-color:rgba(232,89,12,.4);color:var(--ac);
+  box-shadow:0 0 0 1px rgba(232,89,12,.15) inset}
+.sw.on{background:var(--g-ac);
+  box-shadow:0 0 0 1px rgba(232,89,12,.3),0 2px 8px rgba(232,89,12,.25)}
+.sbtn.on{background:rgba(232,89,12,.12);border-color:rgba(232,89,12,.4);color:var(--ac)}
+.pl-b.on{color:var(--ac);background:rgba(232,89,12,.11)}
+
+.lyr.cur{text-shadow:0 0 28px rgba(232,89,12,.4),0 0 6px rgba(232,89,12,.25)}
+.qrow.on{background:linear-gradient(90deg,rgba(232,89,12,.12),transparent 92%)}
+.layer{background:
+  radial-gradient(900px 460px at 12% -12%,rgba(232,89,12,.07),transparent 62%),
+  radial-gradient(820px 460px at 100% 108%,rgba(180,83,9,.06),transparent 62%),
+  var(--bg-0)}
+body.light .layer{background:
+  radial-gradient(900px 460px at 12% -12%,rgba(232,89,12,.06),transparent 62%),
+  radial-gradient(820px 460px at 100% 108%,rgba(180,83,9,.05),transparent 62%),
+  var(--bg-0)}
+
+.ep .ic{background:linear-gradient(135deg,rgba(232,89,12,.13),rgba(240,160,60,.08))}
+
+.egg-card{background:linear-gradient(160deg,rgba(232,89,12,.12),
+  rgba(240,160,60,.07) 55%,rgba(0,0,0,.06));
+  border-color:rgba(232,89,12,.4)}
+body:not(.light) .egg-card{background:linear-gradient(160deg,rgba(232,89,12,.16),
+  rgba(240,160,60,.08) 55%,rgba(0,0,0,.25))}
+.egg-card::before{background:radial-gradient(420px 130px at 15% 0%,rgba(232,89,12,.14),transparent 60%)}
+.egg-disc{background:conic-gradient(from 0deg,#E8590C,#F0A03C,#B45309,#E8590C);
+  color:#FFFDF9;box-shadow:0 0 0 4px rgba(232,89,12,.12),0 4px 14px rgba(0,0,0,.2)}
+.egg-line.on{text-shadow:0 0 12px rgba(232,89,12,.45)}
 </style>
 </head>
 <body>
@@ -832,19 +974,19 @@ body.light .nt{color:#9a6510}
 <div id="authLayer" style="position:fixed;inset:0;z-index:100000;
   display:flex;align-items:center;justify-content:center;padding:24px;
   background:
-    radial-gradient(700px 500px at 20% 20%,rgba(0,224,184,.13),transparent 60%),
-    radial-gradient(700px 500px at 80% 80%,rgba(168,85,247,.11),transparent 60%),
-    #08090d;
+    radial-gradient(700px 500px at 20% 20%,rgba(232,89,12,.10),transparent 60%),
+    radial-gradient(700px 500px at 80% 80%,rgba(180,83,9,.08),transparent 60%),
+    #FAF7F2;
   overflow-y:auto">
   <div id="authCard" style="width:420px;max-width:100%;padding:36px 32px;
-    background:linear-gradient(180deg,#0d0f14,#12151c);
-    border:1px solid rgba(255,255,255,.08);border-radius:20px;
-    box-shadow:0 24px 80px rgba(0,0,0,.5);"></div>
+    background:#FFFFFF;
+    border:1px solid #E8E2D6;border-radius:20px;
+    box-shadow:0 24px 80px rgba(31,29,26,.14);"></div>
 </div>
 
 <div id="profileLayer" style="position:fixed;inset:0;z-index:99999;display:none;
   align-items:center;justify-content:center;padding:20px;
-  background:rgba(0,0,0,.7);overflow-y:auto"></div>
+  background:rgba(31,29,26,.4);overflow-y:auto"></div>
 
 <svg style="display:none" aria-hidden="true">
   <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
@@ -889,6 +1031,7 @@ body.light .nt{color:#9a6510}
 <div class="app">
 
   <aside class="side">
+   <div class="rail">
     <div class="brand">
       <div class="logo"><svg><use href="#i-music"/></svg></div>
       <div class="bname">MelodySync<small>DESKTOP</small></div>
@@ -929,6 +1072,7 @@ body.light .nt{color:#9a6510}
       <button class="ibtn" id="bTheme" title="明暗主题切换"><svg><use href="#i-theme"/></svg></button>
       <div class="avatar" id="userAvatarBtn" title="个人中心" style="cursor:pointer">M</div>
     </div>
+   </div>
   </aside>
 
   <div class="stage">
@@ -1085,6 +1229,41 @@ body.light .nt{color:#9a6510}
           </div>
         </div>
         <div class="dgrid" id="dGrid"></div>
+
+        <!-- 选择性同步（2026-10-24）：默认手动勾选，不再默认整库推送。
+             勾选清单存 localStorage，下次打开设备页仍然记得。 -->
+        <div class="cd" id="syncScopeCard">
+          <div style="display:flex;align-items:center;justify-content:space-between;
+            gap:10px;flex-wrap:wrap;margin-bottom:12px">
+            <div>
+              <div style="font-size:15.5px;font-weight:650">同步内容</div>
+              <div style="font-size:11.5px;color:var(--tx-3);margin-top:3px">
+                勾选要传到设备的歌曲；增量同步仍会自动跳过设备上已有的同名文件
+              </div>
+            </div>
+            <div class="rgs" id="syncScope">
+              <div class="ro on" data-scope="sel">手动勾选</div>
+              <div class="ro" data-scope="all">整个曲库</div>
+            </div>
+          </div>
+          <div id="syncPickWrap">
+            <div class="row" style="flex-wrap:nowrap;margin-bottom:10px">
+              <input class="inp gr" id="syncFilter" placeholder="筛选要同步的歌曲…">
+              <button class="btn sm" id="bSyncAll">全选</button>
+              <button class="btn sm" id="bSyncNone">全不选</button>
+            </div>
+            <div id="syncPick" style="max-height:300px;overflow-y:auto;
+              border:1px solid var(--br-1);border-radius:10px;padding:4px"></div>
+            <div style="font-size:11.5px;color:var(--tx-3);margin-top:10px" id="syncPickSum">
+              已选 0 首</div>
+          </div>
+          <div id="syncAllWrap" style="display:none;font-size:12px;color:var(--tx-3);
+            line-height:1.7">
+            将把下载目录中的<b style="color:var(--tx-1)">全部音频</b>同步到所选设备
+            （设备上已有的自动跳过）。
+          </div>
+        </div>
+
         <div class="cd">
           <div class="row" style="justify-content:space-between">
             <div style="font-size:12.5px;color:var(--tx-3)" id="syncHint">未选择设备</div>
@@ -1107,8 +1286,8 @@ body.light .nt{color:#9a6510}
               <div class="sd">深色 / 浅色</div></div>
             <div class="sc">
               <div class="rgs" id="themeSel">
-                <div class="ro on" data-t="dark">🌙 深色</div>
-                <div class="ro" data-t="light">☀ 浅色</div>
+                <div class="ro" data-t="dark">🌙 炭黑</div>
+                <div class="ro on" data-t="light">☀ 暖纸</div>
               </div>
             </div>
           </div>
@@ -1773,31 +1952,31 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
 
   var currentUser = null;
   var pendingAvatar = '🎵';
-  var pendingGrad = 'linear-gradient(135deg,#5b8cff,#8b5bff)';
+  var pendingGrad = 'linear-gradient(135deg,#E8590C,#B45309)';
   var GRADS = [
-    'linear-gradient(135deg,#5b8cff,#8b5bff)',
-    'linear-gradient(135deg,#00e0b8,#00b8d4)',
-    'linear-gradient(135deg,#ff6b9d,#f5a524)',
-    'linear-gradient(135deg,#8b5bff,#ff6b9d)',
-    'linear-gradient(135deg,#00b8d4,#5b8cff)',
-    'linear-gradient(135deg,#f5a524,#00e0b8)'
+    'linear-gradient(135deg,#E8590C,#B45309)',
+    'linear-gradient(135deg,#F0762E,#C2410C)',
+    'linear-gradient(135deg,#D97706,#78350F)',
+    'linear-gradient(135deg,#C2410C,#7C2D12)',
+    'linear-gradient(135deg,#E8873A,#9A3412)',
+    'linear-gradient(135deg,#B45309,#F5B08A)'
   ];
 
   function showAuth(){ authLayer.style.display = 'flex'; }
   function hideAuth(){ authLayer.style.display = 'none'; }
 
   var inpStyle = 'width:100%;padding:12px 14px;border-radius:10px;' +
-    'background:#181c25;border:1px solid rgba(255,255,255,.08);' +
-    'color:#f0f2f7;-webkit-text-fill-color:#f0f2f7;caret-color:#00e0b8;' +
+    'background:var(--bg-3);border:1px solid var(--br-2);' +
+    'color:var(--tx-1);-webkit-text-fill-color:var(--tx-1);caret-color:var(--ac);' +
     'font-size:14px;font-family:inherit;outline:none;' +
     'transition:border-color .2s;opacity:1;box-sizing:border-box';
-  var labelStyle = 'display:block;font-size:12px;color:#6b7488;' +
+  var labelStyle = 'display:block;font-size:12px;color:var(--tx-3);' +
     'font-weight:550;margin-bottom:7px';
   var btnStyle = 'width:100%;padding:13px;border-radius:11px;border:none;' +
-    'background:linear-gradient(135deg,#00e0b8,#00b8d4);' +
-    'color:#04120e;font-size:14px;font-weight:700;' +
+    'background:var(--g-ac);' +
+    'color:#FFFDF9;font-size:14px;font-weight:700;' +
     'font-family:inherit;cursor:pointer;margin-top:4px;' +
-    'box-shadow:0 4px 16px rgba(0,224,184,.3)';
+    'box-shadow:0 4px 16px rgba(232,89,12,.3)';
 
   function renderRegister(){
     var avatars = ['🎵','🎧','🎸','🎹','🎤','🌙','⭐','🔥','💫','🚀','🎯','💎'];
@@ -1808,7 +1987,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
       var on = i === 0;
       return '<div class="av-opt" data-av="' + a + '" data-g="' + g + '" ' +
         'style="aspect-ratio:1;border-radius:12px;' +
-        'border:2px solid ' + (on ? '#00e0b8' : 'transparent') + ';' +
+        'border:2px solid ' + (on ? 'var(--ac)' : 'transparent') + ';' +
         'display:grid;place-items:center;font-size:20px;cursor:pointer;' +
         'background:' + g + ';transition:all .18s;' +
         (on ? 'box-shadow:0 0 0 3px rgba(0,224,184,.2);' : '') +
@@ -1816,9 +1995,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
     }).join('');
 
     authCard.innerHTML =
-      '<div style="text-align:center;font-size:22px;font-weight:750;' +
-        'color:#00e0b8;margin-bottom:6px">MelodySync</div>' +
-      '<div style="text-align:center;font-size:12.5px;color:#6b7488;' +
+      '<div style="text-align:center;font-family:var(--serif);font-size:22px;font-weight:750;' +
+        'color:var(--ac);margin-bottom:6px">MelodySync</div>' +
+      '<div style="text-align:center;font-size:12.5px;color:var(--tx-3);' +
         'margin-bottom:24px;line-height:1.6">首次启动 · 创建本地账户<br>' +
         '你的数据只保存在本机</div>' +
 
@@ -1847,21 +2026,21 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
       '</div>' +
 
       '<label style="display:flex;align-items:flex-start;gap:10px;' +
-        'padding:12px 14px;border-radius:10px;background:rgba(0,0,0,.2);' +
-        'border:1px solid rgba(255,255,255,.06);margin-bottom:16px;cursor:pointer">' +
+        'padding:12px 14px;border-radius:10px;background:var(--bg-2);' +
+        'border:1px solid var(--br-1);margin-bottom:16px;cursor:pointer">' +
         '<input type="checkbox" id="regCloud" style="margin-top:2px;width:16px;' +
-          'height:16px;accent-color:#00e0b8">' +
-        '<div style="flex:1;font-size:12px;color:#a8b0c0;line-height:1.6">' +
-          '<b style="color:#f0f2f7;display:block;margin-bottom:2px">同步账户到云端（可选）</b>' +
-          '<span style="font-size:11px;color:#6b7488">勾选后，昵称、头像、注册时间会上传至开发者服务器。不勾选仅保存在本机。</span>' +
+          'height:16px;accent-color:var(--ac)">' +
+        '<div style="flex:1;font-size:12px;color:var(--tx-2);line-height:1.6">' +
+          '<b style="color:var(--tx-1);display:block;margin-bottom:2px">同步账户到云端（可选）</b>' +
+          '<span style="font-size:11px;color:var(--tx-3)">勾选后，昵称、头像、注册时间会上传至开发者服务器。不勾选仅保存在本机。</span>' +
         '</div>' +
       '</label>' +
 
       '<button id="regSubmit" style="' + btnStyle + '">创建账户</button>' +
 
-      '<div style="text-align:center;font-size:12px;color:#6b7488;' +
+      '<div style="text-align:center;font-size:12px;color:var(--tx-3);' +
         'margin-top:18px;line-height:1.7">已有账户？' +
-        '<a id="toLogin" style="color:#00e0b8;cursor:pointer;' +
+        '<a id="toLogin" style="color:var(--ac);cursor:pointer;' +
         'text-decoration:none;font-weight:550">直接登录</a></div>';
 
     document.getElementById('regName').focus();
@@ -1872,7 +2051,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
           x.style.border = '2px solid transparent';
           x.style.boxShadow = 'none';
         });
-        o.style.border = '2px solid #00e0b8';
+        o.style.border = '2px solid var(--ac)';
         o.style.boxShadow = '0 0 0 3px rgba(0,224,184,.2)';
         pendingAvatar = o.getAttribute('data-av');
         pendingGrad = o.getAttribute('data-g');
@@ -1931,9 +2110,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
 
   function renderLogin(){
     authCard.innerHTML =
-      '<div style="text-align:center;font-size:22px;font-weight:750;' +
-        'color:#00e0b8;margin-bottom:6px">MelodySync</div>' +
-      '<div style="text-align:center;font-size:12.5px;color:#6b7488;' +
+      '<div style="text-align:center;font-family:var(--serif);font-size:22px;font-weight:750;' +
+        'color:var(--ac);margin-bottom:6px">MelodySync</div>' +
+      '<div style="text-align:center;font-size:12.5px;color:var(--tx-3);' +
         'margin-bottom:24px;line-height:1.6">欢迎回来，请登录你的账户</div>' +
 
       '<div style="margin-bottom:16px">' +
@@ -1948,14 +2127,14 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
 
       '<div id="logErr" style="display:none;padding:10px 12px;' +
         'border-radius:8px;background:rgba(255,77,106,.1);' +
-        'border:1px solid rgba(255,77,106,.2);color:#ff4d6a;' +
+        'border:1px solid rgba(255,77,106,.2);color:var(--dg);' +
         'font-size:12px;margin-bottom:14px"></div>' +
 
       '<button id="logSubmit" style="' + btnStyle + '">登录</button>' +
 
-      '<div style="text-align:center;font-size:12px;color:#6b7488;' +
+      '<div style="text-align:center;font-size:12px;color:var(--tx-3);' +
         'margin-top:18px;line-height:1.7">' +
-        '<a id="toRegister" style="color:#00e0b8;cursor:pointer;' +
+        '<a id="toRegister" style="color:var(--ac);cursor:pointer;' +
         'text-decoration:none;font-weight:550">创建新账户</a></div>';
 
     document.getElementById('logName').focus();
@@ -2047,13 +2226,13 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
     profileLayer.innerHTML =
       '<div style="width:480px;max-width:calc(100% - 32px);' +
         'max-height:85vh;overflow-y:auto;' +
-        'background:linear-gradient(180deg,#0d0f14,#12151c);' +
-        'border:1px solid rgba(255,255,255,.09);border-radius:16px;' +
+        'background:var(--bg-1);' +
+        'border:1px solid var(--br-2);border-radius:16px;' +
         'padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.6)">' +
         '<div style="display:flex;align-items:center;gap:10px;' +
           'font-size:16px;font-weight:650;margin-bottom:18px">' +
           '个人中心<span id="pClose" style="margin-left:auto;cursor:pointer;' +
-          'color:#6b7488;font-size:22px;line-height:1;width:28px;height:28px;' +
+          'color:var(--tx-3);font-size:22px;line-height:1;width:28px;height:28px;' +
           'border-radius:8px;display:grid;place-items:center">×</span></div>' +
 
         '<div style="width:72px;height:72px;border-radius:20px;' +
@@ -2061,22 +2240,22 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
           'background:' + (u.avatarGrad || GRADS[0]) + '">' +
           (u.avatar || '🎵') + '</div>' +
         '<div style="font-size:20px;font-weight:750;margin-bottom:6px">' + u.name + '</div>' +
-        '<div style="font-size:12px;color:#a8b0c0;line-height:1.7;margin-bottom:18px">' +
+        '<div style="font-size:12px;color:var(--tx-2);line-height:1.7;margin-bottom:18px">' +
           (u.isCloud ? '● 云端账户' : '○ 本地账户') + '<br>' +
           '注册于 ' + createdDate.toLocaleDateString() + ' · 已使用 ' + days + ' 天<br>' +
           '上次登录 ' + lastDate.toLocaleString() +
         '</div>' +
 
         '<div style="display:flex;align-items:center;padding:12px 0;' +
-          'border-bottom:1px solid rgba(255,255,255,.06)">' +
+          'border-bottom:1px solid var(--br-1)">' +
           '<div style="font-size:12.5px;font-weight:550">昵称</div>' +
           '<div style="margin-left:auto;display:flex;align-items:center;gap:8px">' +
-            '<span style="font-size:12px;color:#a8b0c0">' + u.name + '</span>' +
+            '<span style="font-size:12px;color:var(--tx-2)">' + u.name + '</span>' +
             '<button class="p-mini" id="pEditName">修改</button>' +
           '</div></div>' +
 
         '<div style="display:flex;align-items:center;padding:12px 0;' +
-          'border-bottom:1px solid rgba(255,255,255,.06)">' +
+          'border-bottom:1px solid var(--br-1)">' +
           '<div style="font-size:12.5px;font-weight:550">头像</div>' +
           '<div style="margin-left:auto;display:flex;align-items:center;gap:8px">' +
             '<span style="font-size:20px">' + (u.avatar || '🎵') + '</span>' +
@@ -2084,7 +2263,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
           '</div></div>' +
 
         '<div style="display:flex;align-items:center;padding:12px 0;' +
-          'border-bottom:1px solid rgba(255,255,255,.06)">' +
+          'border-bottom:1px solid var(--br-1)">' +
           '<div style="font-size:12.5px;font-weight:550">密码</div>' +
           '<div style="margin-left:auto">' +
             '<button class="p-mini" id="pEditPwd">修改密码</button>' +
@@ -2092,9 +2271,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
 
         (u.isCloud ?
           '<div style="display:flex;align-items:center;padding:12px 0;' +
-            'border-bottom:1px solid rgba(255,255,255,.06)">' +
+            'border-bottom:1px solid var(--br-1)">' +
             '<div style="font-size:12.5px;font-weight:550">歌单云同步' +
-              '<div style="font-size:10.5px;color:#6b7488;margin-top:2px">' +
+              '<div style="font-size:10.5px;color:var(--tx-3);margin-top:2px">' +
                 '上传整包覆盖云端；恢复会导入云端歌单到本地</div></div>' +
             '<div style="margin-left:auto;display:flex;gap:8px">' +
               '<button class="p-mini" id="pCloudPush">上传</button>' +
@@ -2104,19 +2283,19 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
         '<div style="display:flex;align-items:center;padding:12px 0">' +
           '<div style="font-size:12.5px;font-weight:550">退出登录</div>' +
           '<div style="margin-left:auto">' +
-            '<button class="p-mini" id="pLogout" style="color:#ff4d6a;' +
+            '<button class="p-mini" id="pLogout" style="color:var(--dg);' +
               'border-color:rgba(255,77,106,.2)">退出</button>' +
           '</div></div>' +
 
         '<button class="p-mini" id="pDelete" style="width:100%;' +
-          'margin-top:18px;padding:10px;color:#ff4d6a;' +
+          'margin-top:18px;padding:10px;color:var(--dg);' +
           'border-color:rgba(255,77,106,.2)">删除账户（清空所有数据）</button>' +
       '</div>';
 
     document.querySelectorAll('.p-mini').forEach(function(b){
       b.style.cssText += ';padding:5px 10px;font-size:11.5px;' +
-        'border-radius:6px;border:1px solid rgba(255,255,255,.09);' +
-        'background:#181c25;color:#f0f2f7;cursor:pointer;font-family:inherit';
+        'border-radius:6px;border:1px solid var(--br-2);' +
+        'background:var(--bg-3);color:var(--tx-1);cursor:pointer;font-family:inherit';
     });
 
     profileLayer.style.display = 'flex';
@@ -2163,7 +2342,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
         var g = GRADS[i % GRADS.length];
         html += '<div class="p-av" data-av="' + a + '" data-g="' + g + '" ' +
           'style="aspect-ratio:1;border-radius:12px;' +
-          'border:2px solid ' + (a === u.avatar ? '#00e0b8' : 'transparent') + ';' +
+          'border:2px solid ' + (a === u.avatar ? 'var(--ac)' : 'transparent') + ';' +
           'display:grid;place-items:center;font-size:20px;cursor:pointer;' +
           'background:' + g + '">' + a + '</div>';
       });
@@ -2171,17 +2350,17 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
 
       profileLayer.innerHTML =
         '<div style="width:480px;max-width:calc(100% - 32px);' +
-          'background:linear-gradient(180deg,#0d0f14,#12151c);' +
-          'border:1px solid rgba(255,255,255,.09);border-radius:16px;' +
+          'background:var(--bg-1);' +
+          'border:1px solid var(--br-2);border-radius:16px;' +
           'padding:24px">' +
           '<div style="font-size:16px;font-weight:650;margin-bottom:18px">选择头像</div>' +
           html +
           '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">' +
             '<button id="avCancel" style="padding:6px 14px;border-radius:8px;' +
-              'border:1px solid rgba(255,255,255,.09);background:#181c25;' +
-              'color:#f0f2f7;cursor:pointer">取消</button>' +
+              'border:1px solid var(--br-2);background:var(--bg-3);' +
+              'color:var(--tx-1);cursor:pointer">取消</button>' +
             '<button id="avSave" style="padding:6px 14px;border-radius:8px;' +
-              'border:none;background:#00e0b8;color:#04120e;font-weight:650;' +
+              'border:none;background:var(--ac);color:#FFFDF9;font-weight:650;' +
               'cursor:pointer">保存</button>' +
           '</div>' +
         '</div>';
@@ -2192,7 +2371,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = QRCodeLite
           document.querySelectorAll('#pAvGrid .p-av').forEach(function(x){
             x.style.border = '2px solid transparent';
           });
-          o.style.border = '2px solid #00e0b8';
+          o.style.border = '2px solid var(--ac)';
           newAv = o.getAttribute('data-av');
           newGrad = o.getAttribute('data-g');
         };
@@ -2394,7 +2573,12 @@ const $$ = s => [...document.querySelectorAll(s)];
 const state = {
   platform:'netease', quality:'flac',
   queue:[], library:[], playlists:[], history:[],
-  devices:[], selDev:null, theme:'dark',
+  devices:[], selDev:null, theme:'light',   /* v5 起默认「暖纸」纸面主题 */
+  /* 选择性同步：scope='sel'(手动勾选，默认) | 'all'(整个曲库)。
+     勾选集合存音乐库 id，localStorage 记忆 —— 不用每次进设备页都重新勾。 */
+  syncScope:'sel',
+  syncSel:(() => { try { return new Set(JSON.parse(localStorage.getItem('ms.syncSel') || '[]')); }
+                   catch (e) { return new Set(); } })(),
   currentSong:null, playTimer:null, playPos:0, playDur:0, playPaused:false,
   /* 播放列表（播放上下文）：playQueue 是"当前正在播的这一串"，
      playIndex 指向其中第几首，上一首/下一首/自动续播都基于它。
@@ -2485,12 +2669,14 @@ function lyrLineAt(lines, pos) {
   return ans;
 }
 
-const GRADS = ['linear-gradient(135deg,#5b8cff,#8b5bff)',
-  'linear-gradient(135deg,#00e0b8,#00b8d4)',
-  'linear-gradient(135deg,#ff6b9d,#f5a524)',
-  'linear-gradient(135deg,#8b5bff,#ff6b9d)',
-  'linear-gradient(135deg,#00b8d4,#5b8cff)',
-  'linear-gradient(135deg,#f5a524,#00e0b8)'];
+/* 封面占位渐变：暖纸编辑部改版后统一为珊瑚/琥珀/赭石暖色系，
+   与纸面主题同一色族（原 cool 蓝紫粉已全部退场） */
+const GRADS = ['linear-gradient(135deg,#E8590C,#B45309)',
+  'linear-gradient(135deg,#F0762E,#C2410C)',
+  'linear-gradient(135deg,#D97706,#78350F)',
+  'linear-gradient(135deg,#C2410C,#7C2D12)',
+  'linear-gradient(135deg,#E8873A,#9A3412)',
+  'linear-gradient(135deg,#B45309,#F5B08A)'];
 const grad = i => GRADS[i % GRADS.length];
 
 /* ============================================================
@@ -2707,7 +2893,7 @@ function initBridge() {
       });
       bridge.libraryUpdated.connect(l => {
         try { state.library = JSON.parse(l || '[]').map(_normLib); } catch (e) {}
-        renderLib(); renderAnalysis();
+        renderLib(); renderAnalysis(); renderSyncPick();
       });
       bridge.devicesUpdated.connect(d => {
         try { state.devices = JSON.parse(d || '[]').map(_normDev); } catch (e) {}
@@ -2853,6 +3039,15 @@ const MS = {
     if (!bridge) return null;
     const p = _waitSignal('syncDone', 90000);
     bridge.planSync(deviceId);
+    const r = await p;
+    return r ? JSON.parse(r) : null;
+  },
+
+  /* 选择性同步的计划版：scope = 'all' 或 {"ids":[音乐库 id,...]}（与 startSync 同契约） */
+  async planSyncEx(deviceId, scope) {
+    if (!bridge) return null;
+    const p = _waitSignal('syncDone', 90000);
+    bridge.planSyncEx(deviceId, String(scope || 'all'));
     const r = await p;
     return r ? JSON.parse(r) : null;
   },
@@ -3730,7 +3925,7 @@ async function openQrLogin(platform) {
     const res = await MS.qrCreate();
     const content = res && (res.content || res.qrContent || res.url);
     if (!res || !res.ok || !content) {
-      box.innerHTML = '<span style="color:#ff4d6a;font-size:12px">生成失败</span>';
+      box.innerHTML = '<span style="color:var(--dg);font-size:12px">生成失败</span>';
       setHint((res && res.error) || '无法获取二维码，请检查网络');
       return;
     }
@@ -3738,10 +3933,10 @@ async function openQrLogin(platform) {
     // content 是一个登录 URL（约 70-100 字符），纠错等级 M 足够且码点不密
     try {
       box.innerHTML = QRCodeLite.toSvg(content, {
-        ecc: 'M', quiet: 1, dark: '#0d0f14', light: '#ffffff'
+        ecc: 'M', quiet: 1, dark: '#1F1D1A', light: '#ffffff'
       });
     } catch (e) {
-      box.innerHTML = '<span style="color:#ff4d6a;font-size:12px">渲染失败</span>';
+      box.innerHTML = '<span style="color:var(--dg);font-size:12px">渲染失败</span>';
       setHint('二维码内容过长，无法渲染');
       return;
     }
@@ -4228,7 +4423,7 @@ function renderHistory() {
       <span class="tg ${s.quality==='FLAC'?'f':'p'}">${esc(s.quality)}</span>
       ${good
         ? '<div style="font-size:11px;font-weight:600;color:var(--ac)">✓ 成功</div>'
-        : `<div style="font-size:11px;font-weight:600;color:#ff4d6a" title="${esc(s.error || '')}">✗ 失败</div>`}
+        : `<div style="font-size:11px;font-weight:600;color:var(--dg)" title="${esc(s.error || '')}">✗ 失败</div>`}
     </div>`;
   }).join('');
 
@@ -4364,6 +4559,7 @@ function renderDev() {
       <div class="s">请插入 U 盘 / MP3 播放器，或用数据线连接手机、手表</div>
     </div>`;
     $('#syncHint').textContent = '等待设备接入…';
+    renderSyncPick();   /* 没设备也要把勾选列表画出来（音乐库可能非空） */
     return;
   }
 
@@ -4391,14 +4587,96 @@ function renderDev() {
     if (MS.native) MS.selectDevice(state.selDev);
     renderDev();
   });
+
+  renderSyncPick();   /* 进设备页时按最新音乐库重画勾选列表 */
 }
+/* ---------------- 选择性同步：勾选列表 ---------------- */
+function _saveSyncSel() {
+  try { localStorage.setItem('ms.syncSel', JSON.stringify([...state.syncSel])); } catch (e) {}
+}
+
+function renderSyncPick() {
+  const wrap = $('#syncPick');
+  if (!wrap) return;
+  const filter = ($('#syncFilter').value || '').trim().toLowerCase();
+  const lib = state.library;
+  if (!lib.length) {
+    wrap.innerHTML = `<div class="ep" style="padding:24px 10px">
+      <div class="t">音乐库为空</div>
+      <div class="s">下载完成的歌曲会出现在这里，届时勾选要同步的即可</div></div>`;
+    _updSyncSum();
+    return;
+  }
+  let list = lib;
+  if (filter)
+    list = lib.filter(s => ((s.name || '') + ' ' + (s.artist || '')).toLowerCase().includes(filter));
+  wrap.innerHTML = list.map(s => {
+    const on = state.syncSel.has(Number(s.id));
+    return `<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;
+        border-radius:8px;cursor:pointer${on ? ';background:var(--bg-2)' : ''}">
+      <input type="checkbox" ${on ? 'checked' : ''} data-sync-id="${s.id}">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12.5px;font-weight:550;white-space:nowrap;
+          overflow:hidden;text-overflow:ellipsis">${esc(s.name)}</div>
+        <div style="font-size:10.5px;color:var(--tx-3)">${esc(s.artist || '未知')}
+          · ${(s.size || 0).toFixed(1)} MB</div>
+      </div>
+      <span class="tg ${String(s.quality).toUpperCase() === 'FLAC' ? 'f' : 'p'}">${qLbl(s.quality)}</span>
+    </label>`;
+  }).join('');
+  wrap.querySelectorAll('input[data-sync-id]').forEach(cb => {
+    cb.onchange = () => {
+      const id = Number(cb.dataset.syncId);
+      if (cb.checked) state.syncSel.add(id); else state.syncSel.delete(id);
+      _saveSyncSel(); _updSyncSum();
+    };
+  });
+  _updSyncSum();
+}
+
+function _updSyncSum() {
+  const el = $('#syncPickSum');
+  if (!el) return;
+  const sel = state.library.filter(s => state.syncSel.has(Number(s.id)));
+  const mb = sel.reduce((a, x) => a + (x.size || 0), 0);
+  el.textContent = `已选 ${sel.length} 首 · ${fmtSize(mb)}` +
+    (sel.length ? '' : ' —— 还没勾任何歌，无法开始同步');
+}
+
+/* 同步范围切换：手动勾选（默认）/ 整个曲库 */
+$$('#syncScope .ro').forEach(o => o.onclick = () => {
+  $$('#syncScope .ro').forEach(x => x.classList.remove('on'));
+  o.classList.add('on');
+  state.syncScope = o.dataset.scope;
+  const sel = state.syncScope === 'sel';
+  $('#syncPickWrap').style.display = sel ? '' : 'none';
+  $('#syncAllWrap').style.display  = sel ? 'none' : '';
+});
+$('#syncFilter') && ($('#syncFilter').oninput = () => renderSyncPick());
+$('#bSyncAll') && ($('#bSyncAll').onclick = () => {
+  state.library.forEach(s => state.syncSel.add(Number(s.id)));
+  _saveSyncSel(); renderSyncPick(); toast('已全选');
+});
+$('#bSyncNone') && ($('#bSyncNone').onclick = () => {
+  state.syncSel.clear(); _saveSyncSel(); renderSyncPick(); toast('已全部取消勾选', 'w');
+});
+
 $('#bSync').onclick = async () => {
   if (!state.selDev) { toast('请先选择设备', 'w'); return; }
   if (!state.library.length) { toast('音乐库为空', 'w'); return; }
 
+  /* 解析同步范围：手动勾选 = 只传勾过的歌（scope JSON 契约 {"ids":[...]}）；
+     整个曲库 = 'all'（后端扫下载目录，旧行为不变）。 */
+  let scopeArg = 'all';
+  if (state.syncScope === 'sel') {
+    const ids = state.library.filter(s => state.syncSel.has(Number(s.id))).map(s => Number(s.id));
+    if (!ids.length) { toast('请先勾选要同步的歌曲', 'w'); return; }
+    scopeArg = JSON.stringify({ ids });
+  }
+
   if (MS.native) {
     // 先出计划让用户看到"要传多少、跳过多少"，再真正开始
-    const plan = await MS.planSync(state.selDev);
+    const plan = await MS.planSyncEx(state.selDev, scopeArg);
     if (plan && plan.ok) {
       const msg = `同步计划：共 ${plan.total || 0} 个文件，` +
                   `需传输 ${plan.copy || 0} 个` +
@@ -4407,7 +4685,7 @@ $('#bSync').onclick = async () => {
       toast(`计划：需传 ${plan.copy || 0} / 跳过 ${plan.skip || 0}`);
       if (!await uiConfirm(msg, { title:'设备同步', danger:false, okText:'开始同步' })) return;
     }
-    const res = await MS.startSync(state.selDev, 'all');
+    const res = await MS.startSync(state.selDev, scopeArg);
     if (res && res.ok) {
       $('#syncHint').textContent = '同步完成';
       toast('同步完成，可以安全拔出设备');
@@ -4418,7 +4696,8 @@ $('#bSync').onclick = async () => {
   }
 
   toast('开始同步…');
-  setTimeout(() => toast('同步完成'), 1500);
+  setTimeout(() => toast(`同步完成 · 已推送 ${
+    state.syncScope === 'sel' ? state.syncSel.size : state.library.length} 首`), 1500);
 };
 
 function renderSourceList() {
@@ -4857,14 +5136,14 @@ function renderLayer() {
    本地文件的嵌入式封面暂时拿不到：qrc 页面下 file:// 会被 Chromium 拦，
    要显示得让 LocalAudioServer 再开一条图片路由（见 README 待办）。 */
 const COV_GRADS = [
-  'linear-gradient(135deg,#5b8cff,#8b5bff)',
-  'linear-gradient(135deg,#00e0b8,#0088a8)',
-  'linear-gradient(135deg,#ff6b9d,#f5a524)',
-  'linear-gradient(135deg,#8b5bff,#ff6b9d)',
-  'linear-gradient(135deg,#00b8d4,#4f6ef7)',
-  'linear-gradient(135deg,#f5a524,#ff4d6a)',
-  'linear-gradient(135deg,#22c55e,#00b8d4)',
-  'linear-gradient(135deg,#a855f7,#5b8cff)'
+  'linear-gradient(135deg,#E8590C,#B45309)',
+  'linear-gradient(135deg,#F0762E,#9A3412)',
+  'linear-gradient(135deg,#D97706,#78350F)',
+  'linear-gradient(135deg,#C2410C,#7C2D12)',
+  'linear-gradient(135deg,#E8873A,#B45309)',
+  'linear-gradient(135deg,#B45309,#F5B08A)',
+  'linear-gradient(135deg,#8A5A2B,#3F2A12)',
+  'linear-gradient(135deg,#EA9A5B,#C2410C)'
 ];
 function coverFor(s) {
   const key = `${s.artist || ''}|${s.name || ''}`;
@@ -5427,10 +5706,10 @@ async function loadAnalysis() {
   // 只有纯浏览器预览（无 C++ 后端）时才灌演示数据
   if (typeof QWebChannel === 'undefined' || typeof qt === 'undefined') {
     state.library = [
-      { name:'晴天', artist:'周杰伦', album:'叶惠美', dur:'04:29', quality:'flac', size:34.2 },
-      { name:'七里香', artist:'周杰伦', album:'七里香', dur:'04:59', quality:'flac', size:38.7 },
-      { name:'富士山下', artist:'陈奕迅', album:"What's Going On...", dur:'04:20', quality:'flac', size:31.5 },
-      { name:'倔强', artist:'五月天', album:'神的孩子都在跳舞', dur:'04:20', quality:'320', size:9.8 }
+      { id:1, name:'晴天', artist:'周杰伦', album:'叶惠美', dur:'04:29', quality:'flac', size:34.2 },
+      { id:2, name:'七里香', artist:'周杰伦', album:'七里香', dur:'04:59', quality:'flac', size:38.7 },
+      { id:3, name:'富士山下', artist:'陈奕迅', album:"What's Going On...", dur:'04:20', quality:'flac', size:31.5 },
+      { id:4, name:'倔强', artist:'五月天', album:'神的孩子都在跳舞', dur:'04:20', quality:'320', size:9.8 }
     ];
     state.history = state.library.map((s,i) => ({...s, ts:Date.now() - i*3600000*6, status:'ok'}));
     state.playlists = [
@@ -5449,6 +5728,8 @@ async function loadAnalysis() {
   renderHistory();
   renderAnalysis();
   renderDev();
+  setTheme(state.theme);   /* 启动即应用主题（浏览器 mock 模式没有 applySettings 兜底） */
+  renderSyncPick();        /* 设备同步勾选列表首绘 */
   syncModeUI();          // 底栏的随机/循环按钮按默认模式（顺序播放）上色
   initBridge();
 

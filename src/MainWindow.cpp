@@ -85,10 +85,13 @@ void MainWindow::applyDarkPalette()
 {
     // WebEngine 在页面加载完之前会先绘制一个白底，深色界面下会"闪一下白"。
     // 把窗口与视口调色板设为深色可以显著减轻这一瞬的刺眼感。
+    //
+    // 2026-10-24：界面默认主题换成「暖纸编辑部」纸面（Settings v5 迁移），
+    // 调色板同步改为纸面底色，避免启动首帧从深色跳到浅色的"闪黑"。
     QPalette p = palette();
-    p.setColor(QPalette::Window, QColor(0x08, 0x09, 0x0d));
-    p.setColor(QPalette::Base, QColor(0x0d, 0x0f, 0x14));
-    p.setColor(QPalette::WindowText, QColor(0xf0, 0xf2, 0xf7));
+    p.setColor(QPalette::Window, QColor(0xfa, 0xf7, 0xf2));
+    p.setColor(QPalette::Base, QColor(0xfa, 0xf7, 0xf2));
+    p.setColor(QPalette::WindowText, QColor(0x1f, 0x1d, 0x1a));
     setPalette(p);
     setAutoFillBackground(true);
 }
@@ -112,8 +115,9 @@ void MainWindow::setupWebEngine()
     m_view->setAutoFillBackground(true);
     {
         QPalette vp = m_view->palette();
-        vp.setColor(QPalette::Window, QColor(0x0d, 0x0f, 0x14));
-        vp.setColor(QPalette::Base, QColor(0x0d, 0x0f, 0x14));
+        // 与 applyDarkPalette 同步：默认主题已是「暖纸」纸面，视口底色跟着走
+        vp.setColor(QPalette::Window, QColor(0xfa, 0xf7, 0xf2));
+        vp.setColor(QPalette::Base, QColor(0xfa, 0xf7, 0xf2));
         m_view->setPalette(vp);
     }
     setCentralWidget(m_view);

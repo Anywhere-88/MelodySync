@@ -176,7 +176,9 @@ bool Settings::cloudEnabled() const
 // ---------------------------------------------------------------------------
 QString Settings::theme() const
 {
-    return m_s.value(QStringLiteral("ui/theme"), QStringLiteral("dark")).toString();
+    // v5 起 UI 全面改版为「暖纸编辑部」纸面主题，新默认 = light（暖纸）。
+    // 老配置里落盘的 dark 会在 migrate() 的 v5 迁移里被一次性重置。
+    return m_s.value(QStringLiteral("ui/theme"), QStringLiteral("light")).toString();
 }
 
 void Settings::setTheme(const QString& t) { m_s.setValue(QStringLiteral("ui/theme"), t); }
@@ -234,9 +236,14 @@ void Settings::migrate()
     //   为什么必须走迁移而不是只改默认值：老用户的 `search/sources` 早就落盘成
     //   `"netease,qq,web"` 了，改 kDefaultSources 对他们是**完全无效**的 ——
     //   那行代码只在"从来没写过这个键"时才生效。
-    static const int kSchema = 4;
+    static const int kSchema = 5;
     const int ver = m_s.value(QStringLiteral("search/schemaVersion"), 1).toInt();
     if (ver >= kSchema) return;
+
+    // v5：界面整体换成「暖纸编辑部」设计，旧的深色主题记忆没有延续的意义，
+    // 一次性重置为纸面主题。用户之后手动切回深色会重新落盘，不会再被迁移。
+    if (ver < 5)
+        m_s.setValue(QStringLiteral("ui/theme"), QStringLiteral("light"));
 
     QStringList list = enabledSources();   // 顺带复用它的"带引号/不带引号都认"的容错
     if (list.isEmpty()) {

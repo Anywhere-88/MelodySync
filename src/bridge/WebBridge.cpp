@@ -33,6 +33,7 @@
 #include <QJsonDocument>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QSet>
 #include <QTemporaryFile>
 #include <QTextStream>
 #include <QUrl>
@@ -1118,54 +1119,132 @@ void WebBridge::selectDevice(const QString& deviceId)
     emit toast(QStringLiteral("已选择设备：%1").arg(d.name), QString());
 }
 
-// 生成同步计划（异步）：只读扫描，不写任何东西，让用户先确认再同步
+namespace {
+
+// 解析同步范围（「勾选歌曲同步」的核心）：
+//   scope = "all" / 空        → 返回空表，语义 = 扫描整个下载目录（旧行为）
+//   scope = {"ids":[id,...]}  → 按音乐库 id 解析出磁盘上实际存在的文件路径
+// 返回空表且 ok=true 表示"全库"；ok=false 表示勾选清单本身有问题（空 / 全部失效）。
+QStringList resolveSyncSelection(const QString& scope, qint64 userId,
+                                 bool* ok, QString* errOut)
+{
+    *ok = true;
+    const QString s = scope.trimmed();
+    if (s.isEmpty() || s == QLatin1String("all")) return {};
+
+    const QJsonDocument doc = QJsonDocument::fromJson(s.toUtf8());
+    if (!doc.isObject()) {
+        *ok = false;
+        *errOut = QStringLiteral("同步范围格式错误");
+        return {};
+    }
+    const QJsonArray ids = doc.object().value(QStringLiteral("ids")).toArray();
+    if (ids.isEmpty()) {
+        *ok = false;
+        *errOut = QStringLiteral("没有勾选任何歌曲");
+        return {};
+    }
+
+    QSet<qint64> want;
+    for (const QJsonValue& v : ids) want.insert(static_cast<qint64>(v.toDouble()));
+
+    // 直接在主线程查库：这个入口是用户点「开始同步」触发的，频次极低，
+    // 而 startSync 本身立刻回 pending、真正的拷贝在 worker 线程，这里几毫秒无感。
+    const QVector<LibraryItem> lib = Database::instance().library(userId);
+    QStringList files;
+    for (const LibraryItem& it : lib) {
+        if (!want.contains(it.id)) continue;
+        // 库记录还在、文件已不在（被手动移动/删除）：跳过这一条，其余照常同步
+        if (it.filePath.isEmpty() || !QFileInfo(it.filePath).isFile()) continue;
+        files << it.filePath;
+        want.remove(it.id);
+    }
+    if (files.isEmpty()) {
+        *ok = false;
+        *errOut = QStringLiteral("勾选的歌曲在磁盘上已不存在（可能被移动或删除）");
+    }
+    return files;
+}
+
+// 生成同步计划对象。files 为空 = 全库（扫描下载目录），否则用给定的显式清单。
+// planSyncEx（预览）与 startSync（执行）共用，保证"看到的计划"与"实际执行的"一致。
+QJsonObject makeSyncPlan(const DeviceInfo& dev, const QString& srcDir,
+                         const QStringList& files, const CancelTokenPtr& cancel)
+{
+    UsbSync::Options opt;
+    opt.targetSubdir  = QStringLiteral("Music");
+    opt.incremental   = true;
+    opt.convert       = dev.mtp ? false : !FFmpegTranscoder::deviceSupports(dev, QStringLiteral("flac"));
+    opt.targetBitrate = Settings::instance().deviceBitrate();
+
+    QJsonObject result;
+    if (dev.mtp) {
+        // MTP 设备拿不完整文件表，计划里只列本地待传清单
+        const QStringList all = files.isEmpty()
+            ? UsbSync::collectAudioFiles(srcDir, cancel) : files;
+        QStringList existing = MtpSync::listRemoteFiles(dev.id, opt.targetSubdir, nullptr);
+        QJsonArray arr;
+        int skip = 0;
+        for (const QString& f : all) {
+            if (cancel && cancel->isCanceled()) break;
+            const QFileInfo fi(f);
+            if (!fi.isFile()) continue;
+            const bool has = existing.contains(fi.fileName(), Qt::CaseInsensitive);
+            if (has) ++skip;
+            QJsonObject o;
+            o[QStringLiteral("name")] = fi.fileName();
+            o[QStringLiteral("size")] = fi.size();
+            o[QStringLiteral("skip")] = has;
+            o[QStringLiteral("reason")] = has ? QStringLiteral("设备上已存在同名文件")
+                                              : QStringLiteral("待传输");
+            arr.append(o);
+        }
+        result[QStringLiteral("total")] = arr.size();
+        result[QStringLiteral("skip")]  = skip;
+        result[QStringLiteral("copy")]  = arr.size() - skip;
+        result[QStringLiteral("convert")] = 0;
+        result[QStringLiteral("items")] = arr;
+    } else {
+        const UsbSync::Plan plan = files.isEmpty()
+            ? UsbSync::buildPlan(srcDir, dev, opt, cancel)
+            : UsbSync::buildPlanForFiles(files, srcDir, dev, opt, cancel);
+        result = QJsonDocument::fromJson(plan.toJson().toUtf8()).object();
+    }
+    return result;
+}
+
+} // namespace
+
+// 生成同步计划（异步）：只读扫描，不写任何东西，让用户先确认再同步。
+// 无 scope 版 = 全库同步，等价于 planSyncEx(id, "all")。
 QString WebBridge::planSync(const QString& deviceId)
+{
+    return planSyncEx(deviceId, QStringLiteral("all"));
+}
+
+// 带同步范围的计划版：scope = "all" 或 {"ids":[...]}（与 startSync 同一契约）
+QString WebBridge::planSyncEx(const QString& deviceId, const QString& scope)
 {
     if (!m_devices) return MS_EARLY_ERR(syncDone, "设备模块未初始化");
 
     const DeviceInfo dev = m_devices->deviceById(deviceId);
     if (dev.id.isEmpty()) return MS_EARLY_ERR(syncDone, "设备不存在");
 
-    const Settings& cfg = Settings::instance();
-    const QString srcDir = cfg.downloadDir();
+    bool selOk = false;
+    QString selErr;
+    const QStringList files = resolveSyncSelection(scope, currentUserId(), &selOk, &selErr);
+    if (!selOk) {
+        const QString json = toCompact(err(selErr));
+        emit syncDone(json);
+        return json;
+    }
+
+    const QString srcDir = Settings::instance().downloadDir();
     const CancelTokenPtr cancel = m_sync ? m_sync->cancel : CancelTokenPtr();
     if (cancel) cancel->reset();
 
-    runAsync([this, dev, srcDir, cancel]() {
-        UsbSync::Options opt;
-        opt.targetSubdir  = QStringLiteral("Music");
-        opt.incremental   = true;
-        opt.convert       = dev.mtp ? false : !FFmpegTranscoder::deviceSupports(dev, QStringLiteral("flac"));
-        opt.targetBitrate = Settings::instance().deviceBitrate();
-
-        QJsonObject result;
-        if (dev.mtp) {
-            // MTP 设备拿不完整文件表，计划里只列本地待传清单
-            const QStringList files = UsbSync::collectAudioFiles(srcDir, cancel);
-            QStringList existing = MtpSync::listRemoteFiles(dev.id, opt.targetSubdir, nullptr);
-            QJsonArray arr;
-            int skip = 0;
-            for (const QString& f : files) {
-                const QFileInfo fi(f);
-                const bool has = existing.contains(fi.fileName(), Qt::CaseInsensitive);
-                if (has) ++skip;
-                QJsonObject o;
-                o[QStringLiteral("name")] = fi.fileName();
-                o[QStringLiteral("size")] = fi.size();
-                o[QStringLiteral("skip")] = has;
-                o[QStringLiteral("reason")] = has ? QStringLiteral("设备上已存在同名文件")
-                                                  : QStringLiteral("待传输");
-                arr.append(o);
-            }
-            result[QStringLiteral("total")] = files.size();
-            result[QStringLiteral("skip")]  = skip;
-            result[QStringLiteral("copy")]  = files.size() - skip;
-            result[QStringLiteral("convert")] = 0;
-            result[QStringLiteral("items")] = arr;
-        } else {
-            const UsbSync::Plan plan = UsbSync::buildPlan(srcDir, dev, opt, cancel);
-            result = QJsonDocument::fromJson(plan.toJson().toUtf8()).object();
-        }
+    runAsync([this, dev, srcDir, files, cancel]() {
+        QJsonObject result = makeSyncPlan(dev, srcDir, files, cancel);
 
         result[QStringLiteral("ok")]     = true;
         result[QStringLiteral("action")] = QStringLiteral("plan");
@@ -1187,13 +1266,25 @@ QString WebBridge::startSync(const QString& deviceId, const QString& scope)
     const DeviceInfo dev = m_devices->deviceById(deviceId);
     if (dev.id.isEmpty()) return MS_EARLY_ERR(syncDone, "设备不存在或已拔出");
 
+    // scope 解析必须在主线程先做完（查数据库），worker 里只碰文件系统。
+    // files 为空 = 全库（worker 内自行扫描下载目录）。
+    bool selOk = false;
+    QString selErr;
+    const QStringList selFiles = resolveSyncSelection(scope, currentUserId(), &selOk, &selErr);
+    if (!selOk) {
+        // running 还没置位（在下面才置），这里直接回错误即可
+        const QString json = toCompact(err(selErr));
+        emit syncDone(json);
+        return json;
+    }
+
     const QString srcDir = Settings::instance().downloadDir();
     const CancelTokenPtr cancel = m_sync->cancel;
     cancel->reset();
     m_sync->running = true;
     m_sync->deviceId = deviceId;
 
-    runAsync([this, dev, srcDir, scope, cancel]() {
+    runAsync([this, dev, srcDir, selFiles, cancel]() {
         const Settings& cfg = Settings::instance();
 
         UsbSync::Options opt;
@@ -1220,7 +1311,8 @@ QString WebBridge::startSync(const QString& deviceId, const QString& scope)
         bool ok = false;
 
         if (dev.mtp) {
-            const QStringList files = UsbSync::collectAudioFiles(srcDir, cancel);
+            const QStringList files = selFiles.isEmpty()
+                ? UsbSync::collectAudioFiles(srcDir, cancel) : selFiles;
             MtpSync::Options mo;
             mo.targetFolder = opt.targetSubdir;
             mo.existingNames = MtpSync::listRemoteFiles(dev.id, mo.targetFolder, nullptr);
@@ -1230,7 +1322,9 @@ QString WebBridge::startSync(const QString& deviceId, const QString& scope)
                                     },
                                     cancel, &error);
         } else {
-            const UsbSync::Plan plan = UsbSync::buildPlan(srcDir, dev, opt, cancel);
+            const UsbSync::Plan plan = selFiles.isEmpty()
+                ? UsbSync::buildPlan(srcDir, dev, opt, cancel)
+                : UsbSync::buildPlanForFiles(selFiles, srcDir, dev, opt, cancel);
             UsbSync usb;
             ok = usb.execute(plan, opt, onProgress, cancel, &error);
             if (ok) {

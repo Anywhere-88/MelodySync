@@ -138,6 +138,9 @@ public slots:
     Q_INVOKABLE QString startSync(const QString& deviceId, const QString& scope);
     Q_INVOKABLE void    cancelSync();
     Q_INVOKABLE QString planSync(const QString& deviceId);
+    // 选择性同步的计划版：scope = "all" 或 JSON {"ids":[音乐库 id, ...]}。
+    // 与 startSync 的 scope 同一契约 —— 先让用户看到"勾的这些要传多少"，再真正开始。
+    Q_INVOKABLE QString planSyncEx(const QString& deviceId, const QString& scope);
 
     // ------------------------------------------------------------------ 设置
     Q_INVOKABLE QString getSettings();

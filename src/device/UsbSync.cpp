@@ -148,29 +148,32 @@ bool UsbSync::compareItem(const PlanItem& it, const Options& opt, QString* reaso
 }
 
 // ---------------------------------------------------------------------------
-// 生成计划
+// 生成计划（按调用方给定的文件清单 —— buildPlan 与「勾选歌曲同步」共用）
 // ---------------------------------------------------------------------------
-UsbSync::Plan UsbSync::buildPlan(const QString& sourceDir,
-                                 const DeviceInfo& device,
-                                 const Options& opt,
-                                 const CancelTokenPtr& cancel)
+UsbSync::Plan UsbSync::buildPlanForFiles(const QStringList& files,
+                                         const QString& sourceDir,
+                                         const DeviceInfo& device,
+                                         const Options& opt,
+                                         const CancelTokenPtr& cancel)
 {
     Plan plan;
     plan.sourceDir  = sourceDir;
     plan.targetRoot = device.mountPath;
 
     if (device.mtp) {
-        qWarning() << "[UsbSync] buildPlan 被用于 MTP 设备，应改走 MtpSync";
+        qWarning() << "[UsbSync] buildPlanForFiles 被用于 MTP 设备，应改走 MtpSync";
         return plan;
     }
     if (device.mountPath.isEmpty()) { qWarning() << "[UsbSync] 设备没有挂载点"; return plan; }
 
     const QString targetDir = QDir(device.mountPath).filePath(opt.targetSubdir);
-    const QStringList files = collectAudioFiles(sourceDir, cancel);
 
     plan.items.reserve(files.size());
     for (const QString& src : files) {
         if (cancel && cancel->isCanceled()) break;
+
+        // 勾选清单里可能混进已删除/非音频的路径：安静地过滤掉，不打断整个计划
+        if (!isAudioFile(src) || !QFileInfo(src).isFile()) continue;
 
         PlanItem it;
         it.sourcePath = src;
@@ -210,6 +213,17 @@ UsbSync::Plan UsbSync::buildPlan(const QString& sourceDir,
     qInfo() << "[UsbSync] 计划：" << plan.totalCount << "个文件，跳过" << plan.skipCount
             << "，需传输" << plan.copyCount << "（含转码" << plan.convertCount << "）";
     return plan;
+}
+
+UsbSync::Plan UsbSync::buildPlan(const QString& sourceDir,
+                                 const DeviceInfo& device,
+                                 const Options& opt,
+                                 const CancelTokenPtr& cancel)
+{
+    // 全库同步 = 显式清单版 + 「递归收集整个下载目录」的文件来源。
+    // 计划逻辑只有一份，避免两条路径的增量判定 / 转码判断悄悄漂移。
+    return buildPlanForFiles(collectAudioFiles(sourceDir, cancel),
+                             sourceDir, device, opt, cancel);
 }
 
 // ---------------------------------------------------------------------------
