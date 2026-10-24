@@ -106,6 +106,10 @@ public:
         head += hasRange ? "HTTP/1.1 206 Partial Content\r\n" : "HTTP/1.1 200 OK\r\n";
         head += "Content-Type: " + contentType(path).toUtf8() + "\r\n";
         head += "Accept-Ranges: bytes\r\n";
+        // CORS：悦动音符页的镜像 <audio>（crossOrigin=anonymous）要对同一 URL
+        // 再拉一遍做频谱分析；qrc 页面是 opaque origin，必须用通配符放行。
+        // 只绑 127.0.0.1 + 音频扩展名双重门槛，放开 CORS 不扩大文件暴露面。
+        head += "Access-Control-Allow-Origin: *\r\n";
         head += "Cache-Control: no-store\r\n";
         if (hasRange)
             head += "Content-Range: bytes " + QByteArray::number(start) + "-"
